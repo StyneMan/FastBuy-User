@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1081445553303",
+    "project_id": "fastbuy-c3644",
+    "storage_bucket": "fastbuy-c3644.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1081445553303:android:65fbe16305ee31f2a485d2",
+        "android_client_info": {
+          "package_name": "com.fastbuy.customer.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAxhkmS25b-ZJhbRwZCKO1hPgHGPxDkh0U"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
