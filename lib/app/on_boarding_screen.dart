@@ -116,7 +116,7 @@ class OnBoardingScreen extends StatelessWidget {
                             if (controller.selectedPageIndex.value == 2) {
                               Preferences.setBoolean(
                                   Preferences.isFinishOnBoardingKey, true);
-                              Get.offAll(const LoginScreen());
+                              Get.offAll(LoginScreen());
                             } else {
                               controller.pageController.jumpToPage(
                                   controller.selectedPageIndex.value + 1);

@@ -74,7 +74,7 @@ class FavouriteScreen extends StatelessWidget {
                                         Text(
                                           "Please Log In to Continue".tr,
                                           style:
-                                              TextStyle(color: themeChange.getThem() ? AppThemeData.grey100 : AppThemeData.grey800, fontSize: 22, fontFamily: AppThemeData.semiBold),
+                                              TextStyle(color: themeChange.getThem() ? AppThemeData.grey100 : AppThemeData.grey800, fontSize: 22, fontFamily: AppThemeData.semiBold,),
                                         ),
                                         const SizedBox(
                                           height: 5,
@@ -82,7 +82,7 @@ class FavouriteScreen extends StatelessWidget {
                                         Text(
                                           "You’re not logged in. Please sign in to access your account and explore all features.".tr,
                                           textAlign: TextAlign.center,
-                                          style: TextStyle(color: themeChange.getThem() ? AppThemeData.grey50 : AppThemeData.grey500, fontSize: 16, fontFamily: AppThemeData.bold),
+                                          style: TextStyle(color: themeChange.getThem() ? AppThemeData.grey50 : AppThemeData.grey500, fontSize: 16, fontFamily: AppThemeData.bold,),
                                         ),
                                         const SizedBox(
                                           height: 20,
@@ -94,7 +94,7 @@ class FavouriteScreen extends StatelessWidget {
                                           color: AppThemeData.primary300,
                                           textColor: AppThemeData.grey50,
                                           onPress: () async {
-                                            Get.offAll(const LoginScreen());
+                                            Get.offAll(LoginScreen());
                                           },
                                         ),
                                       ],

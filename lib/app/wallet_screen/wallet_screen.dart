@@ -63,7 +63,7 @@ class WalletScreen extends StatelessWidget {
                               color: AppThemeData.primary300,
                               textColor: AppThemeData.grey50,
                               onPress: () async {
-                                Get.offAll(const LoginScreen());
+                                Get.offAll(LoginScreen());
                               },
                             ),
                           ],

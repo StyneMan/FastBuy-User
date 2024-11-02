@@ -21,7 +21,9 @@ import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 
 class LoginScreen extends StatelessWidget {
-  const LoginScreen({super.key});
+  LoginScreen({super.key});
+
+  var formkey = GlobalKey<FormState>();
 
   @override
   Widget build(BuildContext context) {
@@ -58,7 +60,7 @@ class LoginScreen extends StatelessWidget {
                         color: themeChange.getThem()
                             ? AppThemeData.primary300
                             : AppThemeData.primary300,
-                        fontSize: 18,
+                        fontSize: 16,
                         fontFamily: AppThemeData.semiBold,
                       ),
                     ),
@@ -69,71 +71,89 @@ class LoginScreen extends StatelessWidget {
             body: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      "Welcome Back! 👋".tr,
-                      style: TextStyle(
-                        color: themeChange.getThem()
-                            ? AppThemeData.grey50
-                            : AppThemeData.primary500,
-                        fontSize: 22,
-                        fontWeight: FontWeight.w900,
-                        fontFamily: AppThemeData.semiBold,
+                child: Form(
+                  key: formkey,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        "Welcome Back! 👋".tr,
+                        style: TextStyle(
+                          color: themeChange.getThem()
+                              ? AppThemeData.grey50
+                              : AppThemeData.primary500,
+                          fontSize: 22,
+                          fontWeight: FontWeight.w900,
+                          fontFamily: AppThemeData.semiBold,
+                        ),
                       ),
-                    ),
-                    Text(
-                      "Log in to continue enjoying delicious food delivered to your doorstep."
-                          .tr,
-                      style: TextStyle(
-                        color: themeChange.getThem()
-                            ? AppThemeData.grey400
-                            : AppThemeData.grey500,
-                        fontSize: 16,
-                        fontFamily: AppThemeData.regular,
+                      Text(
+                        "Log in to continue enjoying delicious food delivered to your doorstep."
+                            .tr,
+                        style: TextStyle(
+                          color: themeChange.getThem()
+                              ? AppThemeData.grey400
+                              : AppThemeData.grey500,
+                          fontSize: 16,
+                          fontFamily: AppThemeData.regular,
+                        ),
                       ),
-                    ),
-                    const SizedBox(
-                      height: 32,
-                    ),
-                    TextFieldWidget(
-                      title: 'Email Address'.tr,
-                      controller: controller.emailEditingController.value,
-                      hintText: 'Enter email address'.tr,
-                      prefix: Padding(
-                        padding: const EdgeInsets.all(12),
-                        child: SvgPicture.asset(
-                          "assets/icons/ic_mail.svg",
-                          colorFilter: ColorFilter.mode(
-                            themeChange.getThem()
-                                ? AppThemeData.grey300
-                                : AppThemeData.grey600,
-                            BlendMode.srcIn,
+                      const SizedBox(
+                        height: 32,
+                      ),
+                      TextFieldWidget(
+                        title: 'Email Address'.tr,
+                        controller: controller.emailEditingController.value,
+                        hintText: 'Enter email address'.tr,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter your email';
+                          }
+                          if (!RegExp(r'^[\w-]+(\.[\w-]+)*@[\w-]+(\.[\w-]+)+$')
+                              .hasMatch(value)) {
+                            return 'Enter a valid email address';
+                          }
+                          return null;
+                        },
+                        prefix: Padding(
+                          padding: const EdgeInsets.all(12),
+                          child: SvgPicture.asset(
+                            "assets/icons/ic_mail.svg",
+                            colorFilter: ColorFilter.mode(
+                              themeChange.getThem()
+                                  ? AppThemeData.grey300
+                                  : AppThemeData.grey600,
+                              BlendMode.srcIn,
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                    TextFieldWidget(
-                      title: 'Password'.tr,
-                      controller: controller.passwordEditingController.value,
-                      hintText: 'Enter password'.tr,
-                      obscureText: controller.passwordVisible.value,
-                      prefix: Padding(
-                        padding: const EdgeInsets.all(12),
-                        child: SvgPicture.asset(
-                          "assets/icons/ic_lock.svg",
-                          colorFilter: ColorFilter.mode(
-                            themeChange.getThem()
-                                ? AppThemeData.grey300
-                                : AppThemeData.grey600,
-                            BlendMode.srcIn,
+                      TextFieldWidget(
+                        title: 'Password'.tr,
+                        controller: controller.passwordEditingController.value,
+                        hintText: 'Enter password'.tr,
+                        obscureText: controller.passwordVisible.value,
+                        validator: (value) {
+                          if (value.toString().isEmpty) {
+                            return "Password is required";
+                          }
+                          return null;
+                        },
+                        prefix: Padding(
+                          padding: const EdgeInsets.all(12),
+                          child: SvgPicture.asset(
+                            "assets/icons/ic_lock.svg",
+                            colorFilter: ColorFilter.mode(
+                              themeChange.getThem()
+                                  ? AppThemeData.grey300
+                                  : AppThemeData.grey600,
+                              BlendMode.srcIn,
+                            ),
                           ),
                         ),
-                      ),
-                      suffix: Padding(
-                        padding: const EdgeInsets.all(12),
-                        child: InkWell(
+                        suffix: Padding(
+                          padding: const EdgeInsets.all(12),
+                          child: InkWell(
                             onTap: () {
                               controller.passwordVisible.value =
                                   !controller.passwordVisible.value;
@@ -156,84 +176,79 @@ class LoginScreen extends StatelessWidget {
                                           : AppThemeData.grey600,
                                       BlendMode.srcIn,
                                     ),
-                                  )),
+                                  ),
+                          ),
+                        ),
                       ),
-                    ),
-                    Align(
-                      alignment: Alignment.centerRight,
-                      child: InkWell(
-                        onTap: () {
-                          Get.to(const ForgotPasswordScreen());
-                        },
-                        child: Text(
-                          "Forgot Password".tr,
-                          style: TextStyle(
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: InkWell(
+                          onTap: () {
+                            Get.to(const ForgotPasswordScreen());
+                          },
+                          child: Text(
+                            "Forgot Password".tr,
+                            style: TextStyle(
                               decoration: TextDecoration.underline,
                               decorationColor: AppThemeData.secondary300,
                               color: themeChange.getThem()
                                   ? AppThemeData.secondary300
                                   : AppThemeData.secondary300,
                               fontSize: 14,
-                              fontFamily: AppThemeData.regular),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(
-                      height: 30,
-                    ),
-                    RoundedButtonFill(
-                      title: "Login".tr,
-                      color: AppThemeData.primary300,
-                      textColor: AppThemeData.grey50,
-                      onPress: () async {
-                        if (controller
-                            .emailEditingController.value.text.isEmpty) {
-                          ShowToastDialog.showToast(
-                              "Please enter valid email".tr);
-                        } else if (controller
-                            .passwordEditingController.value.text.isEmpty) {
-                          ShowToastDialog.showToast(
-                              "Please enter valid password".tr);
-                        } else {
-                          controller.loginWithEmailAndPassword();
-                        }
-                      },
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 40),
-                      child: Row(
-                        children: [
-                          const Expanded(child: Divider(thickness: 1)),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 20, vertical: 30),
-                            child: Text(
-                              "or".tr,
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                color: themeChange.getThem()
-                                    ? AppThemeData.grey500
-                                    : AppThemeData.grey400,
-                                fontSize: 16,
-                                fontFamily: AppThemeData.medium,
-                                fontWeight: FontWeight.w500,
-                              ),
+                              fontFamily: AppThemeData.regular,
                             ),
                           ),
-                          const Expanded(child: Divider()),
-                        ],
+                        ),
                       ),
-                    ),
-                    RoundedButtonBorder(
-                      title: "Continue with Mobile Number".tr,
-                      textColor: AppThemeData.primary300,
-                      icon: SvgPicture.asset("assets/icons/ic_phone.svg"),
-                      isRight: false,
-                      onPress: () async {
-                        Get.to(const PhoneNumberScreen());
-                      },
-                    ),
-                  ],
+                      const SizedBox(
+                        height: 30,
+                      ),
+                      RoundedButtonFill(
+                        title: "Login".tr,
+                        color: AppThemeData.primary300,
+                        textColor: AppThemeData.grey50,
+                        onPress: () async {
+                          if (formkey.currentState!.validate()) {
+                            controller.loginWithEmailAndPassword();
+                          }
+                        },
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 40),
+                        child: Row(
+                          children: [
+                            const Expanded(child: Divider(thickness: 1)),
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 20, vertical: 30),
+                              child: Text(
+                                "or".tr,
+                                textAlign: TextAlign.center,
+                                style: TextStyle(
+                                  color: themeChange.getThem()
+                                      ? AppThemeData.grey500
+                                      : AppThemeData.grey400,
+                                  fontSize: 16,
+                                  fontFamily: AppThemeData.medium,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ),
+                            const Expanded(child: Divider()),
+                          ],
+                        ),
+                      ),
+                      RoundedButtonBorder(
+                        title: "Continue with Mobile Number".tr,
+                        textColor: AppThemeData.primary300,
+                        icon: SvgPicture.asset("assets/icons/ic_phone.svg"),
+                        isRight: false,
+                        onPress: () async {
+                          Get.to(const PhoneNumberScreen());
+                        },
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),

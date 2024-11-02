@@ -277,7 +277,7 @@ class ProfileScreen extends StatelessWidget {
                                         "assets/icons/ic_share.svg",
                                         "Share app", () {
                                       Share.share(
-                                          'Check out Foodie, your ultimate food delivery application! \n\nGoogle Play: ${Constant.googlePlayLink} \n\nApp Store: ${Constant.appStoreLink}',
+                                          'Check out FastBuy, your ultimate food and logistic delivery application! \n\nGoogle Play: ${Constant.googlePlayLink} \n\nApp Store: ${Constant.appStoreLink}',
                                           subject: 'Look what I made!');
                                     }),
                                     cardDecoration(
@@ -432,7 +432,7 @@ class ProfileScreen extends StatelessWidget {
                                             controller,
                                             "assets/icons/ic_logout.svg",
                                             "Log In", () {
-                                            Get.offAll(const LoginScreen());
+                                            Get.offAll(LoginScreen());
                                           })
                                         : cardDecoration(
                                             themeChange,
@@ -453,11 +453,11 @@ class ProfileScreen extends StatelessWidget {
                                                     negativeString: "Cancel".tr,
                                                     positiveClick: () async {
                                                       Constant.userModel = null;
-                                                      await FirebaseAuth
-                                                          .instance
-                                                          .signOut();
+                                                      // await FirebaseAuth
+                                                      //     .instance
+                                                      //     .signOut();
                                                       Get.offAll(
-                                                          const LoginScreen());
+                                                          LoginScreen());
                                                     },
                                                     negativeClick: () {
                                                       Get.back();
@@ -507,7 +507,7 @@ class ProfileScreen extends StatelessWidget {
                                                           "Account deleted successfully"
                                                               .tr);
                                                       Get.offAll(
-                                                          const LoginScreen());
+                                                          LoginScreen());
                                                     } else {
                                                       ShowToastDialog.showToast(
                                                           "Contact Administrator"
@@ -554,7 +554,7 @@ class ProfileScreen extends StatelessWidget {
                                   ),
                             Center(
                               child: Text(
-                                "V : ${Constant.appVersion}",
+                                "V: ${"1.0.0" ?? Constant.appVersion}",
                                 textAlign: TextAlign.center,
                                 style: TextStyle(
                                   fontFamily: AppThemeData.medium,

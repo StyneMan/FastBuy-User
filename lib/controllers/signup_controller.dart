@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:customer/app/auth_screen/otp_screen.dart';
 import 'package:customer/app/dash_board_screens/dash_board_screen.dart';
 import 'package:customer/app/location_permission_screen/location_permission_screen.dart';
 import 'package:customer/constant/constant.dart';
@@ -49,113 +50,19 @@ class SignupController extends GetxController {
 
   signUpWithEmailAndPassword() async {
     signUp();
-    // if (referralCodeEditingController.value.text.toString().isNotEmpty) {
-    //   await FireStoreUtils.checkReferralCodeValidOrNot(referralCodeEditingController.value.text.toString()).then((value) async {
-    //     if (value == true) {
-    //       signUp();
-    //     } else {
-    //       ShowToastDialog.showToast("Referral code is Invalid");
-    //     }
-    //   });
-    // } else {
-    //   signUp();
-    // }
   }
 
   signUp() async {
     ShowToastDialog.showLoader("Please wait".tr);
-    if (type.value == "mobileNumber") {
-      userModel.value.firstName = firstNameEditingController.value.text.toString();
-      userModel.value.lastName = lastNameEditingController.value.text.toString();
-      userModel.value.email = emailEditingController.value.text.toString().toLowerCase();
-      userModel.value.phoneNumber = phoneNUmberEditingController.value.text.toString();
-      userModel.value.role = Constant.userRoleCustomer;
-      userModel.value.fcmToken = await NotificationService.getToken();
-      userModel.value.active = true;
-      userModel.value.countryCode = countryCodeEditingController.value.text;
-      userModel.value.createdAt = Timestamp.now();
-
-      // await FireStoreUtils.getReferralUserByCode(referralCodeEditingController.value.text).then((value) async {
-      //   if (value != null) {
-      //     ReferralModel ownReferralModel = ReferralModel(id: FireStoreUtils.getCurrentUid(), referralBy: value.id, referralCode: Constant.getReferralCode());
-      //     await FireStoreUtils.referralAdd(ownReferralModel);
-      //   } else {
-      //     ReferralModel referralModel = ReferralModel(id: FireStoreUtils.getCurrentUid(), referralBy: "", referralCode: Constant.getReferralCode());
-      //     await FireStoreUtils.referralAdd(referralModel);
-      //   }
-      // });
-
-      await FireStoreUtils.updateUser(userModel.value).then(
-        (value) {
-          if (userModel.value.shippingAddress != null && userModel.value.shippingAddress!.isNotEmpty) {
-            if (userModel.value.shippingAddress!.where((element) => element.isDefault == true).isNotEmpty) {
-              Constant.selectedLocation = userModel.value.shippingAddress!.where((element) => element.isDefault == true).single;
-            } else {
-              Constant.selectedLocation = userModel.value.shippingAddress!.first;
-            }
-            Get.offAll(const DashBoardScreen());
-          } else {
-            Get.offAll(const LocationPermissionScreen());
-          }
-          ShowToastDialog.showToast("Account created successfully");
-        },
-      );
-    } else {
-      try {
-        final credential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
-          email: emailEditingController.value.text.trim(),
-          password: passwordEditingController.value.text.trim(),
-        );
-        if (credential.user != null) {
-          userModel.value.id = credential.user!.uid;
-          userModel.value.firstName = firstNameEditingController.value.text.toString();
-          userModel.value.lastName = lastNameEditingController.value.text.toString();
-          userModel.value.email = emailEditingController.value.text.toString().toLowerCase();
-          userModel.value.phoneNumber = phoneNUmberEditingController.value.text.toString();
-          userModel.value.role = Constant.userRoleCustomer;
-          userModel.value.fcmToken = await NotificationService.getToken();
-          userModel.value.active = true;
-          userModel.value.countryCode = countryCodeEditingController.value.text;
-          userModel.value.createdAt = Timestamp.now();
-
-          // await FireStoreUtils.getReferralUserByCode(referralCodeEditingController.value.text).then((value) async {
-          //   if (value != null) {
-          //     ReferralModel ownReferralModel = ReferralModel(id: FireStoreUtils.getCurrentUid(), referralBy: value.id, referralCode: Constant.getReferralCode());
-          //     await FireStoreUtils.referralAdd(ownReferralModel);
-          //   } else {
-          //     ReferralModel referralModel = ReferralModel(id: FireStoreUtils.getCurrentUid(), referralBy: "", referralCode: Constant.getReferralCode());
-          //     await FireStoreUtils.referralAdd(referralModel);
-          //   }
-          // });
-
-          await FireStoreUtils.updateUser(userModel.value).then(
-            (value) async {
-              if (userModel.value.shippingAddress != null && userModel.value.shippingAddress!.isNotEmpty) {
-                if (userModel.value.shippingAddress!.where((element) => element.isDefault == true).isNotEmpty) {
-                  Constant.selectedLocation = userModel.value.shippingAddress!.where((element) => element.isDefault == true).single;
-                } else {
-                  Constant.selectedLocation = userModel.value.shippingAddress!.first;
-                }
-                Get.offAll(const DashBoardScreen());
-              } else {
-                Get.offAll(const LocationPermissionScreen());
-              }
-            },
-          );
-        }
-      } on FirebaseAuthException catch (e) {
-        if (e.code == 'weak-password') {
-          ShowToastDialog.showToast("The password provided is too weak.");
-        } else if (e.code == 'email-already-in-use') {
-          ShowToastDialog.showToast("The account already exists for that email.");
-        } else if (e.code == 'invalid-email') {
-          ShowToastDialog.showToast("Enter email is Invalid");
-        }
-      } catch (e) {
-        ShowToastDialog.showToast(e.toString());
-      }
-    }
-
+    Future.delayed(const Duration(seconds: 3), () {
+      ShowToastDialog.closeLoader();
+       Get.to(const OtpScreen(type: "signup",), arguments: {
+        "countryCode": countryCodeEditingController.value.text,
+        "phoneNumber": phoneNUmberEditingController.value.text,
+        "verificationId": "1234",
+        "emailAddress": emailEditingController.value.text,
+      });
+    });
     ShowToastDialog.closeLoader();
   }
 }

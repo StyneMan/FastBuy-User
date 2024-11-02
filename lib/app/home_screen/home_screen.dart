@@ -109,11 +109,12 @@ class HomeScreen extends StatelessWidget {
                                   .tr,
                               textAlign: TextAlign.center,
                               style: TextStyle(
-                                  color: themeChange.getThem()
-                                      ? AppThemeData.grey50
-                                      : AppThemeData.grey500,
-                                  fontSize: 16,
-                                  fontFamily: AppThemeData.bold),
+                                color: themeChange.getThem()
+                                    ? AppThemeData.grey50
+                                    : AppThemeData.grey500,
+                                fontSize: 16,
+                                fontFamily: AppThemeData.bold,
+                              ),
                             ),
                             const SizedBox(
                               height: 20,
@@ -199,7 +200,7 @@ class HomeScreen extends StatelessWidget {
                                                       ? InkWell(
                                                           onTap: () {
                                                             Get.offAll(
-                                                                const LoginScreen());
+                                                                LoginScreen());
                                                           },
                                                           child: Text(
                                                             "Login".tr,

@@ -155,7 +155,7 @@ class HomeScreenTwo extends StatelessWidget {
                                           Constant.userModel == null
                                               ? InkWell(
                                                   onTap: () {
-                                                    Get.offAll(const LoginScreen());
+                                                    Get.offAll(LoginScreen());
                                                   },
                                                   child: Text(
                                                     "Login".tr,

@@ -26,7 +26,8 @@ class SplashController extends GetxController {
     } else {
       bool isLogin = await FireStoreUtils.isLogin();
       if (isLogin == true) {
-        await FireStoreUtils.getUserProfile(FireStoreUtils.getCurrentUid()).then((value) async {
+        await FireStoreUtils.getUserProfile(FireStoreUtils.getCurrentUid())
+            .then((value) async {
           if (value != null) {
             UserModel userModel = value;
             log(userModel.toJson().toString());
@@ -34,11 +35,17 @@ class SplashController extends GetxController {
               if (userModel.active == true) {
                 userModel.fcmToken = await NotificationService.getToken();
                 await FireStoreUtils.updateUser(userModel);
-                if (userModel.shippingAddress != null && userModel.shippingAddress!.isNotEmpty) {
-                  if (userModel.shippingAddress!.where((element) => element.isDefault == true).isNotEmpty) {
-                    Constant.selectedLocation = userModel.shippingAddress!.where((element) => element.isDefault == true).single;
+                if (userModel.shippingAddress != null &&
+                    userModel.shippingAddress!.isNotEmpty) {
+                  if (userModel.shippingAddress!
+                      .where((element) => element.isDefault == true)
+                      .isNotEmpty) {
+                    Constant.selectedLocation = userModel.shippingAddress!
+                        .where((element) => element.isDefault == true)
+                        .single;
                   } else {
-                    Constant.selectedLocation = userModel.shippingAddress!.first;
+                    Constant.selectedLocation =
+                        userModel.shippingAddress!.first;
                   }
                   Get.offAll(const DashBoardScreen());
                 } else {
@@ -46,17 +53,17 @@ class SplashController extends GetxController {
                 }
               } else {
                 await FirebaseAuth.instance.signOut();
-                Get.offAll(const LoginScreen());
+                Get.offAll(LoginScreen());
               }
             } else {
               await FirebaseAuth.instance.signOut();
-              Get.offAll(const LoginScreen());
+              Get.offAll(LoginScreen());
             }
           }
         });
       } else {
         await FirebaseAuth.instance.signOut();
-        Get.offAll(const LoginScreen());
+        Get.offAll(LoginScreen());
       }
     }
   }

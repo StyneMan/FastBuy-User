@@ -29,278 +29,284 @@ class OtpScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final themeChange = Provider.of<DarkThemeProvider>(context);
     return GetX<OtpController>(
-        init: OtpController(),
-        builder: (controller) {
-          return Scaffold(
-            appBar: AppBar(
-              backgroundColor: themeChange.getThem()
-                  ? AppThemeData.surfaceDark
-                  : AppThemeData.surface,
-            ),
-            body: controller.isLoading.value
-                ? Constant.loader()
-                : SingleChildScrollView(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 24, vertical: 10),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            type == "phone"
-                                ? "Verify Your Number 📱".tr
-                                : "Verify Email Address",
-                            style: TextStyle(
+      init: OtpController(),
+      builder: (controller) {
+        return Scaffold(
+          appBar: AppBar(
+            backgroundColor: themeChange.getThem()
+                ? AppThemeData.surfaceDark
+                : AppThemeData.surface,
+          ),
+          body: controller.isLoading.value
+              ? Constant.loader()
+              : SingleChildScrollView(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 24, vertical: 10),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          type == "phone"
+                              ? "Verify Your Number 📱".tr
+                              : "Verify Email Address",
+                          style: TextStyle(
+                              color: themeChange.getThem()
+                                  ? AppThemeData.grey50
+                                  : AppThemeData.grey900,
+                              fontSize: 22,
+                              fontFamily: AppThemeData.semiBold),
+                        ),
+                        Text(
+                          type == "phone"
+                              ? "Enter the OTP sent to your mobile number. ${controller.countryCode.value} ${Constant.maskingString(controller.phoneNumber.value, 3)}"
+                                  .tr
+                              : "Enter the OTP sent to your email address ${controller.emailAddress.value}",
+                          textAlign: TextAlign.start,
+                          style: TextStyle(
+                            color: themeChange.getThem()
+                                ? AppThemeData.grey200
+                                : AppThemeData.grey700,
+                            fontSize: 16,
+                            fontFamily: AppThemeData.regular,
+                            fontWeight: FontWeight.w400,
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 60,
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 10),
+                          child: PinCodeTextField(
+                            length: 6,
+                            appContext: context,
+                            keyboardType: TextInputType.phone,
+                            enablePinAutofill: true,
+                            hintCharacter: "-",
+                            textStyle: TextStyle(
                                 color: themeChange.getThem()
                                     ? AppThemeData.grey50
                                     : AppThemeData.grey900,
-                                fontSize: 22,
-                                fontFamily: AppThemeData.semiBold),
-                          ),
-                          Text(
-                            type == "phone"
-                                ? "Enter the OTP sent to your mobile number. ${controller.countryCode.value} ${Constant.maskingString(controller.phoneNumber.value, 3)}"
-                                    .tr
-                                : "Enter the OTP sent to your email address ${controller.emailAddress.value}",
-                            textAlign: TextAlign.start,
-                            style: TextStyle(
-                              color: themeChange.getThem()
-                                  ? AppThemeData.grey200
-                                  : AppThemeData.grey700,
-                              fontSize: 16,
-                              fontFamily: AppThemeData.regular,
-                              fontWeight: FontWeight.w400,
-                            ),
-                          ),
-                          const SizedBox(
-                            height: 60,
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 10),
-                            child: PinCodeTextField(
-                              length: 6,
-                              appContext: context,
-                              keyboardType: TextInputType.phone,
-                              enablePinAutofill: true,
-                              hintCharacter: "-",
-                              textStyle: TextStyle(
-                                  color: themeChange.getThem()
-                                      ? AppThemeData.grey50
-                                      : AppThemeData.grey900,
-                                  fontFamily: AppThemeData.regular),
-                              pinTheme: PinTheme(
-                                fieldHeight: 50,
-                                fieldWidth: 50,
-                                inactiveFillColor: themeChange.getThem()
-                                    ? AppThemeData.grey900
-                                    : AppThemeData.grey50,
-                                selectedFillColor: themeChange.getThem()
-                                    ? AppThemeData.grey900
-                                    : AppThemeData.grey50,
-                                activeFillColor: themeChange.getThem()
-                                    ? AppThemeData.grey900
-                                    : AppThemeData.grey50,
-                                selectedColor: themeChange.getThem()
-                                    ? AppThemeData.grey900
-                                    : AppThemeData.grey50,
-                                activeColor: themeChange.getThem()
-                                    ? AppThemeData.primary300
-                                    : AppThemeData.primary300,
-                                inactiveColor: themeChange.getThem()
-                                    ? AppThemeData.grey900
-                                    : AppThemeData.grey50,
-                                disabledColor: themeChange.getThem()
-                                    ? AppThemeData.grey900
-                                    : AppThemeData.grey50,
-                                shape: PinCodeFieldShape.box,
-                                errorBorderColor: themeChange.getThem()
-                                    ? AppThemeData.grey600
-                                    : AppThemeData.grey300,
-                                borderRadius: const BorderRadius.all(
-                                  Radius.circular(10),
-                                ),
+                                fontFamily: AppThemeData.regular),
+                            pinTheme: PinTheme(
+                              fieldHeight: 50,
+                              fieldWidth: 50,
+                              inactiveFillColor: themeChange.getThem()
+                                  ? AppThemeData.grey900
+                                  : AppThemeData.grey50,
+                              selectedFillColor: themeChange.getThem()
+                                  ? AppThemeData.grey900
+                                  : AppThemeData.grey50,
+                              activeFillColor: themeChange.getThem()
+                                  ? AppThemeData.grey900
+                                  : AppThemeData.grey50,
+                              selectedColor: themeChange.getThem()
+                                  ? AppThemeData.grey900
+                                  : AppThemeData.grey50,
+                              activeColor: themeChange.getThem()
+                                  ? AppThemeData.primary300
+                                  : AppThemeData.primary300,
+                              inactiveColor: themeChange.getThem()
+                                  ? AppThemeData.grey900
+                                  : AppThemeData.grey50,
+                              disabledColor: themeChange.getThem()
+                                  ? AppThemeData.grey900
+                                  : AppThemeData.grey50,
+                              shape: PinCodeFieldShape.box,
+                              errorBorderColor: themeChange.getThem()
+                                  ? AppThemeData.grey600
+                                  : AppThemeData.grey300,
+                              borderRadius: const BorderRadius.all(
+                                Radius.circular(10),
                               ),
-                              cursorColor: AppThemeData.primary300,
-                              enableActiveFill: true,
-                              controller: controller.otpController.value,
-                              onCompleted: (v) async {},
-                              onChanged: (value) {},
                             ),
+                            cursorColor: AppThemeData.primary300,
+                            enableActiveFill: true,
+                            controller: controller.otpController.value,
+                            onCompleted: (v) async {},
+                            onChanged: (value) {},
                           ),
-                          const SizedBox(
-                            height: 50,
-                          ),
-                          RoundedButtonFill(
-                            title: "Verify & Next".tr,
-                            color: AppThemeData.primary300,
-                            textColor: AppThemeData.grey50,
-                            onPress: () async {
-                              if (controller.otpController.value.text.length ==
-                                  6) {
-                                ShowToastDialog.showLoader("Verify otp".tr);
-                                if (type == "phone") {
-                                  // Phone verification here
+                        ),
+                        const SizedBox(
+                          height: 50,
+                        ),
+                        RoundedButtonFill(
+                          title: "Verify & Next".tr,
+                          color: AppThemeData.primary300,
+                          textColor: AppThemeData.grey50,
+                          onPress: () async {
+                            if (controller.otpController.value.text.length ==
+                                6) {
+                              ShowToastDialog.showLoader("Verify otp".tr);
+                              if (type == "phone") {
+                                // Phone verification here
+                                Get.offAll(const LocationPermissionScreen());
+                              } else if (type == "signup") {
+                                // Email address verification for password reset
+                                Future.delayed(const Duration(seconds: 3), () {
+                                  ShowToastDialog.closeLoader();
+                                  Get.offAll(const DashBoardScreen());
+                                });
+                              } else {
+                                // Email address verification for password reset
+                                Future.delayed(const Duration(seconds: 3), () {
+                                  ShowToastDialog.closeLoader();
                                   Get.offAll(const LocationPermissionScreen());
-                                } else {
-                                  // Email address verification for password reset
-                                  Future.delayed(const Duration(seconds: 3),
-                                      () {
-                                    Get.offAll(
-                                        const LocationPermissionScreen());
-                                  });
-                                }
+                                });
                               }
+                            }
 
-                              // if (controller.otpController.value.text.length ==
-                              //     6) {
-                              //   ShowToastDialog.showLoader("Verify otp".tr);
+                            // if (controller.otpController.value.text.length ==
+                            //     6) {
+                            //   ShowToastDialog.showLoader("Verify otp".tr);
 
-                              //   PhoneAuthCredential credential =
-                              //       PhoneAuthProvider.credential(
-                              //           verificationId:
-                              //               controller.verificationId.value,
-                              //           smsCode: controller
-                              //               .otpController.value.text);
-                              //   String fcmToken =
-                              //       await NotificationService.getToken();
-                              //   await FirebaseAuth.instance
-                              //       .signInWithCredential(credential)
-                              //       .then((value) async {
-                              //     if (value.additionalUserInfo!.isNewUser) {
-                              //       UserModel userModel = UserModel();
-                              //       userModel.id = value.user!.uid;
-                              //       userModel.countryCode =
-                              //           controller.countryCode.value;
-                              //       userModel.phoneNumber =
-                              //           controller.phoneNumber.value;
-                              //       userModel.fcmToken = fcmToken;
+                            //   PhoneAuthCredential credential =
+                            //       PhoneAuthProvider.credential(
+                            //           verificationId:
+                            //               controller.verificationId.value,
+                            //           smsCode: controller
+                            //               .otpController.value.text);
+                            //   String fcmToken =
+                            //       await NotificationService.getToken();
+                            //   await FirebaseAuth.instance
+                            //       .signInWithCredential(credential)
+                            //       .then((value) async {
+                            //     if (value.additionalUserInfo!.isNewUser) {
+                            //       UserModel userModel = UserModel();
+                            //       userModel.id = value.user!.uid;
+                            //       userModel.countryCode =
+                            //           controller.countryCode.value;
+                            //       userModel.phoneNumber =
+                            //           controller.phoneNumber.value;
+                            //       userModel.fcmToken = fcmToken;
 
-                              //       ShowToastDialog.closeLoader();
-                              //       Get.off(SignupScreen(), arguments: {
-                              //         "userModel": userModel,
-                              //         "type": "mobileNumber",
-                              //       });
-                              //     } else {
-                              //       await FireStoreUtils.userExistOrNot(
-                              //               value.user!.uid)
-                              //           .then((userExit) async {
-                              //         ShowToastDialog.closeLoader();
-                              //         if (userExit == true) {
-                              //           UserModel? userModel =
-                              //               await FireStoreUtils.getUserProfile(
-                              //                   value.user!.uid);
-                              //           if (userModel!.role ==
-                              //               Constant.userRoleCustomer) {
-                              //             if (userModel.active == true) {
-                              //               userModel.fcmToken =
-                              //                   await NotificationService
-                              //                       .getToken();
-                              //               await FireStoreUtils.updateUser(
-                              //                   userModel);
-                              //               if (userModel.shippingAddress !=
-                              //                       null &&
-                              //                   userModel.shippingAddress!
-                              //                       .isNotEmpty) {
-                              //                 if (userModel.shippingAddress!
-                              //                     .where((element) =>
-                              //                         element.isDefault == true)
-                              //                     .isNotEmpty) {
-                              //                   Constant.selectedLocation =
-                              //                       userModel.shippingAddress!
-                              //                           .where((element) =>
-                              //                               element.isDefault ==
-                              //                               true)
-                              //                           .single;
-                              //                 } else {
-                              //                   Constant.selectedLocation =
-                              //                       userModel
-                              //                           .shippingAddress!.first;
-                              //                 }
-                              //                 Get.offAll(
-                              //                     const DashBoardScreen());
-                              //               } else {
-                              //                 Get.offAll(
-                              //                     const LocationPermissionScreen());
-                              //               }
-                              //             } else {
-                              //               ShowToastDialog.showToast(
-                              //                   "This user is disable please contact to administrator"
-                              //                       .tr);
-                              //               await FirebaseAuth.instance
-                              //                   .signOut();
-                              //               Get.offAll(const LoginScreen());
-                              //             }
-                              //           } else {
-                              //             await FirebaseAuth.instance.signOut();
-                              //             Get.offAll(const LoginScreen());
-                              //           }
-                              //         } else {
-                              //           UserModel userModel = UserModel();
-                              //           userModel.id = value.user!.uid;
-                              //           userModel.countryCode =
-                              //               controller.countryCode.value;
-                              //           userModel.phoneNumber =
-                              //               controller.phoneNumber.value;
-                              //           userModel.fcmToken = fcmToken;
+                            //       ShowToastDialog.closeLoader();
+                            //       Get.off(SignupScreen(), arguments: {
+                            //         "userModel": userModel,
+                            //         "type": "mobileNumber",
+                            //       });
+                            //     } else {
+                            //       await FireStoreUtils.userExistOrNot(
+                            //               value.user!.uid)
+                            //           .then((userExit) async {
+                            //         ShowToastDialog.closeLoader();
+                            //         if (userExit == true) {
+                            //           UserModel? userModel =
+                            //               await FireStoreUtils.getUserProfile(
+                            //                   value.user!.uid);
+                            //           if (userModel!.role ==
+                            //               Constant.userRoleCustomer) {
+                            //             if (userModel.active == true) {
+                            //               userModel.fcmToken =
+                            //                   await NotificationService
+                            //                       .getToken();
+                            //               await FireStoreUtils.updateUser(
+                            //                   userModel);
+                            //               if (userModel.shippingAddress !=
+                            //                       null &&
+                            //                   userModel.shippingAddress!
+                            //                       .isNotEmpty) {
+                            //                 if (userModel.shippingAddress!
+                            //                     .where((element) =>
+                            //                         element.isDefault == true)
+                            //                     .isNotEmpty) {
+                            //                   Constant.selectedLocation =
+                            //                       userModel.shippingAddress!
+                            //                           .where((element) =>
+                            //                               element.isDefault ==
+                            //                               true)
+                            //                           .single;
+                            //                 } else {
+                            //                   Constant.selectedLocation =
+                            //                       userModel
+                            //                           .shippingAddress!.first;
+                            //                 }
+                            //                 Get.offAll(
+                            //                     const DashBoardScreen());
+                            //               } else {
+                            //                 Get.offAll(
+                            //                     const LocationPermissionScreen());
+                            //               }
+                            //             } else {
+                            //               ShowToastDialog.showToast(
+                            //                   "This user is disable please contact to administrator"
+                            //                       .tr);
+                            //               await FirebaseAuth.instance
+                            //                   .signOut();
+                            //               Get.offAll(const LoginScreen());
+                            //             }
+                            //           } else {
+                            //             await FirebaseAuth.instance.signOut();
+                            //             Get.offAll(const LoginScreen());
+                            //           }
+                            //         } else {
+                            //           UserModel userModel = UserModel();
+                            //           userModel.id = value.user!.uid;
+                            //           userModel.countryCode =
+                            //               controller.countryCode.value;
+                            //           userModel.phoneNumber =
+                            //               controller.phoneNumber.value;
+                            //           userModel.fcmToken = fcmToken;
 
-                              //           Get.off(SignupScreen(), arguments: {
-                              //             "userModel": userModel,
-                              //             "type": "mobileNumber",
-                              //           });
-                              //         }
-                              //       });
-                              //     }
-                              //   }).catchError((error) {
-                              //     ShowToastDialog.closeLoader();
-                              //     ShowToastDialog.showToast("Invalid Code".tr);
-                              //   });
-                              // } else {
-                              //   ShowToastDialog.showToast("Enter Valid otp".tr);
-                              // }
-                            },
-                          ),
-                          const SizedBox(
-                            height: 40,
-                          ),
-                          Text.rich(
-                            textAlign: TextAlign.start,
-                            TextSpan(
-                              text: "${'Did’t receive any code? '.tr} ",
-                              style: TextStyle(
-                                fontWeight: FontWeight.w500,
-                                fontSize: 14,
-                                fontFamily: AppThemeData.medium,
-                                color: themeChange.getThem()
-                                    ? AppThemeData.grey100
-                                    : AppThemeData.grey800,
-                              ),
-                              children: <TextSpan>[
-                                TextSpan(
-                                  recognizer: TapGestureRecognizer()
-                                    ..onTap = () {
-                                      controller.otpController.value.clear();
-                                      controller.sendOTP();
-                                    },
-                                  text: 'Send Again'.tr,
-                                  style: TextStyle(
-                                      color: themeChange.getThem()
-                                          ? AppThemeData.primary300
-                                          : AppThemeData.primary300,
-                                      fontWeight: FontWeight.w500,
-                                      fontSize: 14,
-                                      fontFamily: AppThemeData.medium,
-                                      decoration: TextDecoration.underline,
-                                      decorationColor: AppThemeData.primary300),
-                                ),
-                              ],
+                            //           Get.off(SignupScreen(), arguments: {
+                            //             "userModel": userModel,
+                            //             "type": "mobileNumber",
+                            //           });
+                            //         }
+                            //       });
+                            //     }
+                            //   }).catchError((error) {
+                            //     ShowToastDialog.closeLoader();
+                            //     ShowToastDialog.showToast("Invalid Code".tr);
+                            //   });
+                            // } else {
+                            //   ShowToastDialog.showToast("Enter Valid otp".tr);
+                            // }
+                          },
+                        ),
+                        const SizedBox(
+                          height: 40,
+                        ),
+                        Text.rich(
+                          textAlign: TextAlign.start,
+                          TextSpan(
+                            text: "${'Did’t receive any code? '.tr} ",
+                            style: TextStyle(
+                              fontWeight: FontWeight.w500,
+                              fontSize: 14,
+                              fontFamily: AppThemeData.medium,
+                              color: themeChange.getThem()
+                                  ? AppThemeData.grey100
+                                  : AppThemeData.grey800,
                             ),
-                          )
-                        ],
-                      ),
+                            children: <TextSpan>[
+                              TextSpan(
+                                recognizer: TapGestureRecognizer()
+                                  ..onTap = () {
+                                    // controller.otpController.value.clear();
+                                    // controller.sendOTP();
+                                  },
+                                text: 'Send Again'.tr,
+                                style: TextStyle(
+                                    color: themeChange.getThem()
+                                        ? AppThemeData.primary300
+                                        : AppThemeData.primary300,
+                                    fontWeight: FontWeight.w500,
+                                    fontSize: 14,
+                                    fontFamily: AppThemeData.medium,
+                                    decoration: TextDecoration.underline,
+                                    decorationColor: AppThemeData.primary300),
+                              ),
+                            ],
+                          ),
+                        )
+                      ],
                     ),
                   ),
-          );
-        });
+                ),
+        );
+      },
+    );
   }
 }

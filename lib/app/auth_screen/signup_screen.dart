@@ -52,7 +52,8 @@ class SignupScreen extends StatelessWidget {
                           ),
                         ),
                         Text(
-                          "Sign up to start your food adventure with FastBuy".tr,
+                          "Sign up to start your food adventure with FastBuy"
+                              .tr,
                           style: TextStyle(
                               color: themeChange.getThem()
                                   ? AppThemeData.grey400
@@ -100,6 +101,12 @@ class SignupScreen extends StatelessWidget {
                                 controller:
                                     controller.lastNameEditingController.value,
                                 hintText: 'Enter Last Name'.tr,
+                                validator: (value) {
+                                  if (value.toString().isEmpty) {
+                                    return "Last name is required";
+                                  }
+                                  return null;
+                                },
                                 prefix: Padding(
                                   padding: const EdgeInsets.all(12),
                                   child: SvgPicture.asset(
@@ -121,6 +128,17 @@ class SignupScreen extends StatelessWidget {
                           textInputType: TextInputType.emailAddress,
                           controller: controller.emailEditingController.value,
                           hintText: 'Enter Email Address'.tr,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter your email';
+                            }
+                            if (!RegExp(
+                                    r'^[\w-]+(\.[\w-]+)*@[\w-]+(\.[\w-]+)+$')
+                                .hasMatch(value)) {
+                              return 'Enter a valid email address';
+                            }
+                            return null;
+                          },
                           prefix: Padding(
                             padding: const EdgeInsets.all(12),
                             child: SvgPicture.asset(
@@ -148,13 +166,19 @@ class SignupScreen extends StatelessWidget {
                           inputFormatters: [
                             FilteringTextInputFormatter.allow(RegExp('[0-9]')),
                           ],
+                          validator: (value) {
+                            if (value.toString().isEmpty) {
+                              return "Phone number is required";
+                            }
+                            return null;
+                          },
                           prefix: CountryCodePicker(
                             enabled: controller.type.value == "mobileNumber"
                                 ? false
                                 : true,
                             onChanged: (value) {
-                              controller.countryCodeEditingController.value.text =
-                                  value.dialCode.toString();
+                              controller.countryCodeEditingController.value
+                                  .text = value.dialCode.toString();
                             },
                             dialogTextStyle: TextStyle(
                                 color: themeChange.getThem()
@@ -196,7 +220,14 @@ class SignupScreen extends StatelessWidget {
                                     controller: controller
                                         .passwordEditingController.value,
                                     hintText: 'Enter Password'.tr,
-                                    obscureText: controller.passwordVisible.value,
+                                    obscureText:
+                                        controller.passwordVisible.value,
+                                    validator: (value) {
+                                      if (value.toString().isEmpty) {
+                                        return "Password is required";
+                                      }
+                                      return null;
+                                    },
                                     prefix: Padding(
                                       padding: const EdgeInsets.all(12),
                                       child: SvgPicture.asset(
@@ -214,9 +245,11 @@ class SignupScreen extends StatelessWidget {
                                       child: InkWell(
                                           onTap: () {
                                             controller.passwordVisible.value =
-                                                !controller.passwordVisible.value;
+                                                !controller
+                                                    .passwordVisible.value;
                                           },
-                                          child: controller.passwordVisible.value
+                                          child: controller
+                                                  .passwordVisible.value
                                               ? SvgPicture.asset(
                                                   "assets/icons/ic_password_show.svg",
                                                   colorFilter: ColorFilter.mode(
@@ -242,6 +275,12 @@ class SignupScreen extends StatelessWidget {
                                     controller: controller
                                         .conformPasswordEditingController.value,
                                     hintText: 'Enter Confirm Password'.tr,
+                                    validator: (value) {
+                                      if (value.toString().isEmpty) {
+                                        return "Password confirmation is required";
+                                      }
+                                      return null;
+                                    },
                                     obscureText:
                                         controller.conformPasswordVisible.value,
                                     prefix: Padding(
@@ -263,7 +302,8 @@ class SignupScreen extends StatelessWidget {
                                             controller.conformPasswordVisible
                                                     .value =
                                                 !controller
-                                                    .conformPasswordVisible.value;
+                                                    .conformPasswordVisible
+                                                    .value;
                                           },
                                           child: controller
                                                   .conformPasswordVisible.value
@@ -300,9 +340,9 @@ class SignupScreen extends StatelessWidget {
                           color: AppThemeData.primary300,
                           textColor: AppThemeData.grey50,
                           onPress: () async {
-                            // if (formkey.currentState!.validate()) {
-                              
-                            // }
+                            if (formkey.currentState!.validate()) {
+                              controller.signUpWithEmailAndPassword();
+                            }
                             // if (controller.type.value == "mobileNumber".tr) {
                             //   if (controller.firstNameEditingController.value.text
                             //       .isEmpty) {

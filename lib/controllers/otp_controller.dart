@@ -37,6 +37,8 @@ class OtpController extends GetxController {
       isLoading.value = false;
       ShowToastDialog.showToast("OTP sent");
     });
+
+    isLoading.value = false;
     // await FirebaseAuth.instance.verifyPhoneNumber(
     //   phoneNumber: countryCode.value + phoneNumber.value,
     //   verificationCompleted: (PhoneAuthCredential credential) {},

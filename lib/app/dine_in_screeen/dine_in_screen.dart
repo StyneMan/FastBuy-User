@@ -118,7 +118,7 @@ class DineInScreen extends StatelessWidget {
                               ),
                               Text(
                                 "No Restaurants Found in Your Area".tr,
-                                style: TextStyle(color: themeChange.getThem() ? AppThemeData.grey100 : AppThemeData.grey800, fontSize: 22, fontFamily: AppThemeData.semiBold),
+                                style: TextStyle(color: themeChange.getThem() ? AppThemeData.grey100 : AppThemeData.primary500, fontSize: 22, fontFamily: AppThemeData.semiBold),
                               ),
                               const SizedBox(
                                 height: 5,
