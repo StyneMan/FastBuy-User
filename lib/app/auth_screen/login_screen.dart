@@ -31,12 +31,16 @@ class LoginScreen extends StatelessWidget {
         builder: (controller) {
           return Scaffold(
             appBar: AppBar(
-              backgroundColor: themeChange.getThem() ? AppThemeData.surfaceDark : AppThemeData.surface,
+              backgroundColor: themeChange.getThem()
+                  ? AppThemeData.surfaceDark
+                  : AppThemeData.surface,
               actions: [
                 InkWell(
                   onTap: () async {
-                    LocationPermission permission = await Geolocator.checkPermission();
-                    if (permission == LocationPermission.always || permission == LocationPermission.whileInUse) {
+                    LocationPermission permission =
+                        await Geolocator.checkPermission();
+                    if (permission == LocationPermission.always ||
+                        permission == LocationPermission.whileInUse) {
                       if (Constant.selectedLocation.location == null) {
                         Get.offAll(const LocationPermissionScreen());
                       } else {
@@ -49,8 +53,14 @@ class LoginScreen extends StatelessWidget {
                   child: Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     child: Text(
-                      "Skip".tr,
-                      style: TextStyle(color: themeChange.getThem() ? AppThemeData.primary300 : AppThemeData.primary300, fontSize: 18, fontFamily: AppThemeData.semiBold),
+                      "Guest mode".tr,
+                      style: TextStyle(
+                        color: themeChange.getThem()
+                            ? AppThemeData.primary300
+                            : AppThemeData.primary300,
+                        fontSize: 18,
+                        fontFamily: AppThemeData.semiBold,
+                      ),
                     ),
                   ),
                 ),
@@ -64,11 +74,25 @@ class LoginScreen extends StatelessWidget {
                   children: [
                     Text(
                       "Welcome Back! 👋".tr,
-                      style: TextStyle(color: themeChange.getThem() ? AppThemeData.grey50 : AppThemeData.grey900, fontSize: 22, fontFamily: AppThemeData.semiBold),
+                      style: TextStyle(
+                        color: themeChange.getThem()
+                            ? AppThemeData.grey50
+                            : AppThemeData.primary500,
+                        fontSize: 22,
+                        fontWeight: FontWeight.w900,
+                        fontFamily: AppThemeData.semiBold,
+                      ),
                     ),
                     Text(
-                      "Log in to continue enjoying delicious food delivered to your doorstep.".tr,
-                      style: TextStyle(color: themeChange.getThem() ? AppThemeData.grey400 : AppThemeData.grey500, fontSize: 16, fontFamily: AppThemeData.regular),
+                      "Log in to continue enjoying delicious food delivered to your doorstep."
+                          .tr,
+                      style: TextStyle(
+                        color: themeChange.getThem()
+                            ? AppThemeData.grey400
+                            : AppThemeData.grey500,
+                        fontSize: 16,
+                        fontFamily: AppThemeData.regular,
+                      ),
                     ),
                     const SizedBox(
                       height: 32,
@@ -82,7 +106,9 @@ class LoginScreen extends StatelessWidget {
                         child: SvgPicture.asset(
                           "assets/icons/ic_mail.svg",
                           colorFilter: ColorFilter.mode(
-                            themeChange.getThem() ? AppThemeData.grey300 : AppThemeData.grey600,
+                            themeChange.getThem()
+                                ? AppThemeData.grey300
+                                : AppThemeData.grey600,
                             BlendMode.srcIn,
                           ),
                         ),
@@ -98,7 +124,9 @@ class LoginScreen extends StatelessWidget {
                         child: SvgPicture.asset(
                           "assets/icons/ic_lock.svg",
                           colorFilter: ColorFilter.mode(
-                            themeChange.getThem() ? AppThemeData.grey300 : AppThemeData.grey600,
+                            themeChange.getThem()
+                                ? AppThemeData.grey300
+                                : AppThemeData.grey600,
                             BlendMode.srcIn,
                           ),
                         ),
@@ -107,20 +135,25 @@ class LoginScreen extends StatelessWidget {
                         padding: const EdgeInsets.all(12),
                         child: InkWell(
                             onTap: () {
-                              controller.passwordVisible.value = !controller.passwordVisible.value;
+                              controller.passwordVisible.value =
+                                  !controller.passwordVisible.value;
                             },
                             child: controller.passwordVisible.value
                                 ? SvgPicture.asset(
                                     "assets/icons/ic_password_show.svg",
                                     colorFilter: ColorFilter.mode(
-                                      themeChange.getThem() ? AppThemeData.grey300 : AppThemeData.grey600,
+                                      themeChange.getThem()
+                                          ? AppThemeData.grey300
+                                          : AppThemeData.grey600,
                                       BlendMode.srcIn,
                                     ),
                                   )
                                 : SvgPicture.asset(
                                     "assets/icons/ic_password_close.svg",
                                     colorFilter: ColorFilter.mode(
-                                      themeChange.getThem() ? AppThemeData.grey300 : AppThemeData.grey600,
+                                      themeChange.getThem()
+                                          ? AppThemeData.grey300
+                                          : AppThemeData.grey600,
                                       BlendMode.srcIn,
                                     ),
                                   )),
@@ -137,7 +170,9 @@ class LoginScreen extends StatelessWidget {
                           style: TextStyle(
                               decoration: TextDecoration.underline,
                               decorationColor: AppThemeData.secondary300,
-                              color: themeChange.getThem() ? AppThemeData.secondary300 : AppThemeData.secondary300,
+                              color: themeChange.getThem()
+                                  ? AppThemeData.secondary300
+                                  : AppThemeData.secondary300,
                               fontSize: 14,
                               fontFamily: AppThemeData.regular),
                         ),
@@ -151,10 +186,14 @@ class LoginScreen extends StatelessWidget {
                       color: AppThemeData.primary300,
                       textColor: AppThemeData.grey50,
                       onPress: () async {
-                        if (controller.emailEditingController.value.text.isEmpty) {
-                          ShowToastDialog.showToast("Please enter valid email".tr);
-                        } else if (controller.passwordEditingController.value.text.isEmpty) {
-                          ShowToastDialog.showToast("Please enter valid password".tr);
+                        if (controller
+                            .emailEditingController.value.text.isEmpty) {
+                          ShowToastDialog.showToast(
+                              "Please enter valid email".tr);
+                        } else if (controller
+                            .passwordEditingController.value.text.isEmpty) {
+                          ShowToastDialog.showToast(
+                              "Please enter valid password".tr);
                         } else {
                           controller.loginWithEmailAndPassword();
                         }
@@ -166,12 +205,15 @@ class LoginScreen extends StatelessWidget {
                         children: [
                           const Expanded(child: Divider(thickness: 1)),
                           Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 30),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 20, vertical: 30),
                             child: Text(
                               "or".tr,
                               textAlign: TextAlign.center,
                               style: TextStyle(
-                                color: themeChange.getThem() ? AppThemeData.grey500 : AppThemeData.grey400,
+                                color: themeChange.getThem()
+                                    ? AppThemeData.grey500
+                                    : AppThemeData.grey400,
                                 fontSize: 16,
                                 fontFamily: AppThemeData.medium,
                                 fontWeight: FontWeight.w500,
@@ -196,7 +238,8 @@ class LoginScreen extends StatelessWidget {
               ),
             ),
             bottomNavigationBar: Padding(
-              padding: EdgeInsets.symmetric(vertical: Platform.isAndroid ? 10 : 30),
+              padding:
+                  EdgeInsets.symmetric(vertical: Platform.isAndroid ? 10 : 30),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -206,7 +249,9 @@ class LoginScreen extends StatelessWidget {
                         TextSpan(
                             text: 'Didn’t have an account?'.tr,
                             style: TextStyle(
-                              color: themeChange.getThem() ? AppThemeData.grey50 : AppThemeData.grey900,
+                              color: themeChange.getThem()
+                                  ? AppThemeData.grey50
+                                  : AppThemeData.grey900,
                               fontFamily: AppThemeData.medium,
                               fontWeight: FontWeight.w500,
                             )),
@@ -218,7 +263,7 @@ class LoginScreen extends StatelessWidget {
                         TextSpan(
                             recognizer: TapGestureRecognizer()
                               ..onTap = () {
-                                Get.to(const SignupScreen());
+                                Get.to(SignupScreen());
                               },
                             text: 'Sign up'.tr,
                             style: TextStyle(

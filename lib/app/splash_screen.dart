@@ -23,12 +23,23 @@ class SplashScreen extends StatelessWidget {
               children: [
                 Image.asset("assets/images/ic_logo.png"),
                 const SizedBox(height: 10,),
-                Text(
-                  "Welcome to Foodie".tr,
-                  style: TextStyle(color: themeChange.getThem() ? AppThemeData.grey50 : AppThemeData.grey50, fontSize: 28, fontFamily: AppThemeData.bold),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text(
+                      "Welcome to".tr,
+                      style: TextStyle(color: themeChange.getThem() ? AppThemeData.grey50 : AppThemeData.grey50, fontSize: 28, fontFamily: AppThemeData.bold),
+                    ),
+                    const SizedBox(width: 2.0,),
+                    Text(
+                      " FastBuy",
+                      style: TextStyle(color: themeChange.getThem() ? AppThemeData.primary500 : AppThemeData.primary500, fontSize: 28, fontFamily: AppThemeData.bold,),
+                    ),
+                  ],
                 ),
                 Text(
-                  "Your Favorite Food Delivered Fast!".tr,
+                  "Your Food & Packages Delivered Fast!".tr,
                   style: TextStyle(color: themeChange.getThem() ? AppThemeData.grey50 : AppThemeData.grey50),
                 ),
               ],

@@ -19,12 +19,12 @@ class OnBoardingController extends GetxController {
   RxList<OnBoardingModel> onBoardingList = <OnBoardingModel>[].obs;
 
   getOnBoardingData() async {
-    await FireStoreUtils.getOnBoardingList().then((value) {
-      onBoardingList.value = value;
-    });
-    // onBoardingList.add(OnBoardingModel(id: "",title: "Restaurants",description: "Discover a variety of restaurants near you.",image: "assets/images/image_1.png"));
-    // onBoardingList.add(OnBoardingModel(id: "",title: "Order",description: "Order your favorite dishes in just a few taps.",image: "assets/images/image_2.png"));
-    // onBoardingList.add(OnBoardingModel(id: "",title: "Delivery",description: "Get your food delivered hot and fresh.",image: "assets/images/image_3.png"));
+    // await FireStoreUtils.getOnBoardingList().then((value) {
+    //   onBoardingList.value = value;
+    // });
+    onBoardingList.add(OnBoardingModel(id: "1",title: "Restaurants",description: "Discover a variety of restaurants near you.",image: "assets/images/image_1.png"));
+    onBoardingList.add(OnBoardingModel(id: "2",title: "Order",description: "Order your favorite dishes in just a few taps.",image: "assets/images/image_2.png"));
+    onBoardingList.add(OnBoardingModel(id: "3",title: "Send Package",description: "Get your packages delivered with ease.",image: "assets/images/image_3.png"));
 
     isLoading.value = false;
     update();

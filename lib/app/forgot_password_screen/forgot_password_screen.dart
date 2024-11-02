@@ -16,64 +16,80 @@ class ForgotPasswordScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final themeChange = Provider.of<DarkThemeProvider>(context);
     return GetX(
-      init: ForgotPasswordController(),
-      builder: (controller) {
-        return Scaffold(
-          appBar: AppBar(
-            backgroundColor: themeChange.getThem() ? AppThemeData.surfaceDark : AppThemeData.surface,
-          ),
-          body: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16,vertical: 10),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  "Forgot Password".tr,
-                  style: TextStyle(color: themeChange.getThem() ? AppThemeData.grey50 : AppThemeData.grey900, fontSize: 22, fontFamily: AppThemeData.semiBold),
-                ),
-                Text(
-                  "No worries!! We’ll send you reset instructions".tr,
-                  style: TextStyle(color: themeChange.getThem() ? AppThemeData.grey50 : AppThemeData.grey500, fontSize: 16, fontFamily: AppThemeData.regular),
-                ),
-                const SizedBox(
-                  height: 32,
-                ),
-                TextFieldWidget(
-                  title: 'Email Address'.tr,
-                  controller: controller.emailEditingController.value,
-                  hintText: 'Enter email address'.tr,
-                  prefix: Padding(
-                    padding: const EdgeInsets.all(12),
-                    child: SvgPicture.asset(
-                      "assets/icons/ic_mail.svg",
-                      colorFilter: ColorFilter.mode(
-                        themeChange.getThem() ? AppThemeData.grey300 : AppThemeData.grey600,
-                        BlendMode.srcIn,
+        init: ForgotPasswordController(),
+        builder: (controller) {
+          return Scaffold(
+            appBar: AppBar(
+              backgroundColor: themeChange.getThem()
+                  ? AppThemeData.surfaceDark
+                  : AppThemeData.surface,
+            ),
+            body: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "Forgot Password".tr,
+                    style: TextStyle(
+                      color: themeChange.getThem()
+                          ? AppThemeData.grey50
+                          : AppThemeData.primary500,
+                      fontSize: 22,
+                      fontWeight: FontWeight.w900,
+                      fontFamily: AppThemeData.semiBold,
+                    ),
+                  ),
+                  Text(
+                    "No worries!! We’ll send you reset instructions".tr,
+                    style: TextStyle(
+                      color: themeChange.getThem()
+                          ? AppThemeData.grey50
+                          : AppThemeData.grey500,
+                      fontSize: 16,
+                      fontFamily: AppThemeData.regular,
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 32,
+                  ),
+                  TextFieldWidget(
+                    title: 'Email Address'.tr,
+                    controller: controller.emailEditingController.value,
+                    hintText: 'Enter email address'.tr,
+                    prefix: Padding(
+                      padding: const EdgeInsets.all(12),
+                      child: SvgPicture.asset(
+                        "assets/icons/ic_mail.svg",
+                        colorFilter: ColorFilter.mode(
+                          themeChange.getThem()
+                              ? AppThemeData.grey300
+                              : AppThemeData.grey600,
+                          BlendMode.srcIn,
+                        ),
                       ),
                     ),
                   ),
-                ),
-                const SizedBox(
-                  height: 32,
-                ),
-
-                RoundedButtonFill(
-                  title: "Forgot Password".tr,
-                  color: AppThemeData.primary300,
-                  textColor: AppThemeData.grey50,
-                  onPress: () async {
-                    if (controller.emailEditingController.value.text.isEmpty) {
-                      ShowToastDialog.showToast("Please enter valid email");
-                    }  else {
-                      controller.forgotPassword();
-                    }
-                  },
-                ),
-              ],
+                  const SizedBox(
+                    height: 32,
+                  ),
+                  RoundedButtonFill(
+                    title: "Forgot Password".tr,
+                    color: AppThemeData.primary300,
+                    textColor: AppThemeData.grey50,
+                    onPress: () async {
+                      if (controller
+                          .emailEditingController.value.text.isEmpty) {
+                        ShowToastDialog.showToast("Please enter valid email");
+                      } else {
+                        controller.forgotPassword();
+                      }
+                    },
+                  ),
+                ],
+              ),
             ),
-          ),
-        );
-      }
-    );
+          );
+        });
   }
 }

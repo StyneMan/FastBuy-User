@@ -8,6 +8,7 @@ class OtpController extends GetxController {
 
   RxString countryCode = "".obs;
   RxString phoneNumber = "".obs;
+  RxString emailAddress = "".obs;
   RxString verificationId = "".obs;
   RxInt resendToken = 0.obs;
   RxBool isLoading = true.obs;
@@ -23,6 +24,7 @@ class OtpController extends GetxController {
     if (argumentData != null) {
       countryCode.value = argumentData['countryCode'];
       phoneNumber.value = argumentData['phoneNumber'];
+      emailAddress.value = argumentData['emailAddress'];
       verificationId.value = argumentData['verificationId'];
     }
     isLoading.value = false;
@@ -30,21 +32,26 @@ class OtpController extends GetxController {
   }
 
   Future<bool> sendOTP() async {
-    await FirebaseAuth.instance.verifyPhoneNumber(
-      phoneNumber: countryCode.value + phoneNumber.value,
-      verificationCompleted: (PhoneAuthCredential credential) {},
-      verificationFailed: (FirebaseAuthException e) {},
-      codeSent: (String verificationId0, int? resendToken0) async {
-        verificationId.value = verificationId0;
-        resendToken.value = resendToken0!;
-        ShowToastDialog.showToast("OTP sent");
-      },
-      timeout: const Duration(seconds: 25),
-      forceResendingToken: resendToken.value,
-      codeAutoRetrievalTimeout: (String verificationId0) {
-        verificationId0 = verificationId.value;
-      },
-    );
+    isLoading.value = true;
+    Future.delayed(const Duration(seconds: 2), () {
+      isLoading.value = false;
+      ShowToastDialog.showToast("OTP sent");
+    });
+    // await FirebaseAuth.instance.verifyPhoneNumber(
+    //   phoneNumber: countryCode.value + phoneNumber.value,
+    //   verificationCompleted: (PhoneAuthCredential credential) {},
+    //   verificationFailed: (FirebaseAuthException e) {},
+    //   codeSent: (String verificationId0, int? resendToken0) async {
+    //     verificationId.value = verificationId0;
+    //     resendToken.value = resendToken0!;
+    //     ShowToastDialog.showToast("OTP sent");
+    //   },
+    //   timeout: const Duration(seconds: 25),
+    //   forceResendingToken: resendToken.value,
+    //   codeAutoRetrievalTimeout: (String verificationId0) {
+    //     verificationId0 = verificationId.value;
+    //   },
+    // );
     return true;
   }
 }

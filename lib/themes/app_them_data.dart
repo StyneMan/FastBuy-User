@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 
 class AppThemeData {
-  static const Color primary50 = Color(0xFFFFEBE5);
-  static const Color primary100 = Color(0xFFFFC0AB);
-  static const Color primary200 = Color(0xFFFF9472);
-  static  Color primary300 = const Color(0xFFFF6839);
-  static const Color primary400 = Color(0xFFB24826);
-  static const Color primary500 = Color(0xFF662713);
+  static const Color primary50 = Color(0xFFFDEDD8);
+  static const Color primary100 = Color(0xFFFAC075);
+  static const Color primary200 = Color(0xFFF9AF4E);
+  static  Color primary300 = const Color(0xFFF79A1D);
+  static const Color primary400 = Color(0xFFE9890C);
+  static const Color primary500 = Color(0xFF4B2E20);
   static const Color primary600 = Color(0xFF1A0600);
 
   static const Color surface = Color(0xFFF9FAFB);

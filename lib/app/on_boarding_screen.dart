@@ -24,15 +24,18 @@ class OnBoardingScreen extends StatelessWidget {
               ? Constant.loader()
               : Container(
                   decoration: BoxDecoration(
-                      image: DecorationImage(
-                          image: AssetImage(controller.selectedPageIndex.value == 0
-                              ? "assets/images/image_1.png"
-                              : controller.selectedPageIndex.value == 1
-                                  ? "assets/images/image_2.png"
-                                  : "assets/images/image_3.png"),
-                          fit: BoxFit.cover)),
+                    image: DecorationImage(
+                      image: AssetImage(controller.selectedPageIndex.value == 0
+                          ? "assets/images/image_1.png"
+                          : controller.selectedPageIndex.value == 1
+                              ? "assets/images/image_2.png"
+                              : "assets/images/image_3.png"),
+                      fit: BoxFit.cover,
+                    ),
+                  ),
                   child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 20, horizontal: 16),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -44,10 +47,12 @@ class OnBoardingScreen extends StatelessWidget {
                               itemCount: controller.onBoardingList.length,
                               itemBuilder: (context, index) {
                                 return Padding(
-                                  padding: const EdgeInsets.symmetric(horizontal: 10),
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 10),
                                   child: Column(
                                     mainAxisAlignment: MainAxisAlignment.end,
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Image.asset(
                                         "assets/images/ic_logo.png",
@@ -55,27 +60,41 @@ class OnBoardingScreen extends StatelessWidget {
                                         height: 72,
                                       ),
                                       Text(
-                                        "Foodie".tr,
-                                        style: TextStyle(color: themeChange.getThem() ? AppThemeData.grey50 : AppThemeData.grey50, fontSize: 24, fontFamily: AppThemeData.bold),
+                                        "FastBuy".tr,
+                                        style: TextStyle(
+                                            color: themeChange.getThem()
+                                                ? AppThemeData.grey50
+                                                : AppThemeData.grey50,
+                                            fontSize: 24,
+                                            fontFamily: AppThemeData.bold),
                                       ),
                                       const SizedBox(
                                         height: 30,
                                       ),
                                       Text(
-                                        controller.onBoardingList[index].title.toString().tr,
+                                        controller.onBoardingList[index].title
+                                            .toString()
+                                            .tr,
                                         textAlign: TextAlign.center,
                                         style: TextStyle(
-                                          color: themeChange.getThem() ? AppThemeData.primary300 : AppThemeData.primary300,
+                                          color: themeChange.getThem()
+                                              ? AppThemeData.primary300
+                                              : AppThemeData.primary300,
                                           fontSize: 28,
                                           fontFamily: AppThemeData.bold,
                                           fontWeight: FontWeight.w400,
                                         ),
                                       ),
                                       Text(
-                                        controller.onBoardingList[index].description.toString().tr,
+                                        controller
+                                            .onBoardingList[index].description
+                                            .toString()
+                                            .tr,
                                         textAlign: TextAlign.center,
                                         style: TextStyle(
-                                          color: themeChange.getThem() ? AppThemeData.grey600 : AppThemeData.grey300,
+                                          color: themeChange.getThem()
+                                              ? AppThemeData.grey600
+                                              : AppThemeData.grey300,
                                           fontSize: 16,
                                           fontFamily: AppThemeData.regular,
                                           fontWeight: FontWeight.w400,
@@ -95,10 +114,12 @@ class OnBoardingScreen extends StatelessWidget {
                           textColor: AppThemeData.grey50,
                           onPress: () {
                             if (controller.selectedPageIndex.value == 2) {
-                              Preferences.setBoolean(Preferences.isFinishOnBoardingKey, true);
+                              Preferences.setBoolean(
+                                  Preferences.isFinishOnBoardingKey, true);
                               Get.offAll(const LoginScreen());
                             } else {
-                              controller.pageController.jumpToPage(controller.selectedPageIndex.value + 1);
+                              controller.pageController.jumpToPage(
+                                  controller.selectedPageIndex.value + 1);
                             }
                           },
                         ),

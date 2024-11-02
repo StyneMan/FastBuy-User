@@ -1,20 +1,30 @@
+import 'package:customer/app/auth_screen/otp_screen.dart';
 import 'package:customer/constant/show_toast_dialog.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class ForgotPasswordController extends GetxController {
-  Rx<TextEditingController> emailEditingController = TextEditingController().obs;
+  Rx<TextEditingController> emailEditingController =
+      TextEditingController().obs;
 
   forgotPassword() async {
     try {
       ShowToastDialog.showLoader("Please wait".tr);
-      await FirebaseAuth.instance.sendPasswordResetEmail(
-        email: emailEditingController.value.text,
-      );
-      ShowToastDialog.closeLoader();
-      ShowToastDialog.showToast('Reset Password link sent your ${emailEditingController.value.text} email');
-      Get.back();
+      // await FirebaseAuth.instance.sendPasswordResetEmail(
+      //   email: emailEditingController.value.text,
+      // );
+      Future.delayed(const Duration(seconds: 2), () {
+        ShowToastDialog.closeLoader();
+        ShowToastDialog.showToast(
+            'Reset Password link sent your ${emailEditingController.value.text} email');
+         Get.to(const OtpScreen(type: "email",), arguments: {
+        "countryCode": "+234",
+        "phoneNumber": "7040277958",
+        "verificationId": "1234",
+        "emailAddress": emailEditingController.value.text,
+      });
+      });
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
         ShowToastDialog.showToast('No user found for that email.');

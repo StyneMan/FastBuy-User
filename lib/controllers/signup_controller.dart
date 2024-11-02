@@ -48,17 +48,18 @@ class SignupController extends GetxController {
   }
 
   signUpWithEmailAndPassword() async {
-    if (referralCodeEditingController.value.text.toString().isNotEmpty) {
-      await FireStoreUtils.checkReferralCodeValidOrNot(referralCodeEditingController.value.text.toString()).then((value) async {
-        if (value == true) {
-          signUp();
-        } else {
-          ShowToastDialog.showToast("Referral code is Invalid");
-        }
-      });
-    } else {
-      signUp();
-    }
+    signUp();
+    // if (referralCodeEditingController.value.text.toString().isNotEmpty) {
+    //   await FireStoreUtils.checkReferralCodeValidOrNot(referralCodeEditingController.value.text.toString()).then((value) async {
+    //     if (value == true) {
+    //       signUp();
+    //     } else {
+    //       ShowToastDialog.showToast("Referral code is Invalid");
+    //     }
+    //   });
+    // } else {
+    //   signUp();
+    // }
   }
 
   signUp() async {
@@ -74,15 +75,15 @@ class SignupController extends GetxController {
       userModel.value.countryCode = countryCodeEditingController.value.text;
       userModel.value.createdAt = Timestamp.now();
 
-      await FireStoreUtils.getReferralUserByCode(referralCodeEditingController.value.text).then((value) async {
-        if (value != null) {
-          ReferralModel ownReferralModel = ReferralModel(id: FireStoreUtils.getCurrentUid(), referralBy: value.id, referralCode: Constant.getReferralCode());
-          await FireStoreUtils.referralAdd(ownReferralModel);
-        } else {
-          ReferralModel referralModel = ReferralModel(id: FireStoreUtils.getCurrentUid(), referralBy: "", referralCode: Constant.getReferralCode());
-          await FireStoreUtils.referralAdd(referralModel);
-        }
-      });
+      // await FireStoreUtils.getReferralUserByCode(referralCodeEditingController.value.text).then((value) async {
+      //   if (value != null) {
+      //     ReferralModel ownReferralModel = ReferralModel(id: FireStoreUtils.getCurrentUid(), referralBy: value.id, referralCode: Constant.getReferralCode());
+      //     await FireStoreUtils.referralAdd(ownReferralModel);
+      //   } else {
+      //     ReferralModel referralModel = ReferralModel(id: FireStoreUtils.getCurrentUid(), referralBy: "", referralCode: Constant.getReferralCode());
+      //     await FireStoreUtils.referralAdd(referralModel);
+      //   }
+      // });
 
       await FireStoreUtils.updateUser(userModel.value).then(
         (value) {
@@ -96,7 +97,7 @@ class SignupController extends GetxController {
           } else {
             Get.offAll(const LocationPermissionScreen());
           }
-          ShowToastDialog.showToast("Account create successfully");
+          ShowToastDialog.showToast("Account created successfully");
         },
       );
     } else {
@@ -117,15 +118,15 @@ class SignupController extends GetxController {
           userModel.value.countryCode = countryCodeEditingController.value.text;
           userModel.value.createdAt = Timestamp.now();
 
-          await FireStoreUtils.getReferralUserByCode(referralCodeEditingController.value.text).then((value) async {
-            if (value != null) {
-              ReferralModel ownReferralModel = ReferralModel(id: FireStoreUtils.getCurrentUid(), referralBy: value.id, referralCode: Constant.getReferralCode());
-              await FireStoreUtils.referralAdd(ownReferralModel);
-            } else {
-              ReferralModel referralModel = ReferralModel(id: FireStoreUtils.getCurrentUid(), referralBy: "", referralCode: Constant.getReferralCode());
-              await FireStoreUtils.referralAdd(referralModel);
-            }
-          });
+          // await FireStoreUtils.getReferralUserByCode(referralCodeEditingController.value.text).then((value) async {
+          //   if (value != null) {
+          //     ReferralModel ownReferralModel = ReferralModel(id: FireStoreUtils.getCurrentUid(), referralBy: value.id, referralCode: Constant.getReferralCode());
+          //     await FireStoreUtils.referralAdd(ownReferralModel);
+          //   } else {
+          //     ReferralModel referralModel = ReferralModel(id: FireStoreUtils.getCurrentUid(), referralBy: "", referralCode: Constant.getReferralCode());
+          //     await FireStoreUtils.referralAdd(referralModel);
+          //   }
+          // });
 
           await FireStoreUtils.updateUser(userModel.value).then(
             (value) async {
