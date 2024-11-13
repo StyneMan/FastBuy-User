@@ -255,11 +255,14 @@ class ProfileScreen extends StatelessWidget {
                                     ? AppThemeData.grey900
                                     : AppThemeData.grey50,
                                 shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(8)),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
                               ),
                               child: Padding(
                                 padding: const EdgeInsets.symmetric(
-                                    horizontal: 10, vertical: 8),
+                                  horizontal: 10,
+                                  vertical: 8,
+                                ),
                                 child: Column(
                                   children: [
                                     Constant.userModel == null
@@ -268,17 +271,22 @@ class ProfileScreen extends StatelessWidget {
                                             themeChange,
                                             controller,
                                             "assets/icons/ic_refer.svg",
-                                            "Refer a Friend", () {
-                                            Get.to(const ReferFriendScreen());
-                                          }),
+                                            "Refer a Friend",
+                                            () {
+                                              Get.to(
+                                                const ReferFriendScreen(),
+                                              );
+                                            },
+                                          ),
                                     cardDecoration(
                                         themeChange,
                                         controller,
                                         "assets/icons/ic_share.svg",
                                         "Share app", () {
                                       Share.share(
-                                          'Check out FastBuy, your ultimate food and logistic delivery application! \n\nGoogle Play: ${Constant.googlePlayLink} \n\nApp Store: ${Constant.appStoreLink}',
-                                          subject: 'Look what I made!');
+                                        'Check out FastBuy, your ultimate food and logistic delivery application! \n\nGoogle Play: ${Constant.googlePlayLink} \n\nApp Store: ${Constant.appStoreLink}',
+                                        subject: 'Look what I made!',
+                                      );
                                     }),
                                     cardDecoration(
                                         themeChange,
@@ -336,16 +344,18 @@ class ProfileScreen extends StatelessWidget {
                                                   controller,
                                                   "assets/icons/ic_restaurant_chat.svg",
                                                   "Restaurant Inbox", () {
-                                                Get.to(
-                                                    const RestaurantInboxScreen());
+                                                // Get.to(
+                                                //   const RestaurantInboxScreen(),
+                                                // );
                                               }),
                                               cardDecoration(
                                                   themeChange,
                                                   controller,
                                                   "assets/icons/ic_restaurant_driver.svg",
                                                   "Driver Inbox", () {
-                                                Get.to(
-                                                    const DriverInboxScreen());
+                                                // Get.to(
+                                                //   const DriverInboxScreen(),
+                                                // );
                                               }),
                                             ],
                                           ),
@@ -456,8 +466,7 @@ class ProfileScreen extends StatelessWidget {
                                                       // await FirebaseAuth
                                                       //     .instance
                                                       //     .signOut();
-                                                      Get.offAll(
-                                                          LoginScreen());
+                                                      Get.offAll(LoginScreen());
                                                     },
                                                     negativeClick: () {
                                                       Get.back();
@@ -506,8 +515,7 @@ class ProfileScreen extends StatelessWidget {
                                                       ShowToastDialog.showToast(
                                                           "Account deleted successfully"
                                                               .tr);
-                                                      Get.offAll(
-                                                          LoginScreen());
+                                                      Get.offAll(LoginScreen());
                                                     } else {
                                                       ShowToastDialog.showToast(
                                                           "Contact Administrator"

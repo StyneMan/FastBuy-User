@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
 class AppThemeData {
-  static const Color primary50 = Color(0xFFFDEDD8);
+  static const Color primary50 = Color(0xFFFFF7ED);
   static const Color primary100 = Color(0xFFFAC075);
   static const Color primary200 = Color(0xFFF9AF4E);
-  static  Color primary300 = const Color(0xFFF79A1D);
+  static Color primary300 = const Color(0xFFF79A1D);
   static const Color primary400 = Color(0xFFE9890C);
   static const Color primary500 = Color(0xFF4B2E20);
   static const Color primary600 = Color(0xFF1A0600);
@@ -28,12 +28,12 @@ class AppThemeData {
   static const Color danger500 = Color(0xFF661316);
   static const Color danger600 = Color(0xFF1A0001);
 
-  static const Color secondary50 = Color(0xFFEBE5FF);
-  static const Color secondary100 = Color(0xFFC0ABFF);
-  static const Color secondary200 = Color(0xFF9472FF);
-  static const Color secondary300 = Color(0xFF6839FF);
-  static const Color secondary400 = Color(0xFF4826B2);
-  static const Color secondary500 = Color(0xFF271366);
+  static const Color secondary50 = Color(0xAA826E66);
+  static const Color secondary100 = Color(0xEA61493F);
+  static const Color secondary200 = Color(0xFF4B2E20);
+  static const Color secondary300 = Color(0xFF4B2E20);
+  static const Color secondary400 = Color(0xFF4B2E20);
+  static const Color secondary500 = Color(0xFF4B2E20);
   static const Color secondary600 = Color(0xFF06001A);
 
   static const Color success50 = Color(0xFFE5FFF5);
@@ -44,7 +44,6 @@ class AppThemeData {
   static const Color success500 = Color(0xFF086640);
   static const Color success600 = Color(0xFF001A0F);
 
-
   static const Color warning50 = Color(0xFFFFF8E5);
   static const Color warning100 = Color(0xFFFFE9AB);
   static const Color warning200 = Color(0xFFFFDA72);
@@ -52,7 +51,6 @@ class AppThemeData {
   static const Color warning400 = Color(0xFFB28D26);
   static const Color warning500 = Color(0xFF665013);
   static const Color warning600 = Color(0xFF191200);
-
 
   static const Color grey50 = Color(0xFFFFFFFF);
   static const Color grey100 = Color(0xFFF3F4F6);
@@ -64,7 +62,6 @@ class AppThemeData {
   static const Color grey700 = Color(0xFF374151);
   static const Color grey800 = Color(0xFF1F2937);
   static const Color grey900 = Color(0xFF111827);
-
 
   static const String black = 'Urbanist-Black';
   static const String bold = 'Urbanist-Bold';

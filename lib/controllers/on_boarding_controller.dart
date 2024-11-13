@@ -22,9 +22,24 @@ class OnBoardingController extends GetxController {
     // await FireStoreUtils.getOnBoardingList().then((value) {
     //   onBoardingList.value = value;
     // });
-    onBoardingList.add(OnBoardingModel(id: "1",title: "Restaurants",description: "Discover a variety of restaurants near you.",image: "assets/images/image_1.png"));
-    onBoardingList.add(OnBoardingModel(id: "2",title: "Order",description: "Order your favorite dishes in just a few taps.",image: "assets/images/image_2.png"));
-    onBoardingList.add(OnBoardingModel(id: "3",title: "Send Package",description: "Get your packages delivered with ease.",image: "assets/images/image_3.png"));
+    onBoardingList.add(OnBoardingModel(
+        id: "1",
+        title: "Discover Restaurants Near You",
+        description:
+            "Explore new flavors and favorite cuisines, all just a few taps away.",
+        image: "assets/images/image_1.png"));
+    onBoardingList.add(OnBoardingModel(
+        id: "2",
+        title: "Grocery Stores",
+        description:
+            "Browse and buy products from nearby grocery stores and get them delivered right to your home, hassle-free",
+        image: "assets/images/image_2.png"));
+    onBoardingList.add(OnBoardingModel(
+        id: "3",
+        title: "Send Package",
+        description:
+            "Our fast and secure delivery service is here to make your day simpler",
+        image: "assets/images/image_3.png"));
 
     isLoading.value = false;
     update();

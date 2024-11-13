@@ -1,4 +1,5 @@
 import 'package:customer/constant/constant.dart';
+import 'package:customer/data/dummy_orders.dart';
 import 'package:customer/models/cart_product_model.dart';
 import 'package:customer/models/order_model.dart';
 import 'package:customer/services/cart_provider.dart';
@@ -22,20 +23,24 @@ class OrderController extends GetxController {
 
   getOrder() async {
     if (Constant.userModel != null) {
-      await FireStoreUtils.getAllOrder().then((value) {
-        allList.value = value;
+      allList.value = dummyOrderModels;
+      rejectedList.value = dummyOrderModels;
+      inProgressList.value = dummyOrderModels;
+      deliveredList.value = dummyOrderModels;
+      // await FireStoreUtils.getAllOrder().then((value) {
+      //   allList.value = value;
 
-        rejectedList.value = allList.where((p0) => p0.status == Constant.orderRejected).toList();
-        inProgressList.value = allList
-            .where((p0) =>
-                p0.status == Constant.orderAccepted ||
-                p0.status == Constant.driverPending ||
-                p0.status == Constant.orderShipped ||
-                p0.status == Constant.orderInTransit ||
-                p0.status == Constant.driverRejected)
-            .toList();
-        deliveredList.value = allList.where((p0) => p0.status == Constant.orderCompleted).toList();
-      });
+      //   rejectedList.value = allList.where((p0) => p0.status == Constant.orderRejected).toList();
+      //   inProgressList.value = allList
+      //       .where((p0) =>
+      //           p0.status == Constant.orderAccepted ||
+      //           p0.status == Constant.driverPending ||
+      //           p0.status == Constant.orderShipped ||
+      //           p0.status == Constant.orderInTransit ||
+      //           p0.status == Constant.driverRejected)
+      //       .toList();
+      //   deliveredList.value = allList.where((p0) => p0.status == Constant.orderCompleted).toList();
+      // });
     }
 
     isLoading.value = false;
@@ -44,7 +49,8 @@ class OrderController extends GetxController {
   final CartProvider cartProvider = CartProvider();
 
   addToCart({required CartProductModel cartProductModel}) {
-    cartProvider.addToCart(Get.context!, cartProductModel, cartProductModel.quantity!);
+    cartProvider.addToCart(
+        Get.context!, cartProductModel, cartProductModel.quantity!);
     update();
   }
 }

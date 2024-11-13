@@ -15,7 +15,7 @@ import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:provider/provider.dart';
-import 'package:google_maps_place_picker_mb/google_maps_place_picker.dart';
+// import 'package:google_maps_place_picker_mb/google_maps_place_picker.dart';
 
 import '../../themes/text_field_widget.dart';
 
@@ -32,12 +32,16 @@ class AddressListScreen extends StatelessWidget {
             appBar: AppBar(
               centerTitle: false,
               titleSpacing: 0,
-              backgroundColor: themeChange.getThem() ? AppThemeData.surfaceDark : AppThemeData.surface,
+              backgroundColor: themeChange.getThem()
+                  ? AppThemeData.surfaceDark
+                  : AppThemeData.surface,
               title: Text(
                 "Add Address",
                 style: TextStyle(
                   fontSize: 16,
-                  color: themeChange.getThem() ? AppThemeData.grey50 : AppThemeData.grey900,
+                  color: themeChange.getThem()
+                      ? AppThemeData.grey50
+                      : AppThemeData.grey900,
                   fontFamily: AppThemeData.medium,
                   fontWeight: FontWeight.w500,
                 ),
@@ -54,12 +58,18 @@ class AddressListScreen extends StatelessWidget {
                       ShippingAddress addressModel = ShippingAddress();
                       try {
                         await Geolocator.requestPermission();
-                        Position newLocalData = await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+                        Position newLocalData =
+                            await Geolocator.getCurrentPosition(
+                                desiredAccuracy: LocationAccuracy.high);
 
-                        await placemarkFromCoordinates(newLocalData.latitude, newLocalData.longitude).then((valuePlaceMaker) {
+                        await placemarkFromCoordinates(
+                                newLocalData.latitude, newLocalData.longitude)
+                            .then((valuePlaceMaker) {
                           Placemark placeMark = valuePlaceMaker[0];
                           addressModel.addressAs = "Home".tr;
-                          addressModel.location = UserLocation(latitude: newLocalData.latitude, longitude: newLocalData.longitude);
+                          addressModel.location = UserLocation(
+                              latitude: newLocalData.latitude,
+                              longitude: newLocalData.longitude);
                           String currentLocation =
                               "${placeMark.name}, ${placeMark.subLocality}, ${placeMark.locality}, ${placeMark.administrativeArea}, ${placeMark.postalCode}, ${placeMark.country}";
                           addressModel.locality = currentLocation;
@@ -68,10 +78,12 @@ class AddressListScreen extends StatelessWidget {
                         ShowToastDialog.closeLoader();
                         Get.back(result: addressModel);
                       } catch (e) {
-                        await placemarkFromCoordinates(19.228825, 72.854118).then((valuePlaceMaker) {
+                        await placemarkFromCoordinates(19.228825, 72.854118)
+                            .then((valuePlaceMaker) {
                           Placemark placeMark = valuePlaceMaker[0];
                           addressModel.addressAs = "Home".tr;
-                          addressModel.location = UserLocation(latitude: 19.228825, longitude: 72.854118);
+                          addressModel.location = UserLocation(
+                              latitude: 19.228825, longitude: 72.854118);
                           String currentLocation =
                               "${placeMark.name}, ${placeMark.subLocality}, ${placeMark.locality}, ${placeMark.administrativeArea}, ${placeMark.postalCode}, ${placeMark.country}";
                           addressModel.locality = currentLocation;
@@ -91,7 +103,9 @@ class AddressListScreen extends StatelessWidget {
                           "Use my current location".tr,
                           style: TextStyle(
                             fontSize: 16,
-                            color: themeChange.getThem() ? AppThemeData.primary300 : AppThemeData.primary300,
+                            color: themeChange.getThem()
+                                ? AppThemeData.primary300
+                                : AppThemeData.primary300,
                             fontFamily: AppThemeData.medium,
                             fontWeight: FontWeight.w500,
                           ),
@@ -117,7 +131,9 @@ class AddressListScreen extends StatelessWidget {
                           "Add Location".tr,
                           style: TextStyle(
                             fontSize: 16,
-                            color: themeChange.getThem() ? AppThemeData.primary300 : AppThemeData.primary300,
+                            color: themeChange.getThem()
+                                ? AppThemeData.primary300
+                                : AppThemeData.primary300,
                             fontFamily: AppThemeData.medium,
                             fontWeight: FontWeight.w500,
                           ),
@@ -132,7 +148,9 @@ class AddressListScreen extends StatelessWidget {
                     "Saved Addresses".tr,
                     style: TextStyle(
                       fontSize: 16,
-                      color: themeChange.getThem() ? AppThemeData.grey50 : AppThemeData.grey900,
+                      color: themeChange.getThem()
+                          ? AppThemeData.grey50
+                          : AppThemeData.grey900,
                       fontFamily: AppThemeData.semiBold,
                       fontWeight: FontWeight.w600,
                     ),
@@ -142,33 +160,45 @@ class AddressListScreen extends StatelessWidget {
                   ),
                   Expanded(
                     child: controller.shippingAddressList.isEmpty
-                        ? Constant.showEmptyView(message: "Saved addresses not found".tr)
+                        ? Constant.showEmptyView(
+                            message: "Saved addresses not found".tr)
                         : ListView.builder(
                             shrinkWrap: true,
                             itemCount: controller.shippingAddressList.length,
                             itemBuilder: (context, index) {
-                              ShippingAddress shippingAddress = controller.shippingAddressList[index];
+                              ShippingAddress shippingAddress =
+                                  controller.shippingAddressList[index];
                               return InkWell(
                                 onTap: () {
                                   Get.back(result: shippingAddress);
                                 },
                                 child: Padding(
-                                  padding: const EdgeInsets.symmetric(vertical: 5),
+                                  padding:
+                                      const EdgeInsets.symmetric(vertical: 5),
                                   child: Container(
                                     decoration: ShapeDecoration(
-                                      color: themeChange.getThem() ? AppThemeData.grey900 : AppThemeData.grey50,
-                                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                                      color: themeChange.getThem()
+                                          ? AppThemeData.grey900
+                                          : AppThemeData.grey50,
+                                      shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(8)),
                                     ),
                                     child: Padding(
                                       padding: const EdgeInsets.all(8.0),
                                       child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
                                         children: [
                                           Row(
                                             children: [
                                               SvgPicture.asset(
                                                 "assets/icons/ic_send_one.svg",
-                                                colorFilter: ColorFilter.mode(themeChange.getThem() ? AppThemeData.grey100 : AppThemeData.grey800, BlendMode.srcIn),
+                                                colorFilter: ColorFilter.mode(
+                                                    themeChange.getThem()
+                                                        ? AppThemeData.grey100
+                                                        : AppThemeData.grey800,
+                                                    BlendMode.srcIn),
                                               ),
                                               const SizedBox(
                                                 width: 10,
@@ -177,33 +207,66 @@ class AddressListScreen extends StatelessWidget {
                                                 child: Row(
                                                   children: [
                                                     Text(
-                                                      shippingAddress.addressAs.toString(),
+                                                      shippingAddress.addressAs
+                                                          .toString(),
                                                       style: TextStyle(
                                                         fontSize: 16,
-                                                        color: themeChange.getThem() ? AppThemeData.grey100 : AppThemeData.grey800,
-                                                        fontFamily: AppThemeData.semiBold,
-                                                        fontWeight: FontWeight.w600,
+                                                        color: themeChange
+                                                                .getThem()
+                                                            ? AppThemeData
+                                                                .grey100
+                                                            : AppThemeData
+                                                                .grey800,
+                                                        fontFamily: AppThemeData
+                                                            .semiBold,
+                                                        fontWeight:
+                                                            FontWeight.w600,
                                                       ),
                                                     ),
                                                     const SizedBox(
                                                       width: 10,
                                                     ),
-                                                    shippingAddress.isDefault == false
+                                                    shippingAddress.isDefault ==
+                                                            false
                                                         ? const SizedBox()
                                                         : Container(
-                                                            decoration: ShapeDecoration(
-                                                              color: themeChange.getThem() ? AppThemeData.primary50 : AppThemeData.primary50,
-                                                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(4)),
+                                                            decoration:
+                                                                ShapeDecoration(
+                                                              color: themeChange.getThem()
+                                                                  ? AppThemeData
+                                                                      .primary50
+                                                                  : AppThemeData
+                                                                      .primary50,
+                                                              shape: RoundedRectangleBorder(
+                                                                  borderRadius:
+                                                                      BorderRadius
+                                                                          .circular(
+                                                                              4)),
                                                             ),
                                                             child: Padding(
-                                                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
+                                                              padding:
+                                                                  const EdgeInsets
+                                                                      .symmetric(
+                                                                      horizontal:
+                                                                          12,
+                                                                      vertical:
+                                                                          5),
                                                               child: Text(
                                                                 "Default".tr,
-                                                                style: TextStyle(
+                                                                style:
+                                                                    TextStyle(
                                                                   fontSize: 12,
-                                                                  color: themeChange.getThem() ? AppThemeData.primary300 : AppThemeData.primary300,
-                                                                  fontFamily: AppThemeData.semiBold,
-                                                                  fontWeight: FontWeight.w600,
+                                                                  color: themeChange.getThem()
+                                                                      ? AppThemeData
+                                                                          .primary300
+                                                                      : AppThemeData
+                                                                          .primary300,
+                                                                  fontFamily:
+                                                                      AppThemeData
+                                                                          .semiBold,
+                                                                  fontWeight:
+                                                                      FontWeight
+                                                                          .w600,
                                                                 ),
                                                               ),
                                                             ),
@@ -213,18 +276,24 @@ class AddressListScreen extends StatelessWidget {
                                               ),
                                               InkWell(
                                                   onTap: () {
-                                                    showActionSheet(context, index, controller);
+                                                    showActionSheet(context,
+                                                        index, controller);
                                                   },
-                                                  child: SvgPicture.asset("assets/icons/ic_more_one.svg"))
+                                                  child: SvgPicture.asset(
+                                                      "assets/icons/ic_more_one.svg"))
                                             ],
                                           ),
                                           const SizedBox(
                                             height: 5,
                                           ),
                                           Text(
-                                            shippingAddress.getFullAddress().toString(),
+                                            shippingAddress
+                                                .getFullAddress()
+                                                .toString(),
                                             style: TextStyle(
-                                              color: themeChange.getThem() ? AppThemeData.grey400 : AppThemeData.grey500,
+                                              color: themeChange.getThem()
+                                                  ? AppThemeData.grey400
+                                                  : AppThemeData.grey500,
                                               fontFamily: AppThemeData.regular,
                                               fontWeight: FontWeight.w600,
                                             ),
@@ -245,7 +314,8 @@ class AddressListScreen extends StatelessWidget {
         });
   }
 
-  void showActionSheet(BuildContext context, int index, AddressListController controller) {
+  void showActionSheet(
+      BuildContext context, int index, AddressListController controller) {
     showCupertinoModalPopup<void>(
       context: context,
       builder: (BuildContext context) => CupertinoActionSheet(
@@ -256,7 +326,8 @@ class AddressListScreen extends StatelessWidget {
               List<ShippingAddress> tempShippingAddress = [];
               for (var element in controller.shippingAddressList) {
                 ShippingAddress addressModel = element;
-                if (addressModel.id == controller.shippingAddressList[index].id) {
+                if (addressModel.id ==
+                    controller.shippingAddressList[index].id) {
                   addressModel.isDefault = true;
                 } else {
                   addressModel.isDefault = false;
@@ -272,7 +343,8 @@ class AddressListScreen extends StatelessWidget {
                 },
               );
             },
-            child:  Text('Default'.tr, style: const TextStyle(color: Colors.blue)),
+            child:
+                Text('Default'.tr, style: const TextStyle(color: Colors.blue)),
           ),
           CupertinoActionSheetAction(
             onPressed: () async {
@@ -287,7 +359,8 @@ class AddressListScreen extends StatelessWidget {
             onPressed: () async {
               ShowToastDialog.showLoader("Please wait".tr);
               controller.shippingAddressList.removeAt(index);
-              controller.userModel.value.shippingAddress = controller.shippingAddressList;
+              controller.userModel.value.shippingAddress =
+                  controller.shippingAddressList;
               await FireStoreUtils.updateUser(controller.userModel.value).then(
                 (value) {
                   controller.getUser();
@@ -296,7 +369,7 @@ class AddressListScreen extends StatelessWidget {
                 },
               );
             },
-            child:  Text('Delete'.tr, style: const TextStyle(color: Colors.red)),
+            child: Text('Delete'.tr, style: const TextStyle(color: Colors.red)),
           ),
         ],
         cancelButton: CupertinoActionSheetAction(
@@ -304,13 +377,14 @@ class AddressListScreen extends StatelessWidget {
           onPressed: () {
             Get.back();
           },
-          child:  Text('Cancel'.tr),
+          child: Text('Cancel'.tr),
         ),
       ),
     );
   }
 
-  addAddressBottomSheet(BuildContext context, AddressListController controller, {int? index}) {
+  addAddressBottomSheet(BuildContext context, AddressListController controller,
+      {int? index}) {
     return showModalBottomSheet(
         context: context,
         isScrollControlled: true,
@@ -340,7 +414,9 @@ class AddressListScreen extends StatelessWidget {
                                 height: 5,
                                 margin: const EdgeInsets.only(bottom: 6),
                                 decoration: ShapeDecoration(
-                                  color: themeChange.getThem() ? AppThemeData.grey50 : AppThemeData.grey800,
+                                  color: themeChange.getThem()
+                                      ? AppThemeData.grey50
+                                      : AppThemeData.grey800,
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(3),
                                   ),
@@ -353,39 +429,48 @@ class AddressListScreen extends StatelessWidget {
                             child: InkWell(
                               onTap: () {
                                 if (Constant.selectedMapType == 'osm') {
-                                  Get.to(() => const LocationPicker())?.then((value) {
+                                  Get.to(() => const LocationPicker())
+                                      ?.then((value) {
                                     if (value != null) {
-                                      controller.localityEditingController.value.text = value.displayName!;
-                                      controller.location.value = UserLocation(latitude: value.lat, longitude: value.lon);
+                                      controller.localityEditingController.value
+                                          .text = value.displayName!;
+                                      controller.location.value = UserLocation(
+                                          latitude: value.lat,
+                                          longitude: value.lon);
                                     }
                                   });
                                 } else {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => PlacePicker(
-                                        apiKey: Constant.mapAPIKey,
-                                        onPlacePicked: (result) {
-                                          controller.localityEditingController.value.text = result.formattedAddress!.toString();
-                                          controller.location.value = UserLocation(latitude: result.geometry!.location.lat, longitude: result.geometry!.location.lng);
-                                          Get.back();
-                                        },
-                                        initialPosition: const LatLng(-33.8567844, 151.213108),
-                                        useCurrentLocation: true,
-                                        selectInitialPosition: true,
-                                        usePinPointingSearch: true,
-                                        usePlaceDetailSearch: true,
-                                        zoomGesturesEnabled: true,
-                                        zoomControlsEnabled: true,
-                                        resizeToAvoidBottomInset: false, // only works in page mode, less flickery, remove if wrong offsets
-                                      ),
-                                    ),
-                                  );
+                                  // Navigator.push(
+                                  //   context,
+                                  //   MaterialPageRoute(
+                                  //     builder: (context) => PlacePicker(
+                                  //       apiKey: Constant.mapAPIKey,
+                                  //       onPlacePicked: (result) {
+                                  //         controller.localityEditingController.value.text = result.formattedAddress!.toString();
+                                  //         controller.location.value = UserLocation(latitude: result.geometry!.location.lat, longitude: result.geometry!.location.lng);
+                                  //         Get.back();
+                                  //       },
+                                  //       initialPosition: const LatLng(-33.8567844, 151.213108),
+                                  //       useCurrentLocation: true,
+                                  //       selectInitialPosition: true,
+                                  //       usePinPointingSearch: true,
+                                  //       usePlaceDetailSearch: true,
+                                  //       zoomGesturesEnabled: true,
+                                  //       zoomControlsEnabled: true,
+                                  //       resizeToAvoidBottomInset: false, // only works in page mode, less flickery, remove if wrong offsets
+                                  //     ),
+                                  //   ),
+                                  // );
                                 }
                               },
                               child: Row(
                                 children: [
-                                  SvgPicture.asset("assets/icons/ic_focus.svg"),
+                                  SvgPicture.asset(
+                                    "assets/icons/ic_focus.svg",
+                                    color: themeChange.getThem()
+                                        ? AppThemeData.primary300
+                                        : AppThemeData.secondary300,
+                                  ),
                                   const SizedBox(
                                     width: 10,
                                   ),
@@ -393,7 +478,9 @@ class AddressListScreen extends StatelessWidget {
                                     "Choose Current Location".tr,
                                     style: TextStyle(
                                       fontSize: 16,
-                                      color: themeChange.getThem() ? AppThemeData.primary300 : AppThemeData.primary300,
+                                      color: themeChange.getThem()
+                                          ? AppThemeData.primary300
+                                          : AppThemeData.secondary300,
                                       fontFamily: AppThemeData.medium,
                                       fontWeight: FontWeight.w500,
                                     ),
@@ -415,7 +502,9 @@ class AddressListScreen extends StatelessWidget {
                                   style: TextStyle(
                                     fontSize: 16,
                                     fontFamily: AppThemeData.semiBold,
-                                    color: themeChange.getThem() ? AppThemeData.grey50 : AppThemeData.grey900,
+                                    color: themeChange.getThem()
+                                        ? AppThemeData.grey50
+                                        : AppThemeData.grey900,
                                   ),
                                 ),
                                 const SizedBox(
@@ -432,55 +521,94 @@ class AddressListScreen extends StatelessWidget {
                                       return InkWell(
                                         onTap: () {
                                           setState(() {
-                                            controller.selectedSaveAs.value = controller.saveAsList[index].toString();
+                                            controller.selectedSaveAs.value =
+                                                controller.saveAsList[index]
+                                                    .toString();
                                           });
                                         },
                                         child: Padding(
-                                          padding: const EdgeInsets.symmetric(horizontal: 5),
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 5),
                                           child: Container(
                                             decoration: BoxDecoration(
-                                                color: controller.selectedSaveAs.value == controller.saveAsList[index].toString()
+                                                color: controller.selectedSaveAs
+                                                            .value ==
+                                                        controller
+                                                            .saveAsList[index]
+                                                            .toString()
                                                     ? AppThemeData.primary300
                                                     : themeChange.getThem()
                                                         ? AppThemeData.grey800
                                                         : AppThemeData.grey100,
-                                                borderRadius: const BorderRadius.all(Radius.circular(20))),
+                                                borderRadius:
+                                                    const BorderRadius.all(
+                                                        Radius.circular(20))),
                                             child: Padding(
-                                              padding: const EdgeInsets.symmetric(horizontal: 20),
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 20),
                                               child: Row(
                                                 children: [
                                                   SvgPicture.asset(
-                                                    controller.saveAsList[index] == "Home".tr
+                                                    controller.saveAsList[
+                                                                index] ==
+                                                            "Home".tr
                                                         ? "assets/icons/ic_home_add.svg"
-                                                        : controller.saveAsList[index] == "Work".tr
+                                                        : controller.saveAsList[
+                                                                    index] ==
+                                                                "Work".tr
                                                             ? "assets/icons/ic_work.svg"
-                                                            : controller.saveAsList[index] == "Hotel".tr
+                                                            : controller.saveAsList[
+                                                                        index] ==
+                                                                    "Hotel".tr
                                                                 ? "assets/icons/ic_building.svg"
                                                                 : "assets/icons/ic_location.svg",
                                                     width: 18,
                                                     height: 18,
-                                                    colorFilter: ColorFilter.mode(
-                                                        controller.selectedSaveAs.value == controller.saveAsList[index].toString()
-                                                            ? AppThemeData.grey50
-                                                            : themeChange.getThem()
-                                                                ? AppThemeData.grey700
-                                                                : AppThemeData.grey300,
-                                                        BlendMode.srcIn),
+                                                    colorFilter:
+                                                        ColorFilter.mode(
+                                                            controller.selectedSaveAs
+                                                                        .value ==
+                                                                    controller
+                                                                        .saveAsList[
+                                                                            index]
+                                                                        .toString()
+                                                                ? AppThemeData
+                                                                    .grey50
+                                                                : themeChange
+                                                                        .getThem()
+                                                                    ? AppThemeData
+                                                                        .grey700
+                                                                    : AppThemeData
+                                                                        .grey300,
+                                                            BlendMode.srcIn),
                                                   ),
                                                   const SizedBox(
                                                     width: 10,
                                                   ),
                                                   Text(
-                                                    controller.saveAsList[index].toString(),
+                                                    controller.saveAsList[index]
+                                                        .toString(),
                                                     style: TextStyle(
                                                       fontSize: 14,
-                                                      fontWeight: FontWeight.w500,
-                                                      fontFamily: AppThemeData.medium,
-                                                      color: controller.selectedSaveAs.value == controller.saveAsList[index].toString()
+                                                      fontWeight:
+                                                          FontWeight.w500,
+                                                      fontFamily:
+                                                          AppThemeData.medium,
+                                                      color: controller
+                                                                  .selectedSaveAs
+                                                                  .value ==
+                                                              controller
+                                                                  .saveAsList[
+                                                                      index]
+                                                                  .toString()
                                                           ? AppThemeData.grey50
-                                                          : themeChange.getThem()
-                                                              ? AppThemeData.grey700
-                                                              : AppThemeData.grey300,
+                                                          : themeChange
+                                                                  .getThem()
+                                                              ? AppThemeData
+                                                                  .grey700
+                                                              : AppThemeData
+                                                                  .grey300,
                                                     ),
                                                   ),
                                                 ],
@@ -497,17 +625,20 @@ class AddressListScreen extends StatelessWidget {
                                 ),
                                 TextFieldWidget(
                                   title: 'House/Flat/Floor No.'.tr,
-                                  controller: controller.houseBuildingTextEditingController.value,
+                                  controller: controller
+                                      .houseBuildingTextEditingController.value,
                                   hintText: 'House/Flat/Floor No.'.tr,
                                 ),
                                 TextFieldWidget(
                                   title: 'Apartment/Road/Area'.tr,
-                                  controller: controller.localityEditingController.value,
+                                  controller: controller
+                                      .localityEditingController.value,
                                   hintText: 'Apartment/Road/Area'.tr,
                                 ),
                                 TextFieldWidget(
                                   title: 'Nearby landmark'.tr,
-                                  controller: controller.landmarkEditingController.value,
+                                  controller: controller
+                                      .landmarkEditingController.value,
                                   hintText: 'Nearby landmark (Optional)'.tr,
                                 ),
                               ],
@@ -517,8 +648,11 @@ class AddressListScreen extends StatelessWidget {
                       ),
                     ),
                     bottomNavigationBar: Container(
-                      color: themeChange.getThem() ? AppThemeData.grey800 : AppThemeData.grey100,
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+                      color: themeChange.getThem()
+                          ? AppThemeData.grey800
+                          : AppThemeData.grey100,
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 20),
                       child: Padding(
                         padding: const EdgeInsets.only(bottom: 20),
                         child: RoundedButtonFill(
@@ -527,36 +661,75 @@ class AddressListScreen extends StatelessWidget {
                           color: AppThemeData.primary300,
                           fontSizes: 16,
                           onPress: () async {
-                            if (controller.location.value.latitude == null || controller.location.value.longitude == null) {
-                              ShowToastDialog.showToast("Please select Location".tr);
-                            } else if (controller.houseBuildingTextEditingController.value.text.isEmpty) {
-                              ShowToastDialog.showToast("Please Enter Flat / House / Flore / Building".tr);
-                            } else if (controller.localityEditingController.value.text.isEmpty) {
-                              ShowToastDialog.showToast("Please Enter Area / Sector / locality".tr);
+                            if (controller.location.value.latitude == null ||
+                                controller.location.value.longitude == null) {
+                              ShowToastDialog.showToast(
+                                  "Please select Location".tr);
+                            } else if (controller
+                                .houseBuildingTextEditingController
+                                .value
+                                .text
+                                .isEmpty) {
+                              ShowToastDialog.showToast(
+                                  "Please Enter Flat / House / Flore / Building"
+                                      .tr);
+                            } else if (controller
+                                .localityEditingController.value.text.isEmpty) {
+                              ShowToastDialog.showToast(
+                                  "Please Enter Area / Sector / locality".tr);
                             } else {
-                              if (controller.shippingModel.value.id != null && index != null) {
-                                controller.shippingModel.value.location = controller.location.value;
-                                controller.shippingModel.value.addressAs = controller.selectedSaveAs.value;
-                                controller.shippingModel.value.address = controller.houseBuildingTextEditingController.value.text;
-                                controller.shippingModel.value.locality = controller.localityEditingController.value.text;
-                                controller.shippingModel.value.landmark = controller.landmarkEditingController.value.text;
+                              if (controller.shippingModel.value.id != null &&
+                                  index != null) {
+                                controller.shippingModel.value.location =
+                                    controller.location.value;
+                                controller.shippingModel.value.addressAs =
+                                    controller.selectedSaveAs.value;
+                                controller.shippingModel.value.address =
+                                    controller
+                                        .houseBuildingTextEditingController
+                                        .value
+                                        .text;
+                                controller.shippingModel.value.locality =
+                                    controller
+                                        .localityEditingController.value.text;
+                                controller.shippingModel.value.landmark =
+                                    controller
+                                        .landmarkEditingController.value.text;
 
                                 controller.shippingAddressList.removeAt(index);
-                                controller.shippingAddressList.insert(index, controller.shippingModel.value);
+                                controller.shippingAddressList.insert(
+                                    index, controller.shippingModel.value);
                               } else {
-                                controller.shippingModel.value.id = Constant.getUuid();
-                                controller.shippingModel.value.location = controller.location.value;
-                                controller.shippingModel.value.addressAs = controller.selectedSaveAs.value;
-                                controller.shippingModel.value.address = controller.houseBuildingTextEditingController.value.text;
-                                controller.shippingModel.value.locality = controller.localityEditingController.value.text;
-                                controller.shippingModel.value.landmark = controller.landmarkEditingController.value.text;
-                                controller.shippingModel.value.isDefault = controller.shippingAddressList.isEmpty ? true : false;
-                                controller.shippingAddressList.add(controller.shippingModel.value);
+                                controller.shippingModel.value.id =
+                                    Constant.getUuid();
+                                controller.shippingModel.value.location =
+                                    controller.location.value;
+                                controller.shippingModel.value.addressAs =
+                                    controller.selectedSaveAs.value;
+                                controller.shippingModel.value.address =
+                                    controller
+                                        .houseBuildingTextEditingController
+                                        .value
+                                        .text;
+                                controller.shippingModel.value.locality =
+                                    controller
+                                        .localityEditingController.value.text;
+                                controller.shippingModel.value.landmark =
+                                    controller
+                                        .landmarkEditingController.value.text;
+                                controller.shippingModel.value.isDefault =
+                                    controller.shippingAddressList.isEmpty
+                                        ? true
+                                        : false;
+                                controller.shippingAddressList
+                                    .add(controller.shippingModel.value);
                               }
                               setState(() {});
 
-                              controller.userModel.value.shippingAddress = controller.shippingAddressList;
-                              await FireStoreUtils.updateUser(controller.userModel.value);
+                              controller.userModel.value.shippingAddress =
+                                  controller.shippingAddressList;
+                              await FireStoreUtils.updateUser(
+                                  controller.userModel.value);
                               Get.back();
                             }
                           },

@@ -19,7 +19,10 @@ class ChatController extends GetxController {
   void onInit() {
     // TODO: implement onInit
     if (scrollController.hasClients) {
-      Timer(const Duration(milliseconds: 500), () => scrollController.jumpTo(scrollController.position.maxScrollExtent));
+      Timer(
+          const Duration(milliseconds: 500),
+          () => scrollController
+              .jumpTo(scrollController.position.maxScrollExtent));
     }
     getArgument();
     super.onInit();
@@ -45,26 +48,29 @@ class ChatController extends GetxController {
       customerProfileImage.value = argumentData['customerProfileImage'] ?? "";
       restaurantId.value = argumentData['restaurantId'];
       restaurantName.value = argumentData['restaurantName'];
-      restaurantProfileImage.value = argumentData['restaurantProfileImage'] ?? "";
+      restaurantProfileImage.value =
+          argumentData['restaurantProfileImage'] ?? "";
       token.value = argumentData['token'];
       chatType.value = argumentData['chatType'];
     }
     isLoading.value = false;
   }
 
-  sendMessage(String message, Url? url, String videoThumbnail, String messageType) async {
+  sendMessage(String message, Url? url, String videoThumbnail,
+      String messageType) async {
     InboxModel inboxModel = InboxModel(
-        lastSenderId: customerId.value,
-        customerId: customerId.value,
-        customerName: customerName.value,
-        restaurantId: restaurantId.value,
-        restaurantName: restaurantName.value,
-        createdAt: Timestamp.now(),
-        orderId: orderId.value,
-        customerProfileImage: customerProfileImage.value,
-        restaurantProfileImage: restaurantProfileImage.value,
-        lastMessage: messageController.value.text,
-        chatType: chatType.value);
+      lastSenderId: customerId.value,
+      customerId: customerId.value,
+      customerName: customerName.value,
+      restaurantId: restaurantId.value,
+      restaurantName: restaurantName.value,
+      createdAt: Timestamp.now(),
+      orderId: orderId.value,
+      customerProfileImage: customerProfileImage.value,
+      restaurantProfileImage: restaurantProfileImage.value,
+      lastMessage: messageController.value.text,
+      chatType: chatType.value,
+    );
 
     if (chatType.value == "Driver") {
       await FireStoreUtils.addDriverInbox(inboxModel);
@@ -99,7 +105,8 @@ class ChatController extends GetxController {
       await FireStoreUtils.addRestaurantChat(conversationModel);
     }
 
-    await SendNotification.sendChatFcmMessage(customerName.value, conversationModel.message.toString(), token.value, {});
+    await SendNotification.sendChatFcmMessage(customerName.value,
+        conversationModel.message.toString(), token.value, {});
   }
 
   final ImagePicker imagePicker = ImagePicker();

@@ -24,7 +24,9 @@ class WalletScreen extends StatelessWidget {
         init: WalletController(),
         builder: (controller) {
           return Scaffold(
-            backgroundColor: themeChange.getThem() ? AppThemeData.surfaceDark : AppThemeData.surface,
+            backgroundColor: themeChange.getThem()
+                ? AppThemeData.surfaceDark
+                : AppThemeData.surface,
             body: controller.isLoading.value
                 ? Constant.loader()
                 : Constant.userModel == null
@@ -43,15 +45,26 @@ class WalletScreen extends StatelessWidget {
                             ),
                             Text(
                               "Please Log In to Continue".tr,
-                              style: TextStyle(color: themeChange.getThem() ? AppThemeData.grey100 : AppThemeData.grey800, fontSize: 22, fontFamily: AppThemeData.semiBold),
+                              style: TextStyle(
+                                  color: themeChange.getThem()
+                                      ? AppThemeData.grey100
+                                      : AppThemeData.grey800,
+                                  fontSize: 22,
+                                  fontFamily: AppThemeData.semiBold),
                             ),
                             const SizedBox(
                               height: 5,
                             ),
                             Text(
-                              "You’re not logged in. Please sign in to access your account and explore all features.".tr,
+                              "You’re not logged in. Please sign in to access your account and explore all features."
+                                  .tr,
                               textAlign: TextAlign.center,
-                              style: TextStyle(color: themeChange.getThem() ? AppThemeData.grey50 : AppThemeData.grey500, fontSize: 16, fontFamily: AppThemeData.bold),
+                              style: TextStyle(
+                                  color: themeChange.getThem()
+                                      ? AppThemeData.grey50
+                                      : AppThemeData.grey500,
+                                  fontSize: 16,
+                                  fontFamily: AppThemeData.bold),
                             ),
                             const SizedBox(
                               height: 20,
@@ -70,7 +83,8 @@ class WalletScreen extends StatelessWidget {
                         ),
                       )
                     : Padding(
-                        padding: EdgeInsets.only(top: MediaQuery.of(context).viewPadding.top),
+                        padding: EdgeInsets.only(
+                            top: MediaQuery.of(context).viewPadding.top),
                         child: Column(
                           children: [
                             Column(
@@ -78,27 +92,36 @@ class WalletScreen extends StatelessWidget {
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
                                 Padding(
-                                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 16),
                                   child: Row(
                                     children: [
                                       Expanded(
                                         child: Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
                                           children: [
                                             Text(
                                               "My Wallet".tr,
                                               style: TextStyle(
                                                 fontSize: 24,
-                                                color: themeChange.getThem() ? AppThemeData.grey50 : AppThemeData.grey900,
-                                                fontFamily: AppThemeData.semiBold,
+                                                color: themeChange.getThem()
+                                                    ? AppThemeData.grey50
+                                                    : AppThemeData.grey900,
+                                                fontFamily:
+                                                    AppThemeData.semiBold,
                                                 fontWeight: FontWeight.w500,
                                               ),
                                             ),
                                             Text(
-                                              "Keep track of your balance, transactions, and payment methods all in one place.".tr,
+                                              "Keep track of your balance, transactions, and payment methods all in one place."
+                                                  .tr,
                                               style: TextStyle(
-                                                color: themeChange.getThem() ? AppThemeData.grey50 : AppThemeData.grey900,
-                                                fontFamily: AppThemeData.regular,
+                                                color: themeChange.getThem()
+                                                    ? AppThemeData.grey50
+                                                    : AppThemeData.grey900,
+                                                fontFamily:
+                                                    AppThemeData.regular,
                                                 fontWeight: FontWeight.w400,
                                               ),
                                             ),
@@ -112,30 +135,48 @@ class WalletScreen extends StatelessWidget {
                                   height: 20,
                                 ),
                                 Padding(
-                                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 16),
                                   child: Container(
                                     decoration: const BoxDecoration(
-                                        borderRadius: BorderRadius.all(Radius.circular(20)),
-                                        image: DecorationImage(image: AssetImage("assets/images/wallet.png"), fit: BoxFit.fill)),
+                                      borderRadius: BorderRadius.all(
+                                        Radius.circular(20),
+                                      ),
+                                      color: AppThemeData.secondary300,
+                                      // image: DecorationImage(
+                                      //     image: AssetImage(
+                                      //         "assets/images/wallet.png"),
+                                      //     fit: BoxFit.fill),
+                                    ),
                                     child: Padding(
-                                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 16,
+                                        vertical: 20,
+                                      ),
                                       child: Column(
                                         children: [
                                           Text(
                                             "My Wallet".tr,
                                             maxLines: 1,
                                             style: TextStyle(
-                                              color: themeChange.getThem() ? AppThemeData.primary100 : AppThemeData.primary100,
+                                              color: themeChange.getThem()
+                                                  ? AppThemeData.primary100
+                                                  : AppThemeData.primary100,
                                               fontSize: 16,
                                               overflow: TextOverflow.ellipsis,
                                               fontFamily: AppThemeData.regular,
                                             ),
                                           ),
                                           Text(
-                                            Constant.amountShow(amount: controller.userModel.value.walletAmount.toString()),
+                                            Constant.amountShow(
+                                                amount: controller.userModel
+                                                        .value.walletAmount ??
+                                                    500.3.toString()),
                                             maxLines: 1,
                                             style: TextStyle(
-                                              color: themeChange.getThem() ? AppThemeData.grey50 : AppThemeData.grey50,
+                                              color: themeChange.getThem()
+                                                  ? AppThemeData.grey50
+                                                  : AppThemeData.grey50,
                                               fontSize: 40,
                                               overflow: TextOverflow.ellipsis,
                                               fontFamily: AppThemeData.bold,
@@ -145,13 +186,16 @@ class WalletScreen extends StatelessWidget {
                                             height: 20,
                                           ),
                                           Padding(
-                                            padding: const EdgeInsets.symmetric(horizontal: 80),
+                                            padding: const EdgeInsets.symmetric(
+                                              horizontal: 80,
+                                            ),
                                             child: RoundedButtonFill(
                                               title: "Top up".tr,
                                               color: AppThemeData.warning300,
                                               textColor: AppThemeData.grey900,
                                               onPress: () {
-                                                Get.to(const PaymentListScreen());
+                                                Get.to(
+                                                    const PaymentListScreen());
                                               },
                                             ),
                                           )
@@ -164,15 +208,21 @@ class WalletScreen extends StatelessWidget {
                             ),
                             Expanded(
                               child: controller.walletTransactionList.isEmpty
-                                  ? Constant.showEmptyView(message: "Transaction not found".tr)
+                                  ? Constant.showEmptyView(
+                                      message: "Transaction not found".tr)
                                   : Padding(
-                                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 16, vertical: 10),
                                       child: ListView.builder(
                                         padding: EdgeInsets.zero,
-                                        itemCount: controller.walletTransactionList.length,
+                                        itemCount: controller
+                                            .walletTransactionList.length,
                                         itemBuilder: (context, index) {
-                                          WalletTransactionModel walletTractionModel = controller.walletTransactionList[index];
-                                          return transactionCard(controller, themeChange, walletTractionModel);
+                                          WalletTransactionModel
+                                              walletTractionModel = controller
+                                                  .walletTransactionList[index];
+                                          return transactionCard(controller,
+                                              themeChange, walletTractionModel);
                                         },
                                       ),
                                     ),
@@ -184,18 +234,19 @@ class WalletScreen extends StatelessWidget {
         });
   }
 
-  transactionCard(WalletController controller, themeChange, WalletTransactionModel transactionModel) {
+  transactionCard(WalletController controller, themeChange,
+      WalletTransactionModel transactionModel) {
     return Column(
       children: [
         InkWell(
           onTap: () async {
-            await FireStoreUtils.getOrderByOrderId(transactionModel.orderId.toString()).then(
-              (value) {
-                if (value != null) {
-                  Get.to(const OrderDetailsScreen(), arguments: {"orderModel": value});
-                }
-              },
-            );
+            // await FireStoreUtils.getOrderByOrderId(transactionModel.orderId.toString()).then(
+            //   (value) {
+            //     if (value != null) {
+            //       Get.to(const OrderDetailsScreen(), arguments: {"orderModel": value});
+            //     }
+            //   },
+            // );
           },
           child: Padding(
             padding: const EdgeInsets.symmetric(vertical: 5),
@@ -204,7 +255,11 @@ class WalletScreen extends StatelessWidget {
                 Container(
                   decoration: ShapeDecoration(
                     shape: RoundedRectangleBorder(
-                      side: BorderSide(width: 1, color: themeChange.getThem() ? AppThemeData.grey800 : AppThemeData.grey100),
+                      side: BorderSide(
+                          width: 1,
+                          color: themeChange.getThem()
+                              ? AppThemeData.grey800
+                              : AppThemeData.grey100),
                       borderRadius: BorderRadius.circular(8),
                     ),
                   ),
@@ -239,16 +294,21 @@ class WalletScreen extends StatelessWidget {
                                 fontSize: 16,
                                 fontFamily: AppThemeData.semiBold,
                                 fontWeight: FontWeight.w600,
-                                color: themeChange.getThem() ? AppThemeData.grey100 : AppThemeData.grey800,
+                                color: themeChange.getThem()
+                                    ? AppThemeData.grey100
+                                    : AppThemeData.grey800,
                               ),
                             ),
                           ),
                           Text(
-                            Constant.amountShow(amount: transactionModel.amount.toString()),
+                            Constant.amountShow(
+                                amount: transactionModel.amount.toString()),
                             style: TextStyle(
                               fontSize: 16,
                               fontFamily: AppThemeData.medium,
-                              color: transactionModel.isTopup == true ? AppThemeData.success400 : AppThemeData.danger300,
+                              color: transactionModel.isTopup == true
+                                  ? AppThemeData.success400
+                                  : AppThemeData.danger300,
                             ),
                           )
                         ],
@@ -259,7 +319,13 @@ class WalletScreen extends StatelessWidget {
                       Text(
                         Constant.timestampToDateTime(transactionModel.date!),
                         style: TextStyle(
-                            fontSize: 12, fontFamily: AppThemeData.medium, fontWeight: FontWeight.w500, color: themeChange.getThem() ? AppThemeData.grey200 : AppThemeData.grey700),
+                          fontSize: 12,
+                          fontFamily: AppThemeData.medium,
+                          fontWeight: FontWeight.w500,
+                          color: themeChange.getThem()
+                              ? AppThemeData.grey200
+                              : AppThemeData.grey700,
+                        ),
                       ),
                     ],
                   ),
@@ -270,11 +336,28 @@ class WalletScreen extends StatelessWidget {
         ),
         Padding(
           padding: const EdgeInsets.symmetric(vertical: 5),
-          child: MySeparator(color: themeChange.getThem() ? AppThemeData.grey700 : AppThemeData.grey200),
+          child: MySeparator(
+              color: themeChange.getThem()
+                  ? AppThemeData.grey700
+                  : AppThemeData.grey200),
         ),
       ],
     );
   }
 }
 
-enum PaymentGateway { payFast, mercadoPago, paypal, stripe, flutterWave, payStack, paytm, razorpay, cod, wallet, midTrans, orangeMoney, xendit }
+enum PaymentGateway {
+  payFast,
+  mercadoPago,
+  paypal,
+  stripe,
+  flutterWave,
+  payStack,
+  paytm,
+  razorpay,
+  cod,
+  wallet,
+  midTrans,
+  orangeMoney,
+  xendit
+}

@@ -30,8 +30,8 @@ class RestaurantListController extends GetxController {
 
     if (Constant.userModel != null) {
       await FireStoreUtils.getFavouriteRestaurant().then(
-            (value) {
-          favouriteList.value = value;
+        (value) {
+          // favouriteList.value = value;
         },
       );
     }

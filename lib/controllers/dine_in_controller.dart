@@ -15,8 +15,8 @@ class DineInController extends GetxController {
 
   @override
   void onInit() {
-    getCategory();
-    getData();
+    // getCategory();
+    // getData();
     // TODO: implement onInit
     super.onInit();
   }
@@ -28,7 +28,8 @@ class DineInController extends GetxController {
   RxList<VendorModel> popularRestaurantList = <VendorModel>[].obs;
 
   RxList<BannerModel> bannerBottomModel = <BannerModel>[].obs;
-  Rx<PageController> pageBottomController = PageController(viewportFraction: 0.877).obs;
+  Rx<PageController> pageBottomController =
+      PageController(viewportFraction: 0.877).obs;
   RxInt currentBottomPage = 0.obs;
 
   RxList<FavouriteModel> favouriteList = <FavouriteModel>[].obs;
@@ -36,7 +37,8 @@ class DineInController extends GetxController {
   getData() async {
     isLoading.value = true;
     await getZone();
-    FireStoreUtils.getAllNearestRestaurant(isDining: true).listen((event) async {
+    FireStoreUtils.getAllNearestRestaurant(isDining: true)
+        .listen((event) async {
       newArrivalRestaurantList.clear();
       allNearestRestaurant.clear();
       popularRestaurantList.clear();
@@ -46,12 +48,18 @@ class DineInController extends GetxController {
       popularRestaurantList.addAll(event);
 
       popularRestaurantList.sort(
-        (a, b) => Constant.calculateReview(reviewCount: b.reviewsCount.toString(), reviewSum: b.reviewsSum.toString())
-            .compareTo(Constant.calculateReview(reviewCount: a.reviewsCount.toString(), reviewSum: a.reviewsSum.toString())),
+        (a, b) => Constant.calculateReview(
+                reviewCount: b.reviewsCount.toString(),
+                reviewSum: b.reviewsSum.toString())
+            .compareTo(Constant.calculateReview(
+                reviewCount: a.reviewsCount.toString(),
+                reviewSum: a.reviewsSum.toString())),
       );
 
       newArrivalRestaurantList.sort(
-        (a, b) => (b.createdAt ?? Timestamp.now()).toDate().compareTo((a.createdAt ?? Timestamp.now()).toDate()),
+        (a, b) => (b.createdAt ?? Timestamp.now())
+            .toDate()
+            .compareTo((a.createdAt ?? Timestamp.now()).toDate()),
       );
     });
 
@@ -84,7 +92,10 @@ class DineInController extends GetxController {
     await FireStoreUtils.getZone().then((value) {
       if (value != null) {
         for (int i = 0; i < value.length; i++) {
-          if (Constant.isPointInPolygon(LatLng(Constant.selectedLocation.location!.latitude ?? 0.0, Constant.selectedLocation.location!.longitude ?? 0.0), value[i].area!)) {
+          if (Constant.isPointInPolygon(
+              LatLng(Constant.selectedLocation.location!.latitude ?? 0.0,
+                  Constant.selectedLocation.location!.longitude ?? 0.0),
+              value[i].area!)) {
             Constant.selectedZone = value[i];
             Constant.isZoneAvailable = true;
             break;

@@ -19,11 +19,10 @@ class DiscountRestaurantListController extends GetxController {
   getArgument() async {
     dynamic argumentData = Get.arguments;
     if (argumentData != null) {
-      vendorList.value = argumentData['vendorList'];
-      couponList.value = argumentData['couponList'];
+      // vendorList.value = argumentData['vendorList'];
+      // couponList.value = argumentData['couponList'];
       title.value = argumentData['title'] ?? "Restaurants";
     }
     isLoading.value = false;
   }
-
 }

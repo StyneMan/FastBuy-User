@@ -6,7 +6,6 @@ import 'package:customer/app/dash_board_screens/dash_board_screen.dart';
 import 'package:customer/app/forgot_password_screen/forgot_password_screen.dart';
 import 'package:customer/app/location_permission_screen/location_permission_screen.dart';
 import 'package:customer/constant/constant.dart';
-import 'package:customer/constant/show_toast_dialog.dart';
 import 'package:customer/controllers/login_controller.dart';
 import 'package:customer/themes/app_them_data.dart';
 import 'package:customer/themes/round_button_border.dart';
@@ -32,10 +31,13 @@ class LoginScreen extends StatelessWidget {
         init: LoginController(),
         builder: (controller) {
           return Scaffold(
+            backgroundColor: themeChange.getThem()
+                ? AppThemeData.surfaceDark
+                : AppThemeData.primary50,
             appBar: AppBar(
               backgroundColor: themeChange.getThem()
                   ? AppThemeData.surfaceDark
-                  : AppThemeData.surface,
+                  : AppThemeData.primary50,
               actions: [
                 InkWell(
                   onTap: () async {
@@ -68,8 +70,11 @@ class LoginScreen extends StatelessWidget {
                 ),
               ],
             ),
-            body: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
+            body: Container(
+              color: themeChange.getThem()
+                  ? AppThemeData.surfaceDark
+                  : AppThemeData.primary50,
+              padding: const EdgeInsets.symmetric(horizontal: 21),
               child: SingleChildScrollView(
                 child: Form(
                   key: formkey,
@@ -109,8 +114,8 @@ class LoginScreen extends StatelessWidget {
                           if (value == null || value.isEmpty) {
                             return 'Please enter your email';
                           }
-                          if (!RegExp(r'^[\w-]+(\.[\w-]+)*@[\w-]+(\.[\w-]+)+$')
-                              .hasMatch(value)) {
+                          if (!RegExp('^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+.[a-z]')
+                              .hasMatch(value!)) {
                             return 'Enter a valid email address';
                           }
                           return null;
@@ -184,7 +189,7 @@ class LoginScreen extends StatelessWidget {
                         alignment: Alignment.centerRight,
                         child: InkWell(
                           onTap: () {
-                            Get.to(const ForgotPasswordScreen());
+                            Get.to(ForgotPasswordScreen());
                           },
                           child: Text(
                             "Forgot Password".tr,
@@ -239,12 +244,13 @@ class LoginScreen extends StatelessWidget {
                         ),
                       ),
                       RoundedButtonBorder(
+                        borderColor: AppThemeData.secondary300,
                         title: "Continue with Mobile Number".tr,
-                        textColor: AppThemeData.primary300,
+                        textColor: AppThemeData.secondary300,
                         icon: SvgPicture.asset("assets/icons/ic_phone.svg"),
                         isRight: false,
                         onPress: () async {
-                          Get.to(const PhoneNumberScreen());
+                          Get.to(PhoneNumberScreen());
                         },
                       ),
                     ],
@@ -252,7 +258,10 @@ class LoginScreen extends StatelessWidget {
                 ),
               ),
             ),
-            bottomNavigationBar: Padding(
+            bottomNavigationBar: Container(
+              color: themeChange.getThem()
+                  ? AppThemeData.surfaceDark
+                  : AppThemeData.primary50,
               padding:
                   EdgeInsets.symmetric(vertical: Platform.isAndroid ? 10 : 30),
               child: Column(
@@ -262,31 +271,33 @@ class LoginScreen extends StatelessWidget {
                     TextSpan(
                       children: [
                         TextSpan(
-                            text: 'Didn’t have an account?'.tr,
-                            style: TextStyle(
-                              color: themeChange.getThem()
-                                  ? AppThemeData.grey50
-                                  : AppThemeData.grey900,
-                              fontFamily: AppThemeData.medium,
-                              fontWeight: FontWeight.w500,
-                            )),
+                          text: 'Didn’t have an account?'.tr,
+                          style: TextStyle(
+                            color: themeChange.getThem()
+                                ? AppThemeData.grey50
+                                : AppThemeData.grey900,
+                            fontFamily: AppThemeData.medium,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
                         const WidgetSpan(
                           child: SizedBox(
                             width: 10,
                           ),
                         ),
                         TextSpan(
-                            recognizer: TapGestureRecognizer()
-                              ..onTap = () {
-                                Get.to(SignupScreen());
-                              },
-                            text: 'Sign up'.tr,
-                            style: TextStyle(
-                                color: AppThemeData.primary300,
-                                fontFamily: AppThemeData.bold,
-                                fontWeight: FontWeight.w500,
-                                decoration: TextDecoration.underline,
-                                decorationColor: AppThemeData.primary300)),
+                          recognizer: TapGestureRecognizer()
+                            ..onTap = () {
+                              Get.to(SignupScreen());
+                            },
+                          text: 'Sign up'.tr,
+                          style: TextStyle(
+                              color: AppThemeData.primary300,
+                              fontFamily: AppThemeData.bold,
+                              fontWeight: FontWeight.w500,
+                              decoration: TextDecoration.underline,
+                              decorationColor: AppThemeData.primary300),
+                        ),
                       ],
                     ),
                   ),

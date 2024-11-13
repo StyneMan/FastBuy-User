@@ -22,14 +22,13 @@ class SearchScreenController extends GetxController {
     dynamic argumentData = Get.arguments;
     if (argumentData != null) {
       vendorList.value = argumentData['vendorList'];
-
     }
     isLoading.value = false;
 
     for (var element in vendorList) {
       await FireStoreUtils.getProductByVendorId(element.id.toString()).then(
-            (value) {
-          productList.addAll(value);
+        (value) {
+          // productList.addAll(value);
         },
       );
     }
@@ -60,6 +59,4 @@ class SearchScreenController extends GetxController {
     productSearchList.clear();
     super.dispose();
   }
-
-
 }

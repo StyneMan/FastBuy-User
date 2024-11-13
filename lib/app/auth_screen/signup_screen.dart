@@ -23,13 +23,16 @@ class SignupScreen extends StatelessWidget {
         init: SignupController(),
         builder: (controller) {
           return Scaffold(
+            backgroundColor: themeChange.getThem()
+                ? AppThemeData.surfaceDark
+                : AppThemeData.primary50,
             appBar: AppBar(
               backgroundColor: themeChange.getThem()
                   ? AppThemeData.surfaceDark
-                  : AppThemeData.surface,
+                  : AppThemeData.primary50,
             ),
             body: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+              padding: const EdgeInsets.symmetric(horizontal: 21, vertical: 10),
               child: GestureDetector(
                 onTap: () {
                   FocusManager.instance.primaryFocus?.unfocus();
@@ -45,10 +48,10 @@ class SignupScreen extends StatelessWidget {
                           style: TextStyle(
                             color: themeChange.getThem()
                                 ? AppThemeData.grey50
-                                : AppThemeData.grey900,
+                                : AppThemeData.secondary300,
                             fontSize: 22,
                             fontFamily: AppThemeData.semiBold,
-                            fontWeight: FontWeight.w700,
+                            fontWeight: FontWeight.w900,
                           ),
                         ),
                         Text(
@@ -133,8 +136,8 @@ class SignupScreen extends StatelessWidget {
                               return 'Please enter your email';
                             }
                             if (!RegExp(
-                                    r'^[\w-]+(\.[\w-]+)*@[\w-]+(\.[\w-]+)+$')
-                                .hasMatch(value)) {
+                                    '^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+.[a-z]')
+                                .hasMatch(value!)) {
                               return 'Enter a valid email address';
                             }
                             return null;
@@ -270,63 +273,63 @@ class SignupScreen extends StatelessWidget {
                                                 )),
                                     ),
                                   ),
-                                  TextFieldWidget(
-                                    title: 'Confirm Password'.tr,
-                                    controller: controller
-                                        .conformPasswordEditingController.value,
-                                    hintText: 'Enter Confirm Password'.tr,
-                                    validator: (value) {
-                                      if (value.toString().isEmpty) {
-                                        return "Password confirmation is required";
-                                      }
-                                      return null;
-                                    },
-                                    obscureText:
-                                        controller.conformPasswordVisible.value,
-                                    prefix: Padding(
-                                      padding: const EdgeInsets.all(12),
-                                      child: SvgPicture.asset(
-                                        "assets/icons/ic_lock.svg",
-                                        colorFilter: ColorFilter.mode(
-                                          themeChange.getThem()
-                                              ? AppThemeData.grey300
-                                              : AppThemeData.grey600,
-                                          BlendMode.srcIn,
-                                        ),
-                                      ),
-                                    ),
-                                    suffix: Padding(
-                                      padding: const EdgeInsets.all(12),
-                                      child: InkWell(
-                                          onTap: () {
-                                            controller.conformPasswordVisible
-                                                    .value =
-                                                !controller
-                                                    .conformPasswordVisible
-                                                    .value;
-                                          },
-                                          child: controller
-                                                  .conformPasswordVisible.value
-                                              ? SvgPicture.asset(
-                                                  "assets/icons/ic_password_show.svg",
-                                                  colorFilter: ColorFilter.mode(
-                                                    themeChange.getThem()
-                                                        ? AppThemeData.grey300
-                                                        : AppThemeData.grey600,
-                                                    BlendMode.srcIn,
-                                                  ),
-                                                )
-                                              : SvgPicture.asset(
-                                                  "assets/icons/ic_password_close.svg",
-                                                  colorFilter: ColorFilter.mode(
-                                                    themeChange.getThem()
-                                                        ? AppThemeData.grey300
-                                                        : AppThemeData.grey600,
-                                                    BlendMode.srcIn,
-                                                  ),
-                                                )),
-                                    ),
-                                  ),
+                                  // TextFieldWidget(
+                                  //   title: 'Confirm Password'.tr,
+                                  //   controller: controller
+                                  //       .conformPasswordEditingController.value,
+                                  //   hintText: 'Enter Confirm Password'.tr,
+                                  //   validator: (value) {
+                                  //     if (value.toString().isEmpty) {
+                                  //       return "Password confirmation is required";
+                                  //     }
+                                  //     return null;
+                                  //   },
+                                  //   obscureText:
+                                  //       controller.conformPasswordVisible.value,
+                                  //   prefix: Padding(
+                                  //     padding: const EdgeInsets.all(12),
+                                  //     child: SvgPicture.asset(
+                                  //       "assets/icons/ic_lock.svg",
+                                  //       colorFilter: ColorFilter.mode(
+                                  //         themeChange.getThem()
+                                  //             ? AppThemeData.grey300
+                                  //             : AppThemeData.grey600,
+                                  //         BlendMode.srcIn,
+                                  //       ),
+                                  //     ),
+                                  //   ),
+                                  //   suffix: Padding(
+                                  //     padding: const EdgeInsets.all(12),
+                                  //     child: InkWell(
+                                  //         onTap: () {
+                                  //           controller.conformPasswordVisible
+                                  //                   .value =
+                                  //               !controller
+                                  //                   .conformPasswordVisible
+                                  //                   .value;
+                                  //         },
+                                  //         child: controller
+                                  //                 .conformPasswordVisible.value
+                                  //             ? SvgPicture.asset(
+                                  //                 "assets/icons/ic_password_show.svg",
+                                  //                 colorFilter: ColorFilter.mode(
+                                  //                   themeChange.getThem()
+                                  //                       ? AppThemeData.grey300
+                                  //                       : AppThemeData.grey600,
+                                  //                   BlendMode.srcIn,
+                                  //                 ),
+                                  //               )
+                                  //             : SvgPicture.asset(
+                                  //                 "assets/icons/ic_password_close.svg",
+                                  //                 colorFilter: ColorFilter.mode(
+                                  //                   themeChange.getThem()
+                                  //                       ? AppThemeData.grey300
+                                  //                       : AppThemeData.grey600,
+                                  //                   BlendMode.srcIn,
+                                  //                 ),
+                                  //               )),
+                                  //   ),
+                                  // ),
                                 ],
                               ),
                         TextFieldWidget(

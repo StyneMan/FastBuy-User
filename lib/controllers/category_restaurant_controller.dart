@@ -22,15 +22,15 @@ class CategoryRestaurantController extends GetxController {
   getArgument() async {
     dynamic argumentData = Get.arguments;
     if (argumentData != null) {
-      vendorCategoryModel.value = argumentData['vendorCategoryModel'];
-      dineIn.value = argumentData['dineIn'];
+      // vendorCategoryModel.value = argumentData['vendorCategoryModel'];
+      // dineIn.value = argumentData['dineIn'];
 
       await getZone();
-      FireStoreUtils.getAllNearestRestaurantByCategoryId(categoryId:vendorCategoryModel.value.id.toString(),isDining: dineIn.value).listen((event) async {
-        allNearestRestaurant.clear();
+      // FireStoreUtils.getAllNearestRestaurantByCategoryId(categoryId:vendorCategoryModel.value.id.toString(),isDining: dineIn.value).listen((event) async {
+      //   allNearestRestaurant.clear();
 
-        allNearestRestaurant.addAll(event);
-      });
+      //   allNearestRestaurant.addAll(event);
+      // });
     }
 
     isLoading.value = false;
@@ -40,7 +40,10 @@ class CategoryRestaurantController extends GetxController {
     await FireStoreUtils.getZone().then((value) {
       if (value != null) {
         for (int i = 0; i < value.length; i++) {
-          if (Constant.isPointInPolygon(LatLng(Constant.selectedLocation.location!.latitude ?? 0.0, Constant.selectedLocation.location!.longitude ?? 0.0), value[i].area!)) {
+          if (Constant.isPointInPolygon(
+              LatLng(Constant.selectedLocation.location!.latitude ?? 0.0,
+                  Constant.selectedLocation.location!.longitude ?? 0.0),
+              value[i].area!)) {
             Constant.selectedZone = value[i];
             Constant.isZoneAvailable = true;
             break;

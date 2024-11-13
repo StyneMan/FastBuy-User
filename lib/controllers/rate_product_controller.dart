@@ -34,7 +34,8 @@ class RateProductController extends GetxController {
   Rx<VendorModel> vendorModel = VendorModel().obs;
   Rx<VendorCategoryModel> vendorCategoryModel = VendorCategoryModel().obs;
 
-  RxList<ReviewAttributeModel> reviewAttributeList = <ReviewAttributeModel>[].obs;
+  RxList<ReviewAttributeModel> reviewAttributeList =
+      <ReviewAttributeModel>[].obs;
 
   RxDouble ratings = 1.0.obs;
 
@@ -53,7 +54,9 @@ class RateProductController extends GetxController {
       orderModel.value = argumentData['orderModel'];
       productId.value = argumentData['productId'];
 
-      await FireStoreUtils.getOrderReviewsByID(orderModel.value.id.toString(), productId.value).then(
+      await FireStoreUtils.getOrderReviewsByID(
+              orderModel.value.id.toString(), productId.value)
+          .then(
         (value) {
           if (value != null) {
             ratingModel.value = value;
@@ -65,58 +68,60 @@ class RateProductController extends GetxController {
         },
       );
 
-      await FireStoreUtils.getProductById(productId.value.split('~').first).then(
+      await FireStoreUtils.getProductById(productId.value.split('~').first)
+          .then(
         (value) {
-          if (value != null) {
-            productModel.value = value;
-            if (ratingModel.value.id != null) {
-              productReviewCount.value = value.reviewsCount! - 1;
-              productReviewSum.value = value.reviewsSum! - ratings.value;
+          // if (value != null) {
+          //   productModel.value = value;
+          //   if (ratingModel.value.id != null) {
+          //     productReviewCount.value = value.reviewsCount! - 1;
+          //     productReviewSum.value = value.reviewsSum! - ratings.value;
 
-              if (value.reviewAttributes != null) {
-                value.reviewAttributes!.forEach((key, value) {
-                  ReviewsAttribute reviewsAttributeModel = ReviewsAttribute.fromJson(value);
-                  reviewsAttributeModel.reviewsCount = reviewsAttributeModel.reviewsCount! - 1;
-                  reviewsAttributeModel.reviewsSum = reviewsAttributeModel.reviewsSum! - reviewAttribute[key];
-                  reviewProductAttributes.addEntries([MapEntry(key, reviewsAttributeModel.toJson())]);
-                });
-              }
-            } else {
-              productReviewCount.value = double.parse(value.reviewsCount.toString());
-              productReviewSum.value =  double.parse(value.reviewsSum.toString());
-              if(value.reviewAttributes != null){
-                reviewProductAttributes.value = value.reviewAttributes!;
-              }
-            }
-          }
+          //     if (value.reviewAttributes != null) {
+          //       value.reviewAttributes!.forEach((key, value) {
+          //         ReviewsAttribute reviewsAttributeModel = ReviewsAttribute.fromJson(value);
+          //         reviewsAttributeModel.reviewsCount = reviewsAttributeModel.reviewsCount! - 1;
+          //         reviewsAttributeModel.reviewsSum = reviewsAttributeModel.reviewsSum! - reviewAttribute[key];
+          //         reviewProductAttributes.addEntries([MapEntry(key, reviewsAttributeModel.toJson())]);
+          //       });
+          //     }
+          //   } else {
+          //     productReviewCount.value = double.parse(value.reviewsCount.toString());
+          //     productReviewSum.value =  double.parse(value.reviewsSum.toString());
+          //     if(value.reviewAttributes != null){
+          //       reviewProductAttributes.value = value.reviewAttributes!;
+          //     }
+          //   }
+          // }
         },
       );
 
-
-      await FireStoreUtils.getVendorById(productModel.value.vendorID.toString()).then(
+      await FireStoreUtils.getVendorById(productModel.value.vendorID.toString())
+          .then(
         (value) {
-          if (value != null) {
-            vendorModel.value = value;
-            if (ratingModel.value.id != null) {
-              vendorReviewCount.value = value.reviewsCount! - 1;
-              vendorReviewSum.value = value.reviewsSum! - ratings.value;
-            } else {
-              vendorReviewCount.value = double.parse(value.reviewsCount.toString());
-              vendorReviewSum.value =  double.parse(value.reviewsSum.toString());
-            }
-          }
+          // if (value != null) {
+          //   vendorModel.value = value;
+          //   if (ratingModel.value.id != null) {
+          //     vendorReviewCount.value = value.reviewsCount! - 1;
+          //     vendorReviewSum.value = value.reviewsSum! - ratings.value;
+          //   } else {
+          //     vendorReviewCount.value = double.parse(value.reviewsCount.toString());
+          //     vendorReviewSum.value =  double.parse(value.reviewsSum.toString());
+          //   }
+          // }
         },
       );
 
-
-      await FireStoreUtils.getVendorCategoryByCategoryId(productModel.value.categoryID.toString()).then((value) async {
+      await FireStoreUtils.getVendorCategoryByCategoryId(
+              productModel.value.categoryID.toString())
+          .then((value) async {
         if (value != null) {
-          vendorCategoryModel.value = value;
-          for (var element in vendorCategoryModel.value.reviewAttributes!) {
-            await FireStoreUtils.getVendorReviewAttribute(element).then((value) {
-              reviewAttributeList.add(value!);
-            });
-          }
+          // vendorCategoryModel.value = value;
+          // for (var element in vendorCategoryModel.value.reviewAttributes!) {
+          //   await FireStoreUtils.getVendorReviewAttribute(element).then((value) {
+          //     reviewAttributeList.add(value!);
+          //   });
+          // }
         }
       });
     }
@@ -130,7 +135,6 @@ class RateProductController extends GetxController {
     productModel.value.reviewsSum = productReviewSum.value + ratings.value;
     productModel.value.reviewAttributes = reviewProductAttributes;
 
-
     vendorModel.value.reviewsCount = vendorReviewCount.value + 1;
     vendorModel.value.reviewsSum = vendorReviewSum.value + ratings.value;
 
@@ -138,15 +142,21 @@ class RateProductController extends GetxController {
     print("=====>${vendorModel.value.reviewsCount}");
     if (reviewProductAttributes.isEmpty) {
       reviewAttribute.forEach((key, value) {
-        ReviewsAttribute reviewsAttributeModel = ReviewsAttribute(reviewsCount: 1, reviewsSum: value);
-        reviewProductAttributes.addEntries([MapEntry(key, reviewsAttributeModel.toJson())]);
+        ReviewsAttribute reviewsAttributeModel =
+            ReviewsAttribute(reviewsCount: 1, reviewsSum: value);
+        reviewProductAttributes
+            .addEntries([MapEntry(key, reviewsAttributeModel.toJson())]);
       });
     } else {
       reviewProductAttributes.forEach((key, value) {
-        ReviewsAttribute reviewsAttributeModel = ReviewsAttribute.fromJson(value);
-        reviewsAttributeModel.reviewsCount = reviewsAttributeModel.reviewsCount! + 1;
-        reviewsAttributeModel.reviewsSum = reviewsAttributeModel.reviewsSum! + reviewAttribute[key];
-        reviewProductAttributes.addEntries([MapEntry(key, reviewsAttributeModel.toJson())]);
+        ReviewsAttribute reviewsAttributeModel =
+            ReviewsAttribute.fromJson(value);
+        reviewsAttributeModel.reviewsCount =
+            reviewsAttributeModel.reviewsCount! + 1;
+        reviewsAttributeModel.reviewsSum =
+            reviewsAttributeModel.reviewsSum! + reviewAttribute[key];
+        reviewProductAttributes
+            .addEntries([MapEntry(key, reviewsAttributeModel.toJson())]);
       });
     }
 
@@ -163,18 +173,19 @@ class RateProductController extends GetxController {
     }
 
     RatingModel ratingProduct = RatingModel(
-        productId: productModel.value.id,
-        comment: commentController.value.text,
-        photos: images,
-        rating: ratings.value,
-        customerId: FireStoreUtils.getCurrentUid(),
-        id: ratingModel.value.id ?? Constant.getUuid(),
-        orderId: orderModel.value.id,
-        vendorId: productModel.value.vendorID,
-        createdAt: Timestamp.now(),
-        uname: Constant.userModel!.fullName(),
-        profile: Constant.userModel!.profilePictureURL,
-        reviewAttributes: reviewAttribute);
+      productId: productModel.value.id,
+      comment: commentController.value.text,
+      photos: images,
+      rating: ratings.value,
+      customerId: FireStoreUtils.getCurrentUid(),
+      id: ratingModel.value.id ?? Constant.getUuid(),
+      orderId: orderModel.value.id,
+      vendorId: productModel.value.vendorID,
+      createdAt: Timestamp.now(),
+      uname: Constant.userModel!.fullName(),
+      profile: Constant.userModel!.profilePictureURL,
+      reviewAttributes: reviewAttribute,
+    );
 
     await FireStoreUtils.setRatingModel(ratingProduct);
     await FireStoreUtils.updateVendor(vendorModel.value);

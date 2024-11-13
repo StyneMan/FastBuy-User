@@ -18,12 +18,17 @@ class ForgotPasswordController extends GetxController {
         ShowToastDialog.closeLoader();
         ShowToastDialog.showToast(
             'Reset Password link sent your ${emailEditingController.value.text} email');
-         Get.to(const OtpScreen(type: "email",), arguments: {
-        "countryCode": "+234",
-        "phoneNumber": "7040277958",
-        "verificationId": "1234",
-        "emailAddress": emailEditingController.value.text,
-      });
+        Get.to(
+          const OtpScreen(
+            type: "email",
+          ),
+          arguments: {
+            "countryCode": "+234",
+            "phoneNumber": "7040277958",
+            "verificationId": "1234",
+            "emailAddress": emailEditingController.value.text,
+          },
+        );
       });
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {

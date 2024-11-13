@@ -1,6 +1,5 @@
 import 'package:customer/app/auth_screen/otp_screen.dart';
 import 'package:customer/constant/show_toast_dialog.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -9,6 +8,12 @@ class PhoneNumberController extends GetxController {
       TextEditingController().obs;
   Rx<TextEditingController> countryCodeEditingController =
       TextEditingController().obs;
+
+  @override
+  void onInit() {
+    super.onInit();
+    countryCodeEditingController.value.text = '+234';
+  }
 
   sendCode() async {
     ShowToastDialog.showLoader("Please wait".tr);

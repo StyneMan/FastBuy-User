@@ -11,20 +11,23 @@ class AddressListController extends GetxController {
   List saveAsList = ['Home'.tr, 'Work'.tr, 'Hotel'.tr, 'other'.tr].obs;
   RxString selectedSaveAs = "Home".tr.obs;
 
-  Rx<TextEditingController> houseBuildingTextEditingController = TextEditingController().obs;
-  Rx<TextEditingController> localityEditingController = TextEditingController().obs;
-  Rx<TextEditingController> landmarkEditingController = TextEditingController().obs;
+  Rx<TextEditingController> houseBuildingTextEditingController =
+      TextEditingController().obs;
+  Rx<TextEditingController> localityEditingController =
+      TextEditingController().obs;
+  Rx<TextEditingController> landmarkEditingController =
+      TextEditingController().obs;
   Rx<UserLocation> location = UserLocation().obs;
   Rx<ShippingAddress> shippingModel = ShippingAddress().obs;
 
   @override
   void onInit() {
     // TODO: implement onInit
-    getUser();
+    // getUser();
     super.onInit();
   }
 
-  clearData(){
+  clearData() {
     shippingModel.value = ShippingAddress();
     houseBuildingTextEditingController.value.clear();
     localityEditingController.value.clear();
@@ -33,9 +36,10 @@ class AddressListController extends GetxController {
     selectedSaveAs.value = "Home".tr;
   }
 
-  setData(ShippingAddress shippingAddress){
+  setData(ShippingAddress shippingAddress) {
     shippingModel.value = shippingAddress;
-    houseBuildingTextEditingController.value.text = shippingAddress.address.toString();
+    houseBuildingTextEditingController.value.text =
+        shippingAddress.address.toString();
     localityEditingController.value.text = shippingAddress.locality.toString();
     landmarkEditingController.value.text = shippingAddress.landmark.toString();
     selectedSaveAs.value = shippingAddress.addressAs.toString();

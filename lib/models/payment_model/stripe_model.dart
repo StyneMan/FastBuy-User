@@ -8,11 +8,11 @@ class StripeModel {
 
   StripeModel(
       {this.stripeSecret,
-        this.clientpublishableKey,
-        this.isWithdrawEnabled,
-        this.isEnabled,
-        this.isSandboxEnabled,
-        this.stripeKey});
+      this.clientpublishableKey,
+      this.isWithdrawEnabled,
+      this.isEnabled,
+      this.isSandboxEnabled,
+      this.stripeKey});
 
   StripeModel.fromJson(Map<String, dynamic> json) {
     stripeSecret = json['stripeSecret'];

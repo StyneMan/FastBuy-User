@@ -78,7 +78,7 @@ class RestaurantDetailsController extends GetxController {
     );
     dynamic argumentData = Get.arguments;
     if (argumentData != null) {
-      vendorModel.value = argumentData['vendorModel'];
+      // vendorModel.value = argumentData['vendorModel'];
     }
     animateSlider();
     statusCheck();
@@ -86,7 +86,7 @@ class RestaurantDetailsController extends GetxController {
     await getProduct();
 
     isLoading.value = false;
-    await getFavouriteList();
+    // await getFavouriteList();
 
     update();
   }
@@ -95,8 +95,8 @@ class RestaurantDetailsController extends GetxController {
     await FireStoreUtils.getProductByVendorId(vendorModel.value.id.toString())
         .then(
       (value) {
-        allProductList.value = value;
-        productList.value = value;
+        // allProductList.value = value;
+        // productList.value = value;
       },
     );
 
@@ -105,15 +105,15 @@ class RestaurantDetailsController extends GetxController {
           .then(
         (value) {
           if (value != null) {
-            vendorCategoryList.add(value);
+            // vendorCategoryList.add(value);
           }
         },
       );
     }
-    var seen = <String>{};
-    vendorCategoryList.value = vendorCategoryList
-        .where((element) => seen.add(element.id.toString()))
-        .toList();
+    // var seen = <String>{};
+    // vendorCategoryList.value = vendorCategoryList
+    //     .where((element) => seen.add(element.id.toString()))
+    //     .toList();
   }
 
   searchProduct(String name) {
@@ -159,7 +159,7 @@ class RestaurantDetailsController extends GetxController {
     if (Constant.userModel != null) {
       await FireStoreUtils.getFavouriteRestaurant().then(
         (value) {
-          favouriteList.value = value;
+          // favouriteList.value = value;
         },
       );
 

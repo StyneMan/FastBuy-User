@@ -17,23 +17,27 @@ class EditProfileController extends GetxController {
   Rx<TextEditingController> lastNameController = TextEditingController().obs;
   Rx<TextEditingController> emailController = TextEditingController().obs;
   Rx<TextEditingController> phoneNumberController = TextEditingController().obs;
-  Rx<TextEditingController> countryCodeController = TextEditingController(text: "+91").obs;
+  Rx<TextEditingController> countryCodeController =
+      TextEditingController(text: "+91").obs;
 
   @override
   void onInit() {
-    getData();
+    // getData();
     super.onInit();
   }
 
   getData() async {
-    await FireStoreUtils.getUserProfile(FireStoreUtils.getCurrentUid()).then((value) {
+    await FireStoreUtils.getUserProfile(FireStoreUtils.getCurrentUid())
+        .then((value) {
       if (value != null) {
         userModel.value = value;
         firstNameController.value.text = userModel.value.firstName.toString();
         lastNameController.value.text = userModel.value.lastName.toString();
         emailController.value.text = userModel.value.email.toString();
-        phoneNumberController.value.text = userModel.value.phoneNumber.toString();
-        countryCodeController.value.text = userModel.value.countryCode.toString();
+        phoneNumberController.value.text =
+            userModel.value.phoneNumber.toString();
+        countryCodeController.value.text =
+            userModel.value.countryCode.toString();
         profileImage.value = userModel.value.profilePictureURL ?? "";
       }
     });
@@ -43,7 +47,8 @@ class EditProfileController extends GetxController {
 
   saveData() async {
     ShowToastDialog.showLoader("Please wait".tr);
-    if (Constant().hasValidUrl(profileImage.value) == false && profileImage.value.isNotEmpty) {
+    if (Constant().hasValidUrl(profileImage.value) == false &&
+        profileImage.value.isNotEmpty) {
       profileImage.value = await Constant.uploadUserImageToFireStorage(
         File(profileImage.value),
         "profileImage/${FireStoreUtils.getCurrentUid()}",

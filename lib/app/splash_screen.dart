@@ -15,32 +15,50 @@ class SplashScreen extends StatelessWidget {
       init: SplashController(),
       builder: (controller) {
         return Scaffold(
-          backgroundColor: AppThemeData.primary300,
+          backgroundColor: AppThemeData.primary400,
           body: Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 Image.asset("assets/images/ic_logo.png"),
-                const SizedBox(height: 10,),
+                const SizedBox(
+                  height: 10,
+                ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Text(
                       "Welcome to".tr,
-                      style: TextStyle(color: themeChange.getThem() ? AppThemeData.grey50 : AppThemeData.grey50, fontSize: 28, fontFamily: AppThemeData.bold),
+                      style: TextStyle(
+                          color: themeChange.getThem()
+                              ? AppThemeData.grey50
+                              : AppThemeData.grey50,
+                          fontSize: 28,
+                          fontFamily: AppThemeData.bold),
                     ),
-                    const SizedBox(width: 2.0,),
+                    const SizedBox(
+                      width: 2.0,
+                    ),
                     Text(
                       " FastBuy",
-                      style: TextStyle(color: themeChange.getThem() ? AppThemeData.primary500 : AppThemeData.primary500, fontSize: 28, fontFamily: AppThemeData.bold,),
+                      style: TextStyle(
+                        color: themeChange.getThem()
+                            ? AppThemeData.primary500
+                            : AppThemeData.primary500,
+                        fontSize: 28,
+                        fontFamily: AppThemeData.bold,
+                      ),
                     ),
                   ],
                 ),
                 Text(
                   "Your Food & Packages Delivered Fast!".tr,
-                  style: TextStyle(color: themeChange.getThem() ? AppThemeData.grey50 : AppThemeData.grey50),
+                  style: TextStyle(
+                      color: themeChange.getThem()
+                          ? AppThemeData.grey50
+                          : AppThemeData.grey50),
                 ),
               ],
             ),
