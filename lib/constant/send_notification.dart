@@ -22,22 +22,62 @@ class SendNotification {
     await getCharacters().then((response) {
       jsonData = json.decode(response.body);
     });
-    final serviceAccountCredentials = ServiceAccountCredentials.fromJson(jsonData);
+    final serviceAccountCredentials =
+        ServiceAccountCredentials.fromJson(jsonData);
 
-    final client = await clientViaServiceAccount(serviceAccountCredentials, _scopes);
+    final client =
+        await clientViaServiceAccount(serviceAccountCredentials, _scopes);
     return client.credentials.accessToken.data;
   }
 
-  static Future<bool> sendFcmMessage(String type, String token, Map<String, dynamic>? payload) async {
-    print(type);
+  // static Future<bool> sendFcmMessage(String type, String token, Map<String, dynamic>? payload) async {
+  //   print(type);
+  //   try {
+  //     final String accessToken = await getAccessToken();
+  //     debugPrint("token=======>");
+  //     debugPrint(token);
+  //     // NotificationModel? notificationModel = await FireStoreUtils.getNotificationContent(type);
+
+  //     final response = await http.post(
+  //       Uri.parse('https://fcm.googleapis.com/v1/projects/${Constant.senderId}/messages:send'),
+  //       headers: <String, String>{
+  //         'Content-Type': 'application/json',
+  //         'Authorization': 'Bearer $accessToken',
+  //       },
+  //       body: jsonEncode(
+  //         // <String, dynamic>{
+  //         //   'message': {
+  //         //     'token': token,
+  //         //     'notification': {'body': notificationModel!.message ??'', 'title': notificationModel.subject ?? ''},
+  //         //     'data':  payload,
+  //         //   }
+  //         // },
+  //       ),
+  //     );
+
+  //     debugPrint("Notification=======>");
+  //     debugPrint(response.statusCode.toString());
+  //     debugPrint(response.body);
+  //     return true;
+  //   } catch (e) {
+  //     debugPrint(e.toString());
+  //     return false;
+  //   }
+  // }
+
+  static sendOneNotification(
+      {required String token,
+      required String title,
+      required String body,
+      required Map<String, dynamic> payload}) async {
     try {
       final String accessToken = await getAccessToken();
       debugPrint("token=======>");
       debugPrint(token);
-      NotificationModel? notificationModel = await FireStoreUtils.getNotificationContent(type);
 
       final response = await http.post(
-        Uri.parse('https://fcm.googleapis.com/v1/projects/${Constant.senderId}/messages:send'),
+        Uri.parse(
+            'https://fcm.googleapis.com/v1/projects/${Constant.senderId}/messages:send'),
         headers: <String, String>{
           'Content-Type': 'application/json',
           'Authorization': 'Bearer $accessToken',
@@ -46,8 +86,8 @@ class SendNotification {
           <String, dynamic>{
             'message': {
               'token': token,
-              'notification': {'body': notificationModel!.message ??'', 'title': notificationModel.subject ?? ''},
-              'data':  payload,
+              'notification': {'body': body ?? '', 'title': title ?? ''},
+              'data': payload,
             }
           },
         ),
@@ -63,16 +103,13 @@ class SendNotification {
     }
   }
 
-
-
-  static sendOneNotification({required String token, required String title, required String body, required Map<String, dynamic> payload}) async {
+  static Future<bool> sendChatFcmMessage(String title, String message,
+      String token, Map<String, dynamic>? payload) async {
     try {
       final String accessToken = await getAccessToken();
-      debugPrint("token=======>");
-      debugPrint(token);
-
       final response = await http.post(
-        Uri.parse('https://fcm.googleapis.com/v1/projects/${Constant.senderId}/messages:send'),
+        Uri.parse(
+            'https://fcm.googleapis.com/v1/projects/${Constant.senderId}/messages:send'),
         headers: <String, String>{
           'Content-Type': 'application/json',
           'Authorization': 'Bearer $accessToken',
@@ -81,38 +118,8 @@ class SendNotification {
           <String, dynamic>{
             'message': {
               'token': token,
-              'notification': {'body': body ??'', 'title': title ?? ''},
-              'data':  payload,
-            }
-          },
-        ),
-      );
-
-      debugPrint("Notification=======>");
-      debugPrint(response.statusCode.toString());
-      debugPrint(response.body);
-      return true;
-    } catch (e) {
-      debugPrint(e.toString());
-      return false;
-    }
-  }
-
-  static Future<bool> sendChatFcmMessage(String title, String message, String token, Map<String, dynamic>? payload) async {
-    try {
-      final String accessToken = await getAccessToken();
-      final response = await http.post(
-        Uri.parse('https://fcm.googleapis.com/v1/projects/${Constant.senderId}/messages:send'),
-        headers: <String, String>{
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer $accessToken',
-        },
-        body: jsonEncode(
-          <String, dynamic>{
-            'message': {
-              'token': token,
-              'notification': {'body': message ??'', 'title': title?? ''},
-              'data':  payload,
+              'notification': {'body': message ?? '', 'title': title ?? ''},
+              'data': payload,
             }
           },
         ),
@@ -126,6 +133,4 @@ class SendNotification {
       return false;
     }
   }
-
-
 }

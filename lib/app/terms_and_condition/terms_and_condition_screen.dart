@@ -1,4 +1,4 @@
-import 'package:customer/constant/constant.dart';
+import 'package:customer/controllers/my_profile_controller.dart';
 import 'package:customer/themes/app_them_data.dart';
 import 'package:customer/utils/dark_theme_provider.dart';
 import 'package:flutter/material.dart';
@@ -9,15 +9,18 @@ import 'package:provider/provider.dart';
 class TermsAndConditionScreen extends StatelessWidget {
   final String? type;
 
-  const TermsAndConditionScreen({super.key, this.type});
+  TermsAndConditionScreen({super.key, this.type});
+  final profileController = Get.find<MyProfileController>();
 
   @override
   Widget build(BuildContext context) {
     final themeChange = Provider.of<DarkThemeProvider>(context);
     return Scaffold(
-      backgroundColor: themeChange.getThem() ? AppThemeData.grey50 : AppThemeData.grey50,
+      backgroundColor:
+          themeChange.getThem() ? AppThemeData.grey50 : AppThemeData.grey50,
       appBar: AppBar(
-        backgroundColor: themeChange.getThem() ? AppThemeData.grey900 : AppThemeData.grey50,
+        backgroundColor:
+            themeChange.getThem() ? AppThemeData.grey900 : AppThemeData.grey50,
         centerTitle: false,
         automaticallyImplyLeading: false,
         titleSpacing: 0,
@@ -27,18 +30,27 @@ class TermsAndConditionScreen extends StatelessWidget {
           },
           child: Icon(
             Icons.chevron_left_outlined,
-            color: themeChange.getThem() ? AppThemeData.grey50 : AppThemeData.grey900,
+            color: themeChange.getThem()
+                ? AppThemeData.grey50
+                : AppThemeData.grey900,
           ),
         ),
         title: Text(
           type == "privacy" ? "Privacy Policy".tr : "Terms & Conditions".tr,
-          style: TextStyle(color: themeChange.getThem() ? AppThemeData.grey100 : AppThemeData.grey800, fontFamily: AppThemeData.bold, fontSize: 18),
+          style: TextStyle(
+              color: themeChange.getThem()
+                  ? AppThemeData.grey100
+                  : AppThemeData.grey800,
+              fontFamily: AppThemeData.bold,
+              fontSize: 18),
         ),
         elevation: 0,
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(4.0),
           child: Container(
-            color: themeChange.getThem() ? AppThemeData.grey700 : AppThemeData.grey200,
+            color: themeChange.getThem()
+                ? AppThemeData.grey700
+                : AppThemeData.grey200,
             height: 4.0,
           ),
         ),
@@ -51,7 +63,9 @@ class TermsAndConditionScreen extends StatelessWidget {
         child: SingleChildScrollView(
           child: Html(
             shrinkWrap: true,
-            data: type == "privacy" ? Constant.privacyPolicy : Constant.termsAndConditions,
+            data: type == "privacy"
+                ? profileController.policy.value
+                : profileController.terms.value,
           ),
         ),
       ),

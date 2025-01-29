@@ -23,7 +23,9 @@ class LiveTrackingController extends GetxController {
     addMarkerSetup();
     if (Constant.selectedMapType == 'osm') {
       ShowToastDialog.showLoader("Please wait".tr);
-      mapOsmController = MapController(initPosition: GeoPoint(latitude: 20.9153, longitude: -100.7439)); //OSM
+      mapOsmController = MapController(
+        initPosition: GeoPoint(latitude: 20.9153, longitude: -100.7439),
+      ); //OSM
     }
 
     getArgument();
@@ -35,75 +37,83 @@ class LiveTrackingController extends GetxController {
   RxBool isLoading = true.obs;
 
   getArgument() async {
-    dynamic argumentData = Get.arguments;
-    if (argumentData != null) {
-      orderModel.value = argumentData['orderModel'];
-      FireStoreUtils.fireStore.collection(CollectionName.restaurantOrders).doc(orderModel.value.id).snapshots().listen((event) {
-        if (event.data() != null) {
-          OrderModel orderModelStream = OrderModel.fromJson(event.data()!);
-          orderModel.value = orderModelStream;
-          FireStoreUtils.fireStore.collection(CollectionName.users).doc(orderModel.value.driverID).snapshots().listen((event) {
-            if (event.data() != null) {
-              driverUserModel.value = UserModel.fromJson(event.data()!);
-              if (Constant.selectedMapType != 'osm') {
-                if (orderModel.value.status == Constant.orderShipped) {
-                  getPolyline(
-                      sourceLatitude: driverUserModel.value.location!.latitude,
-                      sourceLongitude: driverUserModel.value.location!.longitude,
-                      destinationLatitude: orderModel.value.vendor!.latitude,
-                      destinationLongitude: orderModel.value.vendor!.longitude);
-                } else if (orderModel.value.status == Constant.orderInTransit) {
-                  getPolyline(
-                      sourceLatitude: driverUserModel.value.location!.latitude,
-                      sourceLongitude: driverUserModel.value.location!.longitude,
-                      destinationLatitude: orderModel.value.address!.location!.latitude,
-                      destinationLongitude: orderModel.value.address!.location!.longitude);
-                } else {
-                  getPolyline(
-                      sourceLatitude: orderModel.value.address!.location!.latitude,
-                      sourceLongitude: orderModel.value.address!.location!.longitude,
-                      destinationLatitude: orderModel.value.vendor!.latitude,
-                      destinationLongitude: orderModel.value.vendor!.longitude);
-                }
-              } else {
-                if (orderModel.value.status == Constant.orderShipped) {
-                  setOsmMarker(
-                    departure: GeoPoint(latitude: driverUserModel.value.location!.latitude ?? 0.0, longitude: driverUserModel.value.location!.longitude ?? 0.0),
-                    destination: GeoPoint(latitude: orderModel.value.vendor!.latitude ?? 0.0, longitude: orderModel.value.vendor!.longitude ?? 0.0),
-                  );
-                } else if (orderModel.value.status == Constant.orderInTransit) {
-                  setOsmMarker(
-                    departure: GeoPoint(latitude: driverUserModel.value.location!.latitude ?? 0.0, longitude: driverUserModel.value.location!.longitude ?? 0.0),
-                    destination: GeoPoint(latitude: orderModel.value.address!.location!.latitude ?? 0.0, longitude: orderModel.value.address!.location!.longitude ?? 0.0),
-                  );
-                } else {
-                  setOsmMarker(
-                    departure: GeoPoint(latitude: orderModel.value.address!.location!.latitude ?? 0.0, longitude: orderModel.value.address!.location!.longitude ?? 0.0),
-                    destination: GeoPoint(latitude: orderModel.value.vendor!.latitude ?? 0.0, longitude: orderModel.value.vendor!.longitude ?? 0.0),
-                  );
-                }
-              }
-            }
-          });
+    // dynamic argumentData = Get.arguments;
+    // if (argumentData != null) {
+    //   orderModel.value = argumentData['orderModel'];
+    //   FireStoreUtils.fireStore.collection(CollectionName.restaurantOrders).doc(orderModel.value.id).snapshots().listen((event) {
+    //     if (event.data() != null) {
+    //       OrderModel orderModelStream = OrderModel.fromJson(event.data()!);
+    //       orderModel.value = orderModelStream;
+    //       FireStoreUtils.fireStore.collection(CollectionName.users).doc(orderModel.value.driverID).snapshots().listen((event) {
+    //         if (event.data() != null) {
+    //           driverUserModel.value = UserModel.fromJson(event.data()!);
+    //           if (Constant.selectedMapType != 'osm') {
+    //             if (orderModel.value.status == Constant.orderShipped) {
+    //               getPolyline(
+    //                   sourceLatitude: driverUserModel.value.location!.latitude,
+    //                   sourceLongitude: driverUserModel.value.location!.longitude,
+    //                   destinationLatitude: orderModel.value.vendor!.latitude,
+    //                   destinationLongitude: orderModel.value.vendor!.longitude);
+    //             } else if (orderModel.value.status == Constant.orderInTransit) {
+    //               getPolyline(
+    //                   sourceLatitude: driverUserModel.value.location!.latitude,
+    //                   sourceLongitude: driverUserModel.value.location!.longitude,
+    //                   destinationLatitude: orderModel.value.address!.location!.latitude,
+    //                   destinationLongitude: orderModel.value.address!.location!.longitude);
+    //             } else {
+    //               getPolyline(
+    //                   sourceLatitude: orderModel.value.address!.location!.latitude,
+    //                   sourceLongitude: orderModel.value.address!.location!.longitude,
+    //                   destinationLatitude: orderModel.value.vendor!.latitude,
+    //                   destinationLongitude: orderModel.value.vendor!.longitude);
+    //             }
+    //           } else {
+    //             if (orderModel.value.status == Constant.orderShipped) {
+    //               setOsmMarker(
+    //                 departure: GeoPoint(latitude: driverUserModel.value.location!.latitude ?? 0.0, longitude: driverUserModel.value.location!.longitude ?? 0.0),
+    //                 destination: GeoPoint(latitude: orderModel.value.vendor!.latitude ?? 0.0, longitude: orderModel.value.vendor!.longitude ?? 0.0),
+    //               );
+    //             } else if (orderModel.value.status == Constant.orderInTransit) {
+    //               setOsmMarker(
+    //                 departure: GeoPoint(latitude: driverUserModel.value.location!.latitude ?? 0.0, longitude: driverUserModel.value.location!.longitude ?? 0.0),
+    //                 destination: GeoPoint(latitude: orderModel.value.address!.location!.latitude ?? 0.0, longitude: orderModel.value.address!.location!.longitude ?? 0.0),
+    //               );
+    //             } else {
+    //               setOsmMarker(
+    //                 departure: GeoPoint(latitude: orderModel.value.address!.location!.latitude ?? 0.0, longitude: orderModel.value.address!.location!.longitude ?? 0.0),
+    //                 destination: GeoPoint(latitude: orderModel.value.vendor!.latitude ?? 0.0, longitude: orderModel.value.vendor!.longitude ?? 0.0),
+    //               );
+    //             }
+    //           }
+    //         }
+    //       });
 
-          if (orderModel.value.status == Constant.orderCompleted) {
-            Get.back();
-          }
-        }
-      });
-    }
+    //       if (orderModel.value.status == Constant.orderCompleted) {
+    //         Get.back();
+    //       }
+    //     }
+    //   });
+    // }
 
-    isLoading.value = false;
+    // isLoading.value = false;
 
-    update();
+    // update();
   }
 
   BitmapDescriptor? departureIcon;
   BitmapDescriptor? destinationIcon;
   BitmapDescriptor? driverIcon;
 
-  void getPolyline({required double? sourceLatitude, required double? sourceLongitude, required double? destinationLatitude, required double? destinationLongitude}) async {
-    if (sourceLatitude != null && sourceLongitude != null && destinationLatitude != null && destinationLongitude != null) {
+  void getPolyline({
+    required double? sourceLatitude,
+    required double? sourceLongitude,
+    required double? destinationLatitude,
+    required double? destinationLongitude,
+  }) async {
+    if (sourceLatitude != null &&
+        sourceLongitude != null &&
+        destinationLatitude != null &&
+        destinationLongitude != null) {
       List<LatLng> polylineCoordinates = [];
       PolylineRequest polylineRequest = PolylineRequest(
         origin: PointLatLng(sourceLatitude, sourceLongitude),
@@ -123,7 +133,12 @@ class LiveTrackingController extends GetxController {
         print(result.errorMessage.toString());
       }
 
-      addMarker(latitude: orderModel.value.vendor!.latitude, longitude: orderModel.value.vendor!.longitude, id: "Departure", descriptor: departureIcon!, rotation: 0.0);
+      addMarker(
+          latitude: orderModel.value.vendor!.latitude,
+          longitude: orderModel.value.vendor!.longitude,
+          id: "Departure",
+          descriptor: departureIcon!,
+          rotation: 0.0);
       addMarker(
           latitude: orderModel.value.address!.location!.latitude,
           longitude: orderModel.value.address!.location!.longitude,
@@ -143,24 +158,42 @@ class LiveTrackingController extends GetxController {
 
   RxMap<MarkerId, Marker> markers = <MarkerId, Marker>{}.obs;
 
-  addMarker({required double? latitude, required double? longitude, required String id, required BitmapDescriptor descriptor, required double? rotation}) {
+  addMarker(
+      {required double? latitude,
+      required double? longitude,
+      required String id,
+      required BitmapDescriptor descriptor,
+      required double? rotation}) {
     MarkerId markerId = MarkerId(id);
-    Marker marker = Marker(markerId: markerId, icon: descriptor, position: LatLng(latitude ?? 0.0, longitude ?? 0.0), rotation: rotation ?? 0.0);
+    Marker marker = Marker(
+        markerId: markerId,
+        icon: descriptor,
+        position: LatLng(latitude ?? 0.0, longitude ?? 0.0),
+        rotation: rotation ?? 0.0);
     markers[markerId] = marker;
   }
 
   addMarkerSetup() async {
     if (Constant.selectedMapType != 'osm') {
-      final Uint8List departure = await Constant().getBytesFromAsset('assets/images/pickup.png', 100);
-      final Uint8List destination = await Constant().getBytesFromAsset('assets/images/dropoff.png', 100);
-      final Uint8List driver = await Constant().getBytesFromAsset('assets/images/food_delivery.png', 50);
+      final Uint8List departure =
+          await Constant().getBytesFromAsset('assets/images/pickup.png', 100);
+      final Uint8List destination =
+          await Constant().getBytesFromAsset('assets/images/dropoff.png', 100);
+      final Uint8List driver = await Constant()
+          .getBytesFromAsset('assets/images/food_delivery.png', 50);
       departureIcon = BitmapDescriptor.fromBytes(departure);
       destinationIcon = BitmapDescriptor.fromBytes(destination);
       driverIcon = BitmapDescriptor.fromBytes(driver);
     } else {
-      departureOsmIcon = Image.asset("assets/images/pickup.png", width: 30, height: 30); //OSM
-      destinationOsmIcon = Image.asset("assets/images/dropoff.png", width: 30, height: 30); //OSM
-      driverOsmIcon = Image.asset("assets/images/food_delivery.png", width: 30, height: 30); //OSM
+      departureOsmIcon =
+          Image.asset("assets/images/pickup.png", width: 30, height: 30); //OSM
+      destinationOsmIcon =
+          Image.asset("assets/images/dropoff.png", width: 30, height: 30); //OSM
+      driverOsmIcon = Image.asset(
+        "assets/images/food_delivery.png",
+        width: 30,
+        height: 30,
+      ); //OSM
     }
   }
 
@@ -177,7 +210,8 @@ class LiveTrackingController extends GetxController {
       width: 6,
     );
     polyLines[id] = polyline;
-    updateCameraLocation(polylineCoordinates.first, polylineCoordinates.last, mapController);
+    updateCameraLocation(
+        polylineCoordinates.first, polylineCoordinates.last, mapController);
   }
 
   Future<void> updateCameraLocation(
@@ -189,12 +223,17 @@ class LiveTrackingController extends GetxController {
 
     LatLngBounds bounds;
 
-    if (source.latitude > destination.latitude && source.longitude > destination.longitude) {
+    if (source.latitude > destination.latitude &&
+        source.longitude > destination.longitude) {
       bounds = LatLngBounds(southwest: destination, northeast: source);
     } else if (source.longitude > destination.longitude) {
-      bounds = LatLngBounds(southwest: LatLng(source.latitude, destination.longitude), northeast: LatLng(destination.latitude, source.longitude));
+      bounds = LatLngBounds(
+          southwest: LatLng(source.latitude, destination.longitude),
+          northeast: LatLng(destination.latitude, source.longitude));
     } else if (source.latitude > destination.latitude) {
-      bounds = LatLngBounds(southwest: LatLng(destination.latitude, source.longitude), northeast: LatLng(source.latitude, destination.longitude));
+      bounds = LatLngBounds(
+          southwest: LatLng(destination.latitude, source.longitude),
+          northeast: LatLng(source.latitude, destination.longitude));
     } else {
       bounds = LatLngBounds(southwest: source, northeast: destination);
     }
@@ -204,7 +243,8 @@ class LiveTrackingController extends GetxController {
     return checkCameraLocation(cameraUpdate, mapController);
   }
 
-  Future<void> checkCameraLocation(CameraUpdate cameraUpdate, GoogleMapController mapController) async {
+  Future<void> checkCameraLocation(
+      CameraUpdate cameraUpdate, GoogleMapController mapController) async {
     mapController.animateCamera(cameraUpdate);
     LatLngBounds l1 = await mapController.getVisibleRegion();
     LatLngBounds l2 = await mapController.getVisibleRegion();
@@ -226,34 +266,45 @@ class LiveTrackingController extends GetxController {
     try {
       GeoPoint destinationLocation;
       if (orderModel.value.status == Constant.orderShipped) {
-        destinationLocation = GeoPoint(latitude: orderModel.value.vendor!.latitude ?? 0, longitude: orderModel.value.vendor!.longitude ?? 0);
+        destinationLocation = GeoPoint(
+            latitude: orderModel.value.vendor!.latitude ?? 0,
+            longitude: orderModel.value.vendor!.longitude ?? 0);
       } else {
-        destinationLocation = GeoPoint(latitude: orderModel.value.address!.location!.latitude ?? 0, longitude: orderModel.value.address!.location!.longitude ?? 0);
+        destinationLocation = GeoPoint(
+            latitude: orderModel.value.address!.location!.latitude ?? 0,
+            longitude: orderModel.value.address!.location!.longitude ?? 0);
       }
 
       await mapOsmController.removeLastRoad();
       roadInfo.value = await mapOsmController.drawRoad(
-        GeoPoint(latitude: driverUserModel.value.location!.latitude!, longitude: driverUserModel.value.location!.longitude!),
+        GeoPoint(
+            latitude: driverUserModel.value.location!.latitude!,
+            longitude: driverUserModel.value.location!.longitude!),
         destinationLocation,
         roadType: RoadType.car,
         roadOption: RoadOption(
           roadWidth: 15,
-          roadColor: AppThemeData.primary300, //themeChange ? AppColors.darkModePrimary :
+          roadColor: AppThemeData
+              .primary300, //themeChange ? AppColors.darkModePrimary :
           zoomInto: false,
         ),
       );
       mapOsmController.goToLocation(
-        GeoPoint(latitude: driverUserModel.value.location!.latitude!, longitude: driverUserModel.value.location!.longitude!),
+        GeoPoint(
+            latitude: driverUserModel.value.location!.latitude!,
+            longitude: driverUserModel.value.location!.longitude!),
       );
     } catch (e) {
       print('Error: $e');
     }
   }
 
-  Future<void> updateOSMCameraLocation({required GeoPoint source, required GeoPoint destination}) async {
+  Future<void> updateOSMCameraLocation(
+      {required GeoPoint source, required GeoPoint destination}) async {
     BoundingBox bounds;
 
-    if (source.latitude > destination.latitude && source.longitude > destination.longitude) {
+    if (source.latitude > destination.latitude &&
+        source.longitude > destination.longitude) {
       bounds = BoundingBox(
         north: source.latitude,
         south: destination.latitude,
@@ -286,21 +337,27 @@ class LiveTrackingController extends GetxController {
     await mapOsmController.zoomToBoundingBox(bounds, paddinInPixel: 100);
   }
 
-  setOsmMarker({required GeoPoint departure, required GeoPoint destination}) async {
+  setOsmMarker(
+      {required GeoPoint departure, required GeoPoint destination}) async {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (osmMarkers.containsKey('Driver')) {
         await mapOsmController.removeMarker(osmMarkers['Driver']!);
       }
 
       await mapOsmController
-          .addMarker(GeoPoint(latitude: driverUserModel.value.location!.latitude!, longitude: driverUserModel.value.location!.longitude!),
+          .addMarker(
+              GeoPoint(
+                  latitude: driverUserModel.value.location!.latitude!,
+                  longitude: driverUserModel.value.location!.longitude!),
               markerIcon: MarkerIcon(iconWidget: driverOsmIcon),
               angle: pi / 3,
               iconAnchor: IconAnchor(
                 anchor: Anchor.top,
               ))
           .then((v) {
-        osmMarkers['Driver'] = GeoPoint(latitude: driverUserModel.value.location!.latitude!, longitude: driverUserModel.value.location!.longitude!);
+        osmMarkers['Driver'] = GeoPoint(
+            latitude: driverUserModel.value.location!.latitude!,
+            longitude: driverUserModel.value.location!.longitude!);
       });
 
       if (osmMarkers.containsKey('Source')) {

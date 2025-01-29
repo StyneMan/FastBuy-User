@@ -11,13 +11,10 @@ import 'package:customer/utils/dark_theme_provider.dart';
 import 'package:customer/widget/place_picker_osm.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:geolocator/geolocator.dart';
-import 'package:get/get.dart';
 import 'package:geocoding/geocoding.dart';
+import 'package:get/get.dart';
 import 'package:map_location_picker/map_location_picker.dart';
 import 'package:provider/provider.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
-// import 'package:google_maps_place_picker_mb/google_maps_place_picker.dart';
 
 class LocationPermissionScreen extends StatelessWidget {
   const LocationPermissionScreen({super.key});
@@ -51,7 +48,7 @@ class LocationPermissionScreen extends StatelessWidget {
                         fontFamily: AppThemeData.semiBold),
                   ),
                   Text(
-                    "To provide the best dining experience, allow Foodie to access your location."
+                    "To provide the best shopping experience, allow FastBuy to access your location."
                         .tr,
                     textAlign: TextAlign.center,
                     style: TextStyle(
@@ -76,23 +73,39 @@ class LocationPermissionScreen extends StatelessWidget {
                           ShippingAddress addressModel = ShippingAddress();
                           try {
                             await Geolocator.requestPermission();
+
                             Position newLocalData =
                                 await Geolocator.getCurrentPosition(
-                                    desiredAccuracy: LocationAccuracy.high);
+                              locationSettings: const LocationSettings(
+                                accuracy: LocationAccuracy.high,
+                              ),
+                            );
 
-                            // await placemarkFromCoordinates(
-                            //         newLocalData.latitude,
-                            //         newLocalData.longitude)
-                            //     .then((valuePlaceMaker) {
-                            //   Placemark placeMark = valuePlaceMaker[0];
-                            //   addressModel.addressAs = "Home";
-                            //   addressModel.location = UserLocation(
-                            //       latitude: newLocalData.latitude,
-                            //       longitude: newLocalData.longitude);
-                            //   String currentLocation =
-                            //       "${placeMark.name}, ${placeMark.subLocality}, ${placeMark.locality}, ${placeMark.administrativeArea}, ${placeMark.postalCode}, ${placeMark.country}";
-                            //   addressModel.locality = currentLocation;
-                            // });
+                            debugPrint(
+                                "CURRENT LOCATION PICKED LAT ::: ${newLocalData.latitude}");
+                            debugPrint(
+                                "CURRENT LOCATION PICKED LNG ::: ${newLocalData.longitude}");
+
+                            // Position newLocalData =
+                            //     await Geolocator.getCurrentPosition(
+                            //         desiredAccuracy: LocationAccuracy.high);
+
+                            await placemarkFromCoordinates(
+                                    newLocalData.latitude,
+                                    newLocalData.longitude)
+                                .then((valuePlaceMaker) {
+                              Placemark placeMark = valuePlaceMaker[0];
+                              addressModel.addressAs = "Home";
+                              addressModel.location = UserLocation(
+                                latitude: newLocalData.latitude,
+                                longitude: newLocalData.longitude,
+                              );
+                              String currentLocation =
+                                  "${placeMark.name}, ${placeMark.subLocality}, ${placeMark.locality}, ${placeMark.administrativeArea}, ${placeMark.postalCode}, ${placeMark.country}";
+                              addressModel.locality = currentLocation;
+
+                              debugPrint("CURRANT LOCATE >> $currentLocation");
+                            });
 
                             // Constant.selectedLocation = addressModel;
                             ShowToastDialog.closeLoader();
@@ -187,9 +200,10 @@ class LocationPermissionScreen extends StatelessWidget {
                                     hideMoreOptions: true,
                                     hideBackButton: false,
                                     mapType: MapType.satellite,
+
                                     // usePinPointingSearch: true,
                                     // usePlaceDetailSearch: true,
-                                    zoomGesturesEnabled: true,
+                                    // zoomGesturesEnabled: true,
                                     // zoomControlsEnabled: true,
                                     // resizeToAvoidBottomInset:
                                     // false, // only works in page mode, less flickery, remove if wrong offsets
@@ -248,7 +262,7 @@ class LocationPermissionScreen extends StatelessWidget {
                           textColor: AppThemeData.grey50,
                           isRight: false,
                           onPress: () async {
-                            Get.to(const AddressListScreen())!.then(
+                            Get.to(AddressListScreen())!.then(
                               (value) {
                                 if (value != null) {
                                   // ShippingAddress addressModel = value;

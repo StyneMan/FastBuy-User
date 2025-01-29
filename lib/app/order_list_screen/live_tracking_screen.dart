@@ -19,9 +19,13 @@ class LiveTrackingScreen extends StatelessWidget {
         init: LiveTrackingController(),
         builder: (controller) {
           return Scaffold(
-            backgroundColor: themeChange.getThem() ? AppThemeData.surfaceDark : AppThemeData.surface,
+            backgroundColor: themeChange.getThem()
+                ? AppThemeData.surfaceDark
+                : AppThemeData.surface,
             appBar: AppBar(
-              backgroundColor: themeChange.getThem() ? AppThemeData.surfaceDark : AppThemeData.surface,
+              backgroundColor: themeChange.getThem()
+                  ? AppThemeData.surfaceDark
+                  : AppThemeData.surface,
               centerTitle: false,
               titleSpacing: 0,
             ),
@@ -57,7 +61,8 @@ class LiveTrackingScreen extends StatelessWidget {
                           myLocationButtonEnabled: true,
                           mapType: MapType.terrain,
                           zoomControlsEnabled: false,
-                          polylines: Set<Polyline>.of(controller.polyLines.values),
+                          polylines:
+                              Set<Polyline>.of(controller.polyLines.values),
                           padding: const EdgeInsets.only(
                             top: 22.0,
                           ),
@@ -68,8 +73,21 @@ class LiveTrackingScreen extends StatelessWidget {
                           initialCameraPosition: CameraPosition(
                             zoom: 15,
                             target: LatLng(
-                                controller.driverUserModel.value.location!.latitude != null ? controller.driverUserModel.value.location!.latitude ?? 45.521563 : 45.521563,
-                                controller.driverUserModel.value.location!.longitude != null ? controller.driverUserModel.value.location!.longitude ?? 45.521563 : 45.521563),
+                              controller.driverUserModel.value.location!
+                                          .latitude !=
+                                      null
+                                  ? controller.driverUserModel.value.location!
+                                          .latitude ??
+                                      45.521563
+                                  : 45.521563,
+                              controller.driverUserModel.value.location!
+                                          .longitude !=
+                                      null
+                                  ? controller.driverUserModel.value.location!
+                                          .longitude ??
+                                      45.521563
+                                  : 45.521563,
+                            ),
                           ),
                         ),
                       ),

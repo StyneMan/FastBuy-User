@@ -15,11 +15,11 @@ class ViewAllCategoryController extends GetxController {
   }
 
   getCategoryData() async {
-    await FireStoreUtils.getVendorCategory().then(
-      (value) {
-        // vendorCategoryModel.value = value;
-      },
-    );
+    // await FireStoreUtils.getVendorCategory().then(
+    //   (value) {
+    //     // vendorCategoryModel.value = value;
+    //   },
+    // );
     isLoading.value = false;
   }
 }

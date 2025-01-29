@@ -1,5 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-
 class VendorModel {
   String? author;
   bool? dineInActive;
@@ -21,7 +19,7 @@ class VendorModel {
   num? walletAmount;
   String? closeDineTime;
   String? zoneId;
-  Timestamp? createdAt;
+  String? createdAt;
   double? longitude;
   bool? enabledDiveInFuture;
   String? restaurantCost;
@@ -31,7 +29,7 @@ class VendorModel {
   String? phonenumber;
   List<SpecialDiscount>? specialDiscount;
   bool? specialDiscountEnable;
-  GeoPoint? coordinates;
+  String? coordinates;
   num? reviewsSum;
   num? reviewsCount;
   List<dynamic>? photos;
@@ -90,7 +88,7 @@ class VendorModel {
       json['workingHours'].forEach((v) {
         workingHours!.add(WorkingHours.fromJson(v));
       });
-    }else{
+    } else {
       workingHours = <WorkingHours>[];
     }
     location = json['location'];
@@ -98,7 +96,8 @@ class VendorModel {
     g = json['g'] != null ? G.fromJson(json['g']) : null;
     hidephotos = json['hidephotos'];
     reststatus = json['reststatus'];
-    filters = json['filters'] != null ? Filters.fromJson(json['filters']) : null;
+    filters =
+        json['filters'] != null ? Filters.fromJson(json['filters']) : null;
     reviewsCount = json['reviewsCount'] ?? 0.0;
     photo = json['photo'];
     description = json['description'];
@@ -109,7 +108,9 @@ class VendorModel {
     longitude = double.parse(json['longitude'].toString());
     enabledDiveInFuture = json['enabledDiveInFuture'];
     restaurantCost = json['restaurantCost'].toString();
-    deliveryCharge = json['DeliveryCharge'] != null ? DeliveryCharge.fromJson(json['DeliveryCharge']) : null;
+    deliveryCharge = json['DeliveryCharge'] != null
+        ? DeliveryCharge.fromJson(json['DeliveryCharge'])
+        : null;
     authorProfilePic = json['authorProfilePic'];
     authorName = json['authorName'];
     phonenumber = json['phonenumber'];
@@ -167,7 +168,8 @@ class VendorModel {
     data['authorName'] = authorName;
     data['phonenumber'] = phonenumber;
     if (specialDiscount != null) {
-      data['specialDiscount'] = specialDiscount!.map((v) => v.toJson()).toList();
+      data['specialDiscount'] =
+          specialDiscount!.map((v) => v.toJson()).toList();
     }
     data['specialDiscountEnable'] = specialDiscountEnable;
     data['coordinates'] = coordinates;
@@ -227,7 +229,7 @@ class Timeslot {
 
 class G {
   String? geohash;
-  GeoPoint? geopoint;
+  String? geopoint;
 
   G({this.geohash, this.geopoint});
 
@@ -254,7 +256,15 @@ class Filters {
   String? freeWiFi;
   String? takesReservations;
 
-  Filters({this.goodForLunch, this.outdoorSeating, this.liveMusic, this.vegetarianFriendly, this.goodForDinner, this.goodForBreakfast, this.freeWiFi, this.takesReservations});
+  Filters(
+      {this.goodForLunch,
+      this.outdoorSeating,
+      this.liveMusic,
+      this.vegetarianFriendly,
+      this.goodForDinner,
+      this.goodForBreakfast,
+      this.freeWiFi,
+      this.takesReservations});
 
   Filters.fromJson(Map<String, dynamic> json) {
     goodForLunch = json['Good for Lunch'];
@@ -287,7 +297,11 @@ class DeliveryCharge {
   num? deliveryChargesPerKm;
   bool? vendorCanModify;
 
-  DeliveryCharge({this.minimumDeliveryChargesWithinKm, this.minimumDeliveryCharges, this.deliveryChargesPerKm, this.vendorCanModify});
+  DeliveryCharge(
+      {this.minimumDeliveryChargesWithinKm,
+      this.minimumDeliveryCharges,
+      this.deliveryChargesPerKm,
+      this.vendorCanModify});
 
   DeliveryCharge.fromJson(Map<String, dynamic> json) {
     minimumDeliveryChargesWithinKm = json['minimum_delivery_charges_within_km'];
@@ -339,7 +353,8 @@ class SpecialDiscountTimeslot {
   String? type;
   String? from;
 
-  SpecialDiscountTimeslot({this.discount, this.discountType, this.to, this.type, this.from});
+  SpecialDiscountTimeslot(
+      {this.discount, this.discountType, this.to, this.type, this.from});
 
   SpecialDiscountTimeslot.fromJson(Map<String, dynamic> json) {
     discount = json['discount'];

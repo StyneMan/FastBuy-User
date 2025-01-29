@@ -1,5 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-
 class WalletTransactionModel {
   String? userId;
   String? paymentMethod;
@@ -7,7 +5,7 @@ class WalletTransactionModel {
   bool? isTopup;
   String? orderId;
   String? paymentStatus;
-  Timestamp? date;
+  String? date;
   String? id;
   String? transactionUser;
   String? note;

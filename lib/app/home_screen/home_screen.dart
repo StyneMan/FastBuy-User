@@ -2,7 +2,6 @@ import 'package:badges/badges.dart' as badges;
 import 'package:customer/app/address_screens/address_list_screen.dart';
 import 'package:customer/app/auth_screen/login_screen.dart';
 import 'package:customer/app/cart_screen/cart_screen.dart';
-import 'package:customer/app/dash_board_screens/dash_board_screen.dart';
 import 'package:customer/app/home_screen/category_restaurant_screen.dart';
 import 'package:customer/app/home_screen/discount_restaurant_list_screen.dart';
 import 'package:customer/app/home_screen/restaurant_list_screen.dart';
@@ -14,9 +13,11 @@ import 'package:customer/app/scan_qrcode_screen/scan_qr_code_screen.dart';
 import 'package:customer/app/search_screen/search_screen.dart';
 import 'package:customer/constant/constant.dart';
 import 'package:customer/constant/show_toast_dialog.dart';
+import 'package:customer/controllers/cart_controller.dart';
 import 'package:customer/controllers/dash_board_controller.dart';
 import 'package:customer/controllers/home_controller.dart';
 import 'package:customer/controllers/map_view_controller.dart';
+import 'package:customer/controllers/my_profile_controller.dart';
 import 'package:customer/models/BannerModel.dart';
 import 'package:customer/models/coupon_model.dart';
 import 'package:customer/models/favourite_model.dart';
@@ -35,7 +36,6 @@ import 'package:customer/utils/fire_store_utils.dart';
 import 'package:customer/utils/network_image_widget.dart';
 import 'package:customer/utils/preferences.dart';
 import 'package:customer/widget/place_picker_osm.dart';
-import 'package:customer/widget/restaurant_image_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:geocoding/geocoding.dart';
@@ -50,10 +50,14 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../themes/text_field_widget.dart';
 
 class HomeScreen extends StatelessWidget {
-  const HomeScreen({super.key});
+  HomeScreen({super.key});
+
+  final _profileController = Get.find<MyProfileController>();
+  final _cartController = Get.find<CartController>();
 
   @override
   Widget build(BuildContext context) {
+    debugPrint("CARTS ::: ${_cartController.cartData.value}");
     final themeChange = Provider.of<DarkThemeProvider>(context);
     return GetX(
       init: HomeController(),
@@ -173,11 +177,8 @@ class HomeScreen extends StatelessWidget {
                                         },
                                         child: ClipOval(
                                           child: NetworkImageWidget(
-                                            imageUrl: Constant.userModel == null
-                                                ? ""
-                                                : Constant.userModel!
-                                                    .profilePictureURL
-                                                    .toString(),
+                                            imageUrl:
+                                                "${_profileController.userData.value['photo_url']}",
                                             height: 40,
                                             width: 40,
                                             fit: BoxFit.cover,
@@ -201,7 +202,8 @@ class HomeScreen extends StatelessWidget {
                                           crossAxisAlignment:
                                               CrossAxisAlignment.start,
                                           children: [
-                                            Constant.userModel == null
+                                            _profileController
+                                                    .userData.value.isEmpty
                                                 ? InkWell(
                                                     onTap: () {
                                                       Get.offAll(LoginScreen());
@@ -224,7 +226,7 @@ class HomeScreen extends StatelessWidget {
                                                     ),
                                                   )
                                                 : Text(
-                                                    "${Constant.userModel!.fullName()}",
+                                                    "${_profileController.userData.value['first_name']}",
                                                     textAlign: TextAlign.center,
                                                     style: TextStyle(
                                                       fontFamily:
@@ -241,7 +243,7 @@ class HomeScreen extends StatelessWidget {
                                               onTap: () async {
                                                 if (Constant.userModel !=
                                                     null) {
-                                                  Get.to(const AddressListScreen())!
+                                                  Get.to(AddressListScreen())!
                                                       .then(
                                                     (value) {
                                                       if (value != null) {
@@ -353,8 +355,8 @@ class HomeScreen extends StatelessWidget {
                                                                       .satellite,
                                                                   // usePinPointingSearch: true,
                                                                   // usePlaceDetailSearch: true,
-                                                                  zoomGesturesEnabled:
-                                                                      true,
+                                                                  // zoomGesturesEnabled:
+                                                                  //     true,
                                                                   // zoomControlsEnabled: true,
                                                                   // resizeToAvoidBottomInset:
                                                                   // false, // only works in page mode, less flickery, remove if wrong offsets
@@ -466,10 +468,13 @@ class HomeScreen extends StatelessWidget {
                                       ),
                                       Obx(
                                         () => badges.Badge(
-                                          showBadge:
-                                              cartItem.isEmpty ? false : true,
+                                          showBadge: _cartController.cartData
+                                                      .value['totalItems'] >
+                                                  0
+                                              ? true
+                                              : false,
                                           badgeContent: Text(
-                                            "${cartItem.length}",
+                                            "${_cartController.cartData.value['totalItems']}",
                                             style: TextStyle(
                                               fontSize: 14,
                                               overflow: TextOverflow.ellipsis,
@@ -480,11 +485,11 @@ class HomeScreen extends StatelessWidget {
                                                   : AppThemeData.grey50,
                                             ),
                                           ),
-                                          badgeStyle: const badges.BadgeStyle(
-                                            shape: badges.BadgeShape.circle,
-                                            badgeColor:
-                                                AppThemeData.secondary300,
-                                          ),
+                                          // badgeStyle: const badges.BadgeStyle(
+                                          //   shape: badges.BadgeShape.circle,
+                                          //   badgeColor:
+                                          //       AppThemeData.secondary300,
+                                          // ),
                                           child: InkWell(
                                             onTap: () async {
                                               (await Get.to(
@@ -517,13 +522,12 @@ class HomeScreen extends StatelessWidget {
                                                     "assets/icons/ic_shoping_cart.svg",
                                                     colorFilter:
                                                         ColorFilter.mode(
-                                                            themeChange
-                                                                    .getThem()
-                                                                ? AppThemeData
-                                                                    .grey50
-                                                                : AppThemeData
-                                                                    .grey900,
-                                                            BlendMode.srcIn),
+                                                      themeChange.getThem()
+                                                          ? AppThemeData.grey50
+                                                          : AppThemeData
+                                                              .grey900,
+                                                      BlendMode.srcIn,
+                                                    ),
                                                   ),
                                                 ),
                                               ),
@@ -1154,9 +1158,9 @@ class PopularRestaurant extends StatelessWidget {
                             topRight: Radius.circular(16)),
                         child: Stack(
                           children: [
-                            RestaurantImageView(
-                              vendorModel: vendorModel,
-                            ),
+                            // RestaurantImageView(
+                            //   vendorModel: vendorModel,
+                            // ),
                             Container(
                               height: Responsive.height(20, context),
                               width: Responsive.width(100, context),
@@ -1176,33 +1180,33 @@ class PopularRestaurant extends StatelessWidget {
                               top: 10,
                               child: InkWell(
                                 onTap: () async {
-                                  if (controller.favouriteList
-                                      .where((p0) =>
-                                          p0.restaurantId == vendorModel.id)
-                                      .isNotEmpty) {
-                                    FavouriteModel favouriteModel =
-                                        FavouriteModel(
-                                            restaurantId: vendorModel.id,
-                                            userId:
-                                                FireStoreUtils.getCurrentUid());
-                                    controller.favouriteList.removeWhere(
-                                        (item) =>
-                                            item.restaurantId ==
-                                            vendorModel.id);
-                                    await FireStoreUtils
-                                        .removeFavouriteRestaurant(
-                                            favouriteModel);
-                                  } else {
-                                    FavouriteModel favouriteModel =
-                                        FavouriteModel(
-                                            restaurantId: vendorModel.id,
-                                            userId:
-                                                FireStoreUtils.getCurrentUid());
-                                    controller.favouriteList
-                                        .add(favouriteModel);
-                                    await FireStoreUtils.setFavouriteRestaurant(
-                                        favouriteModel);
-                                  }
+                                  // if (controller.favouriteList
+                                  //     .where((p0) =>
+                                  //         p0.restaurantId == vendorModel.id)
+                                  //     .isNotEmpty) {
+                                  //   FavouriteModel favouriteModel =
+                                  //       FavouriteModel(
+                                  //           restaurantId: vendorModel.id,
+                                  //           userId:
+                                  //               FireStoreUtils.getCurrentUid());
+                                  //   controller.favouriteList.removeWhere(
+                                  //       (item) =>
+                                  //           item.restaurantId ==
+                                  //           vendorModel.id);
+                                  //   await FireStoreUtils
+                                  //       .removeFavouriteRestaurant(
+                                  //           favouriteModel);
+                                  // } else {
+                                  //   FavouriteModel favouriteModel =
+                                  //       FavouriteModel(
+                                  //           restaurantId: vendorModel.id,
+                                  //           userId:
+                                  //               FireStoreUtils.getCurrentUid());
+                                  //   controller.favouriteList
+                                  //       .add(favouriteModel);
+                                  //   await FireStoreUtils.setFavouriteRestaurant(
+                                  //       favouriteModel);
+                                  // }
                                 },
                                 child: Obx(
                                   () => controller.favouriteList
@@ -1412,9 +1416,9 @@ class AllRestaurant extends StatelessWidget {
                             topRight: Radius.circular(16)),
                         child: Stack(
                           children: [
-                            RestaurantImageView(
-                              vendorModel: vendorModel,
-                            ),
+                            // RestaurantImageView(
+                            //   vendorModel: vendorModel,
+                            // ),
                             Container(
                               height: Responsive.height(20, context),
                               width: Responsive.width(100, context),
@@ -1434,33 +1438,33 @@ class AllRestaurant extends StatelessWidget {
                               top: 10,
                               child: InkWell(
                                 onTap: () async {
-                                  if (controller.favouriteList
-                                      .where((p0) =>
-                                          p0.restaurantId == vendorModel.id)
-                                      .isNotEmpty) {
-                                    FavouriteModel favouriteModel =
-                                        FavouriteModel(
-                                            restaurantId: vendorModel.id,
-                                            userId:
-                                                FireStoreUtils.getCurrentUid());
-                                    controller.favouriteList.removeWhere(
-                                        (item) =>
-                                            item.restaurantId ==
-                                            vendorModel.id);
-                                    await FireStoreUtils
-                                        .removeFavouriteRestaurant(
-                                            favouriteModel);
-                                  } else {
-                                    FavouriteModel favouriteModel =
-                                        FavouriteModel(
-                                            restaurantId: vendorModel.id,
-                                            userId:
-                                                FireStoreUtils.getCurrentUid());
-                                    controller.favouriteList
-                                        .add(favouriteModel);
-                                    await FireStoreUtils.setFavouriteRestaurant(
-                                        favouriteModel);
-                                  }
+                                  // if (controller.favouriteList
+                                  //     .where((p0) =>
+                                  //         p0.restaurantId == vendorModel.id)
+                                  //     .isNotEmpty) {
+                                  //   FavouriteModel favouriteModel =
+                                  //       FavouriteModel(
+                                  //           restaurantId: vendorModel.id,
+                                  //           userId:
+                                  //               FireStoreUtils.getCurrentUid());
+                                  //   controller.favouriteList.removeWhere(
+                                  //       (item) =>
+                                  //           item.restaurantId ==
+                                  //           vendorModel.id);
+                                  //   await FireStoreUtils
+                                  //       .removeFavouriteRestaurant(
+                                  //           favouriteModel);
+                                  // } else {
+                                  //   FavouriteModel favouriteModel =
+                                  //       FavouriteModel(
+                                  //           restaurantId: vendorModel.id,
+                                  //           userId:
+                                  //               FireStoreUtils.getCurrentUid());
+                                  //   controller.favouriteList
+                                  //       .add(favouriteModel);
+                                  //   await FireStoreUtils.setFavouriteRestaurant(
+                                  //       favouriteModel);
+                                  // }
                                 },
                                 child: Obx(
                                   () => controller.favouriteList
@@ -1684,33 +1688,33 @@ class NewArrival extends StatelessWidget {
                               top: 10,
                               child: InkWell(
                                 onTap: () async {
-                                  if (controller.favouriteList
-                                      .where((p0) =>
-                                          p0.restaurantId == vendorModel.id)
-                                      .isNotEmpty) {
-                                    FavouriteModel favouriteModel =
-                                        FavouriteModel(
-                                            restaurantId: vendorModel.id,
-                                            userId:
-                                                FireStoreUtils.getCurrentUid());
-                                    controller.favouriteList.removeWhere(
-                                        (item) =>
-                                            item.restaurantId ==
-                                            vendorModel.id);
-                                    await FireStoreUtils
-                                        .removeFavouriteRestaurant(
-                                            favouriteModel);
-                                  } else {
-                                    FavouriteModel favouriteModel =
-                                        FavouriteModel(
-                                            restaurantId: vendorModel.id,
-                                            userId:
-                                                FireStoreUtils.getCurrentUid());
-                                    controller.favouriteList
-                                        .add(favouriteModel);
-                                    await FireStoreUtils.setFavouriteRestaurant(
-                                        favouriteModel);
-                                  }
+                                  // if (controller.favouriteList
+                                  //     .where((p0) =>
+                                  //         p0.restaurantId == vendorModel.id)
+                                  //     .isNotEmpty) {
+                                  //   FavouriteModel favouriteModel =
+                                  //       FavouriteModel(
+                                  //           restaurantId: vendorModel.id,
+                                  //           userId:
+                                  //               FireStoreUtils.getCurrentUid());
+                                  //   controller.favouriteList.removeWhere(
+                                  //       (item) =>
+                                  //           item.restaurantId ==
+                                  //           vendorModel.id);
+                                  //   await FireStoreUtils
+                                  //       .removeFavouriteRestaurant(
+                                  //           favouriteModel);
+                                  // } else {
+                                  //   FavouriteModel favouriteModel =
+                                  //       FavouriteModel(
+                                  //           restaurantId: vendorModel.id,
+                                  //           userId:
+                                  //               FireStoreUtils.getCurrentUid());
+                                  //   controller.favouriteList
+                                  //       .add(favouriteModel);
+                                  //   await FireStoreUtils.setFavouriteRestaurant(
+                                  //       favouriteModel);
+                                  // }
                                 },
                                 child: Obx(
                                   () => controller.favouriteList
@@ -2005,47 +2009,47 @@ class BannerView extends StatelessWidget {
               BannerModel bannerModel = controller.bannerModel[index];
               return InkWell(
                 onTap: () async {
-                  if (bannerModel.redirect_type == "store") {
-                    ShowToastDialog.showLoader("Please wait".tr);
-                    VendorModel? vendorModel =
-                        await FireStoreUtils.getVendorById(
-                            bannerModel.redirect_id.toString());
+                  // if (bannerModel.redirect_type == "store") {
+                  //   ShowToastDialog.showLoader("Please wait".tr);
+                  //   VendorModel? vendorModel =
+                  //       await FireStoreUtils.getVendorById(
+                  //           bannerModel.redirect_id.toString());
 
-                    if (vendorModel!.zoneId == Constant.selectedZone!.id) {
-                      ShowToastDialog.closeLoader();
-                      Get.to(const RestaurantDetailsScreen(),
-                          arguments: {"vendorModel": vendorModel});
-                    } else {
-                      ShowToastDialog.closeLoader();
-                      ShowToastDialog.showToast(
-                          "Sorry, The Zone is not available in your area. change the other location first.");
-                    }
-                  } else if (bannerModel.redirect_type == "product") {
-                    ShowToastDialog.showLoader("Please wait".tr);
-                    ProductModel? productModel =
-                        await FireStoreUtils.getProductById(
-                            bannerModel.redirect_id.toString());
-                    VendorModel? vendorModel =
-                        await FireStoreUtils.getVendorById(
-                            productModel!.vendorID.toString());
+                  //   if (vendorModel!.zoneId == Constant.selectedZone!.id) {
+                  //     ShowToastDialog.closeLoader();
+                  //     Get.to(const RestaurantDetailsScreen(),
+                  //         arguments: {"vendorModel": vendorModel});
+                  //   } else {
+                  //     ShowToastDialog.closeLoader();
+                  //     ShowToastDialog.showToast(
+                  //         "Sorry, The Zone is not available in your area. change the other location first.");
+                  //   }
+                  // } else if (bannerModel.redirect_type == "product") {
+                  //   ShowToastDialog.showLoader("Please wait".tr);
+                  //   ProductModel? productModel =
+                  //       await FireStoreUtils.getProductById(
+                  //           bannerModel.redirect_id.toString());
+                  //   VendorModel? vendorModel =
+                  //       await FireStoreUtils.getVendorById(
+                  //           productModel!.vendorID.toString());
 
-                    if (vendorModel!.zoneId == Constant.selectedZone!.id) {
-                      ShowToastDialog.closeLoader();
-                      Get.to(const RestaurantDetailsScreen(),
-                          arguments: {"vendorModel": vendorModel});
-                    } else {
-                      ShowToastDialog.closeLoader();
-                      ShowToastDialog.showToast(
-                          "Sorry, The Zone is not available in your area. change the other location first.");
-                    }
-                  } else if (bannerModel.redirect_type == "external_link") {
-                    final uri = Uri.parse(bannerModel.redirect_id.toString());
-                    if (await canLaunchUrl(uri)) {
-                      await launchUrl(uri);
-                    } else {
-                      ShowToastDialog.showToast("Could not launch");
-                    }
-                  }
+                  //   if (vendorModel!.zoneId == Constant.selectedZone!.id) {
+                  //     ShowToastDialog.closeLoader();
+                  //     Get.to(const RestaurantDetailsScreen(),
+                  //         arguments: {"vendorModel": vendorModel});
+                  //   } else {
+                  //     ShowToastDialog.closeLoader();
+                  //     ShowToastDialog.showToast(
+                  //         "Sorry, The Zone is not available in your area. change the other location first.");
+                  //   }
+                  // } else if (bannerModel.redirect_type == "external_link") {
+                  //   final uri = Uri.parse(bannerModel.redirect_id.toString());
+                  //   if (await canLaunchUrl(uri)) {
+                  //     await launchUrl(uri);
+                  //   } else {
+                  //     ShowToastDialog.showToast("Could not launch");
+                  //   }
+                  // }
                 },
                 child: Padding(
                   padding: const EdgeInsets.only(right: 14),
@@ -2118,47 +2122,47 @@ class BannerBottomView extends StatelessWidget {
               BannerModel bannerModel = controller.bannerBottomModel[index];
               return InkWell(
                 onTap: () async {
-                  if (bannerModel.redirect_type == "store") {
-                    ShowToastDialog.showLoader("Please wait".tr);
-                    VendorModel? vendorModel =
-                        await FireStoreUtils.getVendorById(
-                            bannerModel.redirect_id.toString());
+                  // if (bannerModel.redirect_type == "store") {
+                  //   ShowToastDialog.showLoader("Please wait".tr);
+                  //   VendorModel? vendorModel =
+                  //       await FireStoreUtils.getVendorById(
+                  //           bannerModel.redirect_id.toString());
 
-                    if (vendorModel!.zoneId == Constant.selectedZone!.id) {
-                      ShowToastDialog.closeLoader();
-                      Get.to(const RestaurantDetailsScreen(),
-                          arguments: {"vendorModel": vendorModel});
-                    } else {
-                      ShowToastDialog.closeLoader();
-                      ShowToastDialog.showToast(
-                          "Sorry, The Zone is not available in your area. change the other location first.");
-                    }
-                  } else if (bannerModel.redirect_type == "product") {
-                    ShowToastDialog.showLoader("Please wait".tr);
-                    ProductModel? productModel =
-                        await FireStoreUtils.getProductById(
-                            bannerModel.redirect_id.toString());
-                    VendorModel? vendorModel =
-                        await FireStoreUtils.getVendorById(
-                            productModel!.vendorID.toString());
+                  //   if (vendorModel!.zoneId == Constant.selectedZone!.id) {
+                  //     ShowToastDialog.closeLoader();
+                  //     Get.to(const RestaurantDetailsScreen(),
+                  //         arguments: {"vendorModel": vendorModel});
+                  //   } else {
+                  //     ShowToastDialog.closeLoader();
+                  //     ShowToastDialog.showToast(
+                  //         "Sorry, The Zone is not available in your area. change the other location first.");
+                  //   }
+                  // } else if (bannerModel.redirect_type == "product") {
+                  //   ShowToastDialog.showLoader("Please wait".tr);
+                  //   ProductModel? productModel =
+                  //       await FireStoreUtils.getProductById(
+                  //           bannerModel.redirect_id.toString());
+                  //   VendorModel? vendorModel =
+                  //       await FireStoreUtils.getVendorById(
+                  //           productModel!.vendorID.toString());
 
-                    if (vendorModel!.zoneId == Constant.selectedZone!.id) {
-                      ShowToastDialog.closeLoader();
-                      Get.to(const RestaurantDetailsScreen(),
-                          arguments: {"vendorModel": vendorModel});
-                    } else {
-                      ShowToastDialog.closeLoader();
-                      ShowToastDialog.showToast(
-                          "Sorry, The Zone is not available in your area. change the other location first.");
-                    }
-                  } else if (bannerModel.redirect_type == "external_link") {
-                    final uri = Uri.parse(bannerModel.redirect_id.toString());
-                    if (await canLaunchUrl(uri)) {
-                      await launchUrl(uri);
-                    } else {
-                      ShowToastDialog.showToast("Could not launch");
-                    }
-                  }
+                  //   if (vendorModel!.zoneId == Constant.selectedZone!.id) {
+                  //     ShowToastDialog.closeLoader();
+                  //     Get.to(const RestaurantDetailsScreen(),
+                  //         arguments: {"vendorModel": vendorModel});
+                  //   } else {
+                  //     ShowToastDialog.closeLoader();
+                  //     ShowToastDialog.showToast(
+                  //         "Sorry, The Zone is not available in your area. change the other location first.");
+                  //   }
+                  // } else if (bannerModel.redirect_type == "external_link") {
+                  //   final uri = Uri.parse(bannerModel.redirect_id.toString());
+                  //   if (await canLaunchUrl(uri)) {
+                  //     await launchUrl(uri);
+                  //   } else {
+                  //     ShowToastDialog.showToast("Could not launch");
+                  //   }
+                  // }
                 },
                 child: Padding(
                   padding: const EdgeInsets.only(right: 14),
@@ -2333,90 +2337,90 @@ class StoryView extends StatelessWidget {
                       Container(
                         color: Colors.black.withOpacity(0.30),
                       ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 5, vertical: 8),
-                        child: FutureBuilder(
-                            future: FireStoreUtils.getVendorById(
-                                storyModel.vendorID.toString()),
-                            builder: (context, snapshot) {
-                              if (snapshot.connectionState ==
-                                  ConnectionState.waiting) {
-                                return Constant.loader();
-                              } else {
-                                if (snapshot.hasError) {
-                                  return Center(
-                                      child: Text('Error: ${snapshot.error}'));
-                                } else if (snapshot.data == null) {
-                                  return const SizedBox();
-                                } else {
-                                  VendorModel vendorModel = snapshot.data!;
-                                  return Row(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      ClipOval(
-                                        child: NetworkImageWidget(
-                                          imageUrl:
-                                              vendorModel.photo.toString(),
-                                          width: 30,
-                                          height: 30,
-                                          fit: BoxFit.cover,
-                                        ),
-                                      ),
-                                      const SizedBox(
-                                        width: 4,
-                                      ),
-                                      Expanded(
-                                        child: Column(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.start,
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              vendorModel.title.toString(),
-                                              textAlign: TextAlign.center,
-                                              maxLines: 1,
-                                              style: const TextStyle(
-                                                color: Colors.white,
-                                                fontSize: 12,
-                                                overflow: TextOverflow.ellipsis,
-                                                fontWeight: FontWeight.w700,
-                                              ),
-                                            ),
-                                            Row(
-                                              children: [
-                                                SvgPicture.asset(
-                                                    "assets/icons/ic_star.svg"),
-                                                const SizedBox(
-                                                  width: 5,
-                                                ),
-                                                Text(
-                                                  "${Constant.calculateReview(reviewCount: vendorModel.reviewsCount.toString(), reviewSum: vendorModel.reviewsSum!.toStringAsFixed(0))} reviews",
-                                                  textAlign: TextAlign.center,
-                                                  maxLines: 1,
-                                                  style: const TextStyle(
-                                                    color:
-                                                        AppThemeData.warning300,
-                                                    fontSize: 10,
-                                                    overflow:
-                                                        TextOverflow.ellipsis,
-                                                    fontWeight: FontWeight.w700,
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ],
-                                  );
-                                }
-                              }
-                            }),
-                      ),
+                      // Padding(
+                      //   padding: const EdgeInsets.symmetric(
+                      //       horizontal: 5, vertical: 8),
+                      //   child: FutureBuilder(
+                      //       future: FireStoreUtils.getVendorById(
+                      //           storyModel.vendorID.toString()),
+                      //       builder: (context, snapshot) {
+                      //         if (snapshot.connectionState ==
+                      //             ConnectionState.waiting) {
+                      //           return Constant.loader();
+                      //         } else {
+                      //           if (snapshot.hasError) {
+                      //             return Center(
+                      //                 child: Text('Error: ${snapshot.error}'));
+                      //           } else if (snapshot.data == null) {
+                      //             return const SizedBox();
+                      //           } else {
+                      //             VendorModel vendorModel = snapshot.data!;
+                      //             return Row(
+                      //               mainAxisAlignment: MainAxisAlignment.start,
+                      //               crossAxisAlignment:
+                      //                   CrossAxisAlignment.start,
+                      //               children: [
+                      //                 ClipOval(
+                      //                   child: NetworkImageWidget(
+                      //                     imageUrl:
+                      //                         vendorModel.photo.toString(),
+                      //                     width: 30,
+                      //                     height: 30,
+                      //                     fit: BoxFit.cover,
+                      //                   ),
+                      //                 ),
+                      //                 const SizedBox(
+                      //                   width: 4,
+                      //                 ),
+                      //                 Expanded(
+                      //                   child: Column(
+                      //                     mainAxisAlignment:
+                      //                         MainAxisAlignment.start,
+                      //                     crossAxisAlignment:
+                      //                         CrossAxisAlignment.start,
+                      //                     children: [
+                      //                       Text(
+                      //                         vendorModel.title.toString(),
+                      //                         textAlign: TextAlign.center,
+                      //                         maxLines: 1,
+                      //                         style: const TextStyle(
+                      //                           color: Colors.white,
+                      //                           fontSize: 12,
+                      //                           overflow: TextOverflow.ellipsis,
+                      //                           fontWeight: FontWeight.w700,
+                      //                         ),
+                      //                       ),
+                      //                       Row(
+                      //                         children: [
+                      //                           SvgPicture.asset(
+                      //                               "assets/icons/ic_star.svg"),
+                      //                           const SizedBox(
+                      //                             width: 5,
+                      //                           ),
+                      //                           Text(
+                      //                             "${Constant.calculateReview(reviewCount: vendorModel.reviewsCount.toString(), reviewSum: vendorModel.reviewsSum!.toStringAsFixed(0))} reviews",
+                      //                             textAlign: TextAlign.center,
+                      //                             maxLines: 1,
+                      //                             style: const TextStyle(
+                      //                               color:
+                      //                                   AppThemeData.warning300,
+                      //                               fontSize: 10,
+                      //                               overflow:
+                      //                                   TextOverflow.ellipsis,
+                      //                               fontWeight: FontWeight.w700,
+                      //                             ),
+                      //                           ),
+                      //                         ],
+                      //                       ),
+                      //                     ],
+                      //                   ),
+                      //                 ),
+                      //               ],
+                      //             );
+                      //           }
+                      //         }
+                      //       }),
+                      // ),
                     ],
                   ),
                 ),
@@ -2590,50 +2594,51 @@ class MapView extends StatelessWidget {
                                                         top: 10,
                                                         child: InkWell(
                                                           onTap: () async {
-                                                            if (controller
-                                                                .homeController
-                                                                .favouriteList
-                                                                .where((p0) =>
-                                                                    p0.restaurantId ==
-                                                                    vendorModel
-                                                                        .id)
-                                                                .isNotEmpty) {
-                                                              FavouriteModel
-                                                                  favouriteModel =
-                                                                  FavouriteModel(
-                                                                      restaurantId:
-                                                                          vendorModel
-                                                                              .id,
-                                                                      userId: FireStoreUtils
-                                                                          .getCurrentUid());
-                                                              controller
-                                                                  .homeController
-                                                                  .favouriteList
-                                                                  .removeWhere((item) =>
-                                                                      item.restaurantId ==
-                                                                      vendorModel
-                                                                          .id);
-                                                              await FireStoreUtils
-                                                                  .removeFavouriteRestaurant(
-                                                                      favouriteModel);
-                                                            } else {
-                                                              FavouriteModel
-                                                                  favouriteModel =
-                                                                  FavouriteModel(
-                                                                      restaurantId:
-                                                                          vendorModel
-                                                                              .id,
-                                                                      userId: FireStoreUtils
-                                                                          .getCurrentUid());
-                                                              controller
-                                                                  .homeController
-                                                                  .favouriteList
-                                                                  .add(
-                                                                      favouriteModel);
-                                                              await FireStoreUtils
-                                                                  .setFavouriteRestaurant(
-                                                                      favouriteModel);
-                                                            }
+                                                            // if (controller
+                                                            //     .homeController
+                                                            //     .favouriteList
+                                                            //     .where((p0) =>
+                                                            //         p0.restaurantId ==
+                                                            //         vendorModel
+                                                            //             .id)
+                                                            //     .isNotEmpty) {
+                                                            //   FavouriteModel
+                                                            //       favouriteModel =
+                                                            //       FavouriteModel(
+                                                            //     restaurantId:
+                                                            //         vendorModel
+                                                            //             .id,
+                                                            //     userId: FireStoreUtils
+                                                            //         .getCurrentUid(),
+                                                            //   );
+                                                            //   controller
+                                                            //       .homeController
+                                                            //       .favouriteList
+                                                            //       .removeWhere((item) =>
+                                                            //           item.restaurantId ==
+                                                            //           vendorModel
+                                                            //               .id);
+                                                            //   await FireStoreUtils
+                                                            //       .removeFavouriteRestaurant(
+                                                            //           favouriteModel);
+                                                            // } else {
+                                                            //   FavouriteModel
+                                                            //       favouriteModel =
+                                                            //       FavouriteModel(
+                                                            //           restaurantId:
+                                                            //               vendorModel
+                                                            //                   .id,
+                                                            //           userId: FireStoreUtils
+                                                            //               .getCurrentUid());
+                                                            //   controller
+                                                            //       .homeController
+                                                            //       .favouriteList
+                                                            //       .add(
+                                                            //           favouriteModel);
+                                                            //   await FireStoreUtils
+                                                            //       .setFavouriteRestaurant(
+                                                            //           favouriteModel);
+                                                            // }
                                                           },
                                                           child: Obx(
                                                             () => controller

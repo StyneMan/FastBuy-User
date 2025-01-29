@@ -1,7 +1,5 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-
 class ZoneModel {
-  List<GeoPoint>? area;
+  List<dynamic>? area;
   bool? publish;
   double? latitude;
   String? name;
@@ -10,15 +8,15 @@ class ZoneModel {
 
   ZoneModel(
       {this.area,
-        this.publish,
-        this.latitude,
-        this.name,
-        this.id,
-        this.longitude});
+      this.publish,
+      this.latitude,
+      this.name,
+      this.id,
+      this.longitude});
 
   ZoneModel.fromJson(Map<String, dynamic> json) {
     if (json['area'] != null) {
-      area = <GeoPoint>[];
+      area = <dynamic>[];
       json['area'].forEach((v) {
         area!.add(v);
       });

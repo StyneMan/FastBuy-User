@@ -1,6 +1,11 @@
+import 'dart:convert';
+
 import 'package:customer/app/auth_screen/otp_screen.dart';
+import 'package:customer/constant/constant.dart';
 import 'package:customer/constant/show_toast_dialog.dart';
+import 'package:customer/services/api_service.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_libphonenumber/flutter_libphonenumber.dart';
 import 'package:get/get.dart';
 
 class PhoneNumberController extends GetxController {
@@ -9,6 +14,8 @@ class PhoneNumberController extends GetxController {
   Rx<TextEditingController> countryCodeEditingController =
       TextEditingController().obs;
 
+  RxString code = "NG".obs;
+
   @override
   void onInit() {
     super.onInit();
@@ -16,41 +23,44 @@ class PhoneNumberController extends GetxController {
   }
 
   sendCode() async {
-    ShowToastDialog.showLoader("Please wait".tr);
-    Future.delayed(const Duration(seconds: 3), () {
+    try {
+      ShowToastDialog.showLoader("Please wait".tr);
+
+      final codeResp = await parse(
+        phoneNUmberEditingController.value.text,
+        region: code.value,
+      );
+      debugPrint("UEIWD ::: $codeResp");
+      Map body = {
+        "phone_number": "${codeResp['national_number']}",
+        "intl_phone_number": "${codeResp['e164']}",
+      };
+
+      final resp = await APIService().loginPhone(body);
+      debugPrint(resp.body);
       ShowToastDialog.closeLoader();
-      Get.to(const OtpScreen(), arguments: {
-        "countryCode": countryCodeEditingController.value.text,
-        "phoneNumber": phoneNUmberEditingController.value.text,
-        "verificationId": "1234",
-      });
-    });
-    // await FirebaseAuth.instance
-    //     .verifyPhoneNumber(
-    //         phoneNumber: countryCodeEditingController.value.text + phoneNUmberEditingController.value.text,
-    //         verificationCompleted: (PhoneAuthCredential credential) {},
-    //         verificationFailed: (FirebaseAuthException e) {
-    //           debugPrint("FirebaseAuthException--->${e.message}");
-    //           ShowToastDialog.closeLoader();
-    //           if (e.code == 'invalid-phone-number') {
-    //             ShowToastDialog.showToast("invalid_phone_number".tr);
-    //           } else {
-    //             ShowToastDialog.showToast(e.message);
-    //           }
-    //         },
-    //         codeSent: (String verificationId, int? resendToken) {
-    //           ShowToastDialog.closeLoader();
-    //           Get.to(const OtpScreen(), arguments: {
-    //             "countryCode": countryCodeEditingController.value.text,
-    //             "phoneNumber": phoneNUmberEditingController.value.text,
-    //             "verificationId": verificationId,
-    //           });
-    //         },
-    //         codeAutoRetrievalTimeout: (String verificationId) {})
-    //     .catchError((error) {
-    //   debugPrint("catchError--->$error");
-    //   ShowToastDialog.closeLoader();
-    //   ShowToastDialog.showToast("multiple_time_request".tr);
-    // });
+      if (resp.statusCode >= 200 && resp.statusCode <= 299) {
+        // all good here
+        Map<String, dynamic> map = jsonDecode(resp.body);
+        Constant.toast(map['message']);
+
+        Get.to(
+          OtpScreen(
+            type: "phone",
+            region: code.value,
+            phone: phoneNUmberEditingController.value.text,
+          ),
+          arguments: {
+            "emailAddress": phoneNUmberEditingController.value.text,
+          },
+        );
+      } else {
+        Map<String, dynamic> errorMap = jsonDecode(resp.body);
+        Constant.toast(errorMap['message']);
+      }
+    } catch (e) {
+      ShowToastDialog.closeLoader();
+      debugPrint(e.toString());
+    }
   }
 }

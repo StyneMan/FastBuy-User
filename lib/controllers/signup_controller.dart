@@ -1,7 +1,12 @@
+import 'dart:convert';
+
 import 'package:customer/app/auth_screen/otp_screen.dart';
+import 'package:customer/constant/constant.dart';
 import 'package:customer/constant/show_toast_dialog.dart';
 import 'package:customer/models/user_model.dart';
+import 'package:customer/services/api_service.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_libphonenumber/flutter_libphonenumber.dart';
 import 'package:get/get.dart';
 
 class SignupController extends GetxController {
@@ -25,6 +30,7 @@ class SignupController extends GetxController {
   RxBool passwordVisible = true.obs;
   RxBool conformPasswordVisible = true.obs;
 
+  RxString code = "NG".obs;
   RxString type = "".obs;
 
   Rx<UserModel> userModel = UserModel().obs;
@@ -51,25 +57,51 @@ class SignupController extends GetxController {
   }
 
   signUpWithEmailAndPassword() async {
-    signUp();
-  }
-
-  signUp() async {
-    ShowToastDialog.showLoader("Please wait".tr);
-    Future.delayed(const Duration(seconds: 3), () {
-      ShowToastDialog.closeLoader();
-      Get.to(
-        const OtpScreen(
-          type: "signup",
-        ),
-        arguments: {
-          "countryCode": countryCodeEditingController.value.text,
-          "phoneNumber": phoneNUmberEditingController.value.text,
-          "verificationId": "1234",
-          "emailAddress": emailEditingController.value.text,
-        },
+    try {
+      ShowToastDialog.showLoader("Please wait".tr);
+      final codeResp = await parse(
+        phoneNUmberEditingController.value.text,
+        region: code.value,
       );
-    });
-    ShowToastDialog.closeLoader();
+
+      Map body = {
+        "first_name": firstNameEditingController.value.text.trim(),
+        "last_name": lastNameEditingController.value.text.trim(),
+        "email_address": emailEditingController.value.text,
+        "password": passwordEditingController.value.text,
+        "intl_phone_format": "${codeResp['e164']}",
+        "phone_number": "${codeResp['national_number']}",
+        "iso_code": countryCodeEditingController.value.text,
+        "country_code": code.value,
+      };
+
+      var resp = await APIService().signup(body);
+      debugPrint(resp.body);
+      ShowToastDialog.closeLoader();
+      if (resp.statusCode >= 200 && resp.statusCode <= 299) {
+        // all good here
+        Map<String, dynamic> map = jsonDecode(resp.body);
+        Constant.toast(map['message']);
+        if (!map.containsKey('user') && map['user'] == null) {
+          // Prompt user to verify account first
+          Get.to(
+            OtpScreen(
+              type: "signup",
+              email: emailEditingController.value.text,
+            ),
+            arguments: {
+              "emailAddress": emailEditingController.value.text,
+            },
+          );
+        }
+        // Constant.toast(errorMap['message']);
+      } else {
+        Map<String, dynamic> errorMap = jsonDecode(resp.body);
+        Constant.toast(errorMap['message']);
+      }
+    } catch (e) {
+      ShowToastDialog.closeLoader();
+      debugPrint(e.toString());
+    }
   }
 }

@@ -7,6 +7,7 @@ import 'package:customer/themes/text_field_widget.dart';
 import 'package:customer/utils/dark_theme_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_libphonenumber/flutter_libphonenumber.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:provider/provider.dart';
@@ -182,6 +183,7 @@ class SignupScreen extends StatelessWidget {
                             onChanged: (value) {
                               controller.countryCodeEditingController.value
                                   .text = value.dialCode.toString();
+                              controller.code.value = value.code.toString();
                             },
                             dialogTextStyle: TextStyle(
                                 color: themeChange.getThem()
@@ -342,73 +344,10 @@ class SignupScreen extends StatelessWidget {
                           title: "Signup".tr,
                           color: AppThemeData.primary300,
                           textColor: AppThemeData.grey50,
-                          onPress: () async {
+                          onPress: () {
                             if (formkey.currentState!.validate()) {
                               controller.signUpWithEmailAndPassword();
                             }
-                            // if (controller.type.value == "mobileNumber".tr) {
-                            //   if (controller.firstNameEditingController.value.text
-                            //       .isEmpty) {
-                            //     ShowToastDialog.showToast(
-                            //         "Please enter first name".tr);
-                            //   } else if (controller
-                            //       .lastNameEditingController.value.text.isEmpty) {
-                            //     ShowToastDialog.showToast(
-                            //         "Please enter last name".tr);
-                            //   } else if (controller
-                            //       .emailEditingController.value.text.isEmpty) {
-                            //     ShowToastDialog.showToast(
-                            //         "Please enter valid email".tr);
-                            //   } else if (controller
-                            //           .passwordEditingController.value.text !=
-                            //       controller.conformPasswordEditingController
-                            //           .value.text) {
-                            //     ShowToastDialog.showToast(
-                            //         "Password and Confirm password doesn't match"
-                            //             .tr);
-                            //   } else {
-                            //     controller.signUpWithEmailAndPassword();
-                            //   }
-                            // } else {
-                            //   if (controller.firstNameEditingController.value.text
-                            //       .isEmpty) {
-                            //     ShowToastDialog.showToast(
-                            //         "Please enter first name".tr);
-                            //   } else if (controller
-                            //       .lastNameEditingController.value.text.isEmpty) {
-                            //     ShowToastDialog.showToast(
-                            //         "Please enter last name".tr);
-                            //   } else if (controller
-                            //       .emailEditingController.value.text.isEmpty) {
-                            //     ShowToastDialog.showToast(
-                            //         "Please enter valid email".tr);
-                            //   } else if (controller.passwordEditingController
-                            //           .value.text.length <
-                            //       6) {
-                            //     ShowToastDialog.showToast(
-                            //         "Please enter minimum 6 digit password".tr);
-                            //   } else if (controller
-                            //       .passwordEditingController.value.text.isEmpty) {
-                            //     ShowToastDialog.showToast(
-                            //         "Please enter password".tr);
-                            //   } else if (controller
-                            //       .conformPasswordEditingController
-                            //       .value
-                            //       .text
-                            //       .isEmpty) {
-                            //     ShowToastDialog.showToast(
-                            //         "Please enter Confirm password".tr);
-                            //   } else if (controller
-                            //           .passwordEditingController.value.text !=
-                            //       controller.conformPasswordEditingController
-                            //           .value.text) {
-                            //     ShowToastDialog.showToast(
-                            //         "Password and Confirm password doesn't match"
-                            //             .tr);
-                            //   } else {
-                            //     controller.signUpWithEmailAndPassword();
-                            //   }
-                            // }
                           },
                         ),
                       ],

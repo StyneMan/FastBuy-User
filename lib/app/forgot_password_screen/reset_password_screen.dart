@@ -9,7 +9,11 @@ import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 
 class ResetPasswordScreen extends StatelessWidget {
-  ResetPasswordScreen({super.key});
+  final String email;
+  ResetPasswordScreen({
+    super.key,
+    required this.email,
+  });
 
   var formkey = GlobalKey<FormState>();
 
@@ -28,160 +32,158 @@ class ResetPasswordScreen extends StatelessWidget {
                   ? AppThemeData.surfaceDark
                   : AppThemeData.primary50,
             ),
-            body: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-              child: Form(
-                key: formkey,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      "Reset Password".tr,
-                      style: TextStyle(
-                        color: themeChange.getThem()
-                            ? AppThemeData.grey50
-                            : AppThemeData.primary500,
-                        fontSize: 22,
-                        fontWeight: FontWeight.w900,
-                        fontFamily: AppThemeData.semiBold,
-                      ),
+            body: Form(
+              key: formkey,
+              child: ListView(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                children: [
+                  Text(
+                    "Reset Password".tr,
+                    style: TextStyle(
+                      color: themeChange.getThem()
+                          ? AppThemeData.grey50
+                          : AppThemeData.primary500,
+                      fontSize: 22,
+                      fontWeight: FontWeight.w900,
+                      fontFamily: AppThemeData.semiBold,
                     ),
-                    Text(
-                      "No worries!! We’ll send you reset instructions".tr,
-                      style: TextStyle(
-                        color: themeChange.getThem()
-                            ? AppThemeData.grey50
-                            : AppThemeData.grey500,
-                        fontSize: 16,
-                        fontFamily: AppThemeData.regular,
-                      ),
+                  ),
+                  Text(
+                    "Enter your new password here".tr,
+                    style: TextStyle(
+                      color: themeChange.getThem()
+                          ? AppThemeData.grey50
+                          : AppThemeData.grey500,
+                      fontSize: 16,
+                      fontFamily: AppThemeData.regular,
                     ),
-                    const SizedBox(
-                      height: 32,
-                    ),
-                    TextFieldWidget(
-                      title: 'New Password'.tr,
-                      controller: controller.passwordController.value,
-                      hintText: 'Enter password'.tr,
-                      obscureText: controller.passwordVisible.value,
-                      validator: (value) {
-                        if (value.toString().isEmpty) {
-                          return "Password is required";
-                        }
-                        return null;
-                      },
-                      prefix: Padding(
-                        padding: const EdgeInsets.all(12),
-                        child: SvgPicture.asset(
-                          "assets/icons/ic_lock.svg",
-                          colorFilter: ColorFilter.mode(
-                            themeChange.getThem()
-                                ? AppThemeData.grey300
-                                : AppThemeData.grey600,
-                            BlendMode.srcIn,
-                          ),
+                  ),
+                  const SizedBox(
+                    height: 32,
+                  ),
+                  TextFieldWidget(
+                    title: 'New Password'.tr,
+                    controller: controller.passwordController.value,
+                    hintText: 'Enter password'.tr,
+                    obscureText: controller.passwordVisible.value,
+                    validator: (value) {
+                      if (value.toString().isEmpty) {
+                        return "Password is required";
+                      }
+                      return null;
+                    },
+                    prefix: Padding(
+                      padding: const EdgeInsets.all(12),
+                      child: SvgPicture.asset(
+                        "assets/icons/ic_lock.svg",
+                        colorFilter: ColorFilter.mode(
+                          themeChange.getThem()
+                              ? AppThemeData.grey300
+                              : AppThemeData.grey600,
+                          BlendMode.srcIn,
                         ),
                       ),
-                      suffix: Padding(
-                        padding: const EdgeInsets.all(12),
-                        child: InkWell(
-                          onTap: () {
-                            controller.passwordVisible.value =
-                                !controller.passwordVisible.value;
-                          },
-                          child: controller.passwordVisible.value
-                              ? SvgPicture.asset(
-                                  "assets/icons/ic_password_show.svg",
-                                  colorFilter: ColorFilter.mode(
-                                    themeChange.getThem()
-                                        ? AppThemeData.grey300
-                                        : AppThemeData.grey600,
-                                    BlendMode.srcIn,
-                                  ),
-                                )
-                              : SvgPicture.asset(
-                                  "assets/icons/ic_password_close.svg",
-                                  colorFilter: ColorFilter.mode(
-                                    themeChange.getThem()
-                                        ? AppThemeData.grey300
-                                        : AppThemeData.grey600,
-                                    BlendMode.srcIn,
-                                  ),
+                    ),
+                    suffix: Padding(
+                      padding: const EdgeInsets.all(12),
+                      child: InkWell(
+                        onTap: () {
+                          controller.passwordVisible.value =
+                              !controller.passwordVisible.value;
+                        },
+                        child: controller.passwordVisible.value
+                            ? SvgPicture.asset(
+                                "assets/icons/ic_password_show.svg",
+                                colorFilter: ColorFilter.mode(
+                                  themeChange.getThem()
+                                      ? AppThemeData.grey300
+                                      : AppThemeData.grey600,
+                                  BlendMode.srcIn,
                                 ),
-                        ),
-                      ),
-                    ),
-                    TextFieldWidget(
-                      title: 'Confirm Password'.tr,
-                      controller: controller.confirmpasswordController.value,
-                      hintText: 'Enter password'.tr,
-                      obscureText: controller.confirmPasswordVisible.value,
-                      validator: (value) {
-                        if (value.toString().isEmpty) {
-                          return "Password confirmation is required";
-                        }
-                        if (value.toString() !=
-                            controller.passwordController.value.text) {
-                          return "Password does not match!";
-                        }
-                        return null;
-                      },
-                      prefix: Padding(
-                        padding: const EdgeInsets.all(12),
-                        child: SvgPicture.asset(
-                          "assets/icons/ic_lock.svg",
-                          colorFilter: ColorFilter.mode(
-                            themeChange.getThem()
-                                ? AppThemeData.grey300
-                                : AppThemeData.grey600,
-                            BlendMode.srcIn,
-                          ),
-                        ),
-                      ),
-                      suffix: Padding(
-                        padding: const EdgeInsets.all(12),
-                        child: InkWell(
-                          onTap: () {
-                            controller.confirmPasswordVisible.value =
-                                !controller.confirmPasswordVisible.value;
-                          },
-                          child: controller.confirmPasswordVisible.value
-                              ? SvgPicture.asset(
-                                  "assets/icons/ic_password_show.svg",
-                                  colorFilter: ColorFilter.mode(
-                                    themeChange.getThem()
-                                        ? AppThemeData.grey300
-                                        : AppThemeData.grey600,
-                                    BlendMode.srcIn,
-                                  ),
-                                )
-                              : SvgPicture.asset(
-                                  "assets/icons/ic_password_close.svg",
-                                  colorFilter: ColorFilter.mode(
-                                    themeChange.getThem()
-                                        ? AppThemeData.grey300
-                                        : AppThemeData.grey600,
-                                    BlendMode.srcIn,
-                                  ),
+                              )
+                            : SvgPicture.asset(
+                                "assets/icons/ic_password_close.svg",
+                                colorFilter: ColorFilter.mode(
+                                  themeChange.getThem()
+                                      ? AppThemeData.grey300
+                                      : AppThemeData.grey600,
+                                  BlendMode.srcIn,
                                 ),
+                              ),
+                      ),
+                    ),
+                  ),
+                  TextFieldWidget(
+                    title: 'Confirm Password'.tr,
+                    controller: controller.confirmpasswordController.value,
+                    hintText: 'Enter password'.tr,
+                    obscureText: controller.confirmPasswordVisible.value,
+                    validator: (value) {
+                      if (value.toString().isEmpty) {
+                        return "Password confirmation is required";
+                      }
+                      if (value.toString() !=
+                          controller.passwordController.value.text) {
+                        return "Password does not match!";
+                      }
+                      return null;
+                    },
+                    prefix: Padding(
+                      padding: const EdgeInsets.all(12),
+                      child: SvgPicture.asset(
+                        "assets/icons/ic_lock.svg",
+                        colorFilter: ColorFilter.mode(
+                          themeChange.getThem()
+                              ? AppThemeData.grey300
+                              : AppThemeData.grey600,
+                          BlendMode.srcIn,
                         ),
                       ),
                     ),
-                    const SizedBox(
-                      height: 32,
+                    suffix: Padding(
+                      padding: const EdgeInsets.all(12),
+                      child: InkWell(
+                        onTap: () {
+                          controller.confirmPasswordVisible.value =
+                              !controller.confirmPasswordVisible.value;
+                        },
+                        child: controller.confirmPasswordVisible.value
+                            ? SvgPicture.asset(
+                                "assets/icons/ic_password_show.svg",
+                                colorFilter: ColorFilter.mode(
+                                  themeChange.getThem()
+                                      ? AppThemeData.grey300
+                                      : AppThemeData.grey600,
+                                  BlendMode.srcIn,
+                                ),
+                              )
+                            : SvgPicture.asset(
+                                "assets/icons/ic_password_close.svg",
+                                colorFilter: ColorFilter.mode(
+                                  themeChange.getThem()
+                                      ? AppThemeData.grey300
+                                      : AppThemeData.grey600,
+                                  BlendMode.srcIn,
+                                ),
+                              ),
+                      ),
                     ),
-                    RoundedButtonFill(
-                      title: "Reset Password".tr,
-                      color: AppThemeData.primary300,
-                      textColor: AppThemeData.grey50,
-                      onPress: () {
-                        if (formkey.currentState!.validate()) {
-                          controller.resetPassword();
-                        }
-                      },
-                    ),
-                  ],
-                ),
+                  ),
+                  const SizedBox(
+                    height: 32,
+                  ),
+                  RoundedButtonFill(
+                    title: "Reset Password".tr,
+                    color: AppThemeData.primary300,
+                    textColor: AppThemeData.grey50,
+                    onPress: () {
+                      if (formkey.currentState!.validate()) {
+                        controller.resetPassword(email: email);
+                      }
+                    },
+                  ),
+                ],
               ),
             ),
           );

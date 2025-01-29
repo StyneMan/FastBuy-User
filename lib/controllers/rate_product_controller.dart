@@ -1,6 +1,5 @@
 import 'dart:io';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:customer/constant/constant.dart';
 import 'package:customer/constant/show_toast_dialog.dart';
 import 'package:customer/models/order_model.dart';
@@ -54,76 +53,76 @@ class RateProductController extends GetxController {
       orderModel.value = argumentData['orderModel'];
       productId.value = argumentData['productId'];
 
-      await FireStoreUtils.getOrderReviewsByID(
-              orderModel.value.id.toString(), productId.value)
-          .then(
-        (value) {
-          if (value != null) {
-            ratingModel.value = value;
-            ratings.value = value.rating ?? 0.0;
-            commentController.value.text = value.comment.toString();
-            reviewAttribute.value = value.reviewAttributes!;
-            images.addAll(value.photos ?? []);
-          }
-        },
-      );
+      // await FireStoreUtils.getOrderReviewsByID(
+      //         orderModel.value.id.toString(), productId.value)
+      //     .then(
+      //   (value) {
+      //     if (value != null) {
+      //       ratingModel.value = value;
+      //       ratings.value = value.rating ?? 0.0;
+      //       commentController.value.text = value.comment.toString();
+      //       reviewAttribute.value = value.reviewAttributes!;
+      //       images.addAll(value.photos ?? []);
+      //     }
+      //   },
+      // );
 
-      await FireStoreUtils.getProductById(productId.value.split('~').first)
-          .then(
-        (value) {
-          // if (value != null) {
-          //   productModel.value = value;
-          //   if (ratingModel.value.id != null) {
-          //     productReviewCount.value = value.reviewsCount! - 1;
-          //     productReviewSum.value = value.reviewsSum! - ratings.value;
+      // await FireStoreUtils.getProductById(productId.value.split('~').first)
+      //     .then(
+      //   (value) {
+      //     // if (value != null) {
+      //   productModel.value = value;
+      //   if (ratingModel.value.id != null) {
+      //     productReviewCount.value = value.reviewsCount! - 1;
+      //     productReviewSum.value = value.reviewsSum! - ratings.value;
 
-          //     if (value.reviewAttributes != null) {
-          //       value.reviewAttributes!.forEach((key, value) {
-          //         ReviewsAttribute reviewsAttributeModel = ReviewsAttribute.fromJson(value);
-          //         reviewsAttributeModel.reviewsCount = reviewsAttributeModel.reviewsCount! - 1;
-          //         reviewsAttributeModel.reviewsSum = reviewsAttributeModel.reviewsSum! - reviewAttribute[key];
-          //         reviewProductAttributes.addEntries([MapEntry(key, reviewsAttributeModel.toJson())]);
-          //       });
-          //     }
-          //   } else {
-          //     productReviewCount.value = double.parse(value.reviewsCount.toString());
-          //     productReviewSum.value =  double.parse(value.reviewsSum.toString());
-          //     if(value.reviewAttributes != null){
-          //       reviewProductAttributes.value = value.reviewAttributes!;
-          //     }
-          //   }
-          // }
-        },
-      );
+      //     if (value.reviewAttributes != null) {
+      //       value.reviewAttributes!.forEach((key, value) {
+      //         ReviewsAttribute reviewsAttributeModel = ReviewsAttribute.fromJson(value);
+      //         reviewsAttributeModel.reviewsCount = reviewsAttributeModel.reviewsCount! - 1;
+      //         reviewsAttributeModel.reviewsSum = reviewsAttributeModel.reviewsSum! - reviewAttribute[key];
+      //         reviewProductAttributes.addEntries([MapEntry(key, reviewsAttributeModel.toJson())]);
+      //       });
+      //     }
+      //   } else {
+      //     productReviewCount.value = double.parse(value.reviewsCount.toString());
+      //     productReviewSum.value =  double.parse(value.reviewsSum.toString());
+      //     if(value.reviewAttributes != null){
+      //       reviewProductAttributes.value = value.reviewAttributes!;
+      //     }
+      //   }
+      // }
+      //   },
+      // );
 
-      await FireStoreUtils.getVendorById(productModel.value.vendorID.toString())
-          .then(
-        (value) {
-          // if (value != null) {
-          //   vendorModel.value = value;
-          //   if (ratingModel.value.id != null) {
-          //     vendorReviewCount.value = value.reviewsCount! - 1;
-          //     vendorReviewSum.value = value.reviewsSum! - ratings.value;
-          //   } else {
-          //     vendorReviewCount.value = double.parse(value.reviewsCount.toString());
-          //     vendorReviewSum.value =  double.parse(value.reviewsSum.toString());
-          //   }
-          // }
-        },
-      );
+      // await FireStoreUtils.getVendorById(productModel.value.vendorID.toString())
+      //     .then(
+      //   (value) {
+      //     // if (value != null) {
+      //     //   vendorModel.value = value;
+      //     //   if (ratingModel.value.id != null) {
+      //     //     vendorReviewCount.value = value.reviewsCount! - 1;
+      //     //     vendorReviewSum.value = value.reviewsSum! - ratings.value;
+      //     //   } else {
+      //     //     vendorReviewCount.value = double.parse(value.reviewsCount.toString());
+      //     //     vendorReviewSum.value =  double.parse(value.reviewsSum.toString());
+      //     //   }
+      //     // }
+      //   },
+      // );
 
-      await FireStoreUtils.getVendorCategoryByCategoryId(
-              productModel.value.categoryID.toString())
-          .then((value) async {
-        if (value != null) {
-          // vendorCategoryModel.value = value;
-          // for (var element in vendorCategoryModel.value.reviewAttributes!) {
-          //   await FireStoreUtils.getVendorReviewAttribute(element).then((value) {
-          //     reviewAttributeList.add(value!);
-          //   });
-          // }
-        }
-      });
+      // await FireStoreUtils.getVendorCategoryByCategoryId(
+      //         productModel.value.categoryID.toString())
+      //     .then((value) async {
+      //   if (value != null) {
+      //     // vendorCategoryModel.value = value;
+      //     // for (var element in vendorCategoryModel.value.reviewAttributes!) {
+      //     //   await FireStoreUtils.getVendorReviewAttribute(element).then((value) {
+      //     //     reviewAttributeList.add(value!);
+      //     //   });
+      //     // }
+      //   }
+      // });
     }
 
     isLoading.value = false;
@@ -162,13 +161,13 @@ class RateProductController extends GetxController {
 
     for (int i = 0; i < images.length; i++) {
       if (images[i].runtimeType == XFile) {
-        String url = await Constant.uploadUserImageToFireStorage(
-          File(images[i].path),
-          "profileImage/${FireStoreUtils.getCurrentUid()}",
-          File(images[i].path).path.split('/').last,
-        );
+        // String url = await Constant.uploadUserImageToFireStorage(
+        //   File(images[i].path),
+        //   "profileImage/${FireStoreUtils.getCurrentUid()}",
+        //   File(images[i].path).path.split('/').last,
+        // );
         images.removeAt(i);
-        images.insert(i, url);
+        // images.insert(i, url);
       }
     }
 
@@ -177,19 +176,19 @@ class RateProductController extends GetxController {
       comment: commentController.value.text,
       photos: images,
       rating: ratings.value,
-      customerId: FireStoreUtils.getCurrentUid(),
+      // customerId: FireStoreUtils.getCurrentUid(),
       id: ratingModel.value.id ?? Constant.getUuid(),
       orderId: orderModel.value.id,
       vendorId: productModel.value.vendorID,
-      createdAt: Timestamp.now(),
+      // createdAt: Timestamp.now(),
       uname: Constant.userModel!.fullName(),
       profile: Constant.userModel!.profilePictureURL,
       reviewAttributes: reviewAttribute,
     );
 
-    await FireStoreUtils.setRatingModel(ratingProduct);
-    await FireStoreUtils.updateVendor(vendorModel.value);
-    await FireStoreUtils.setProduct(productModel.value);
+    // await FireStoreUtils.setRatingModel(ratingProduct);
+    // await FireStoreUtils.updateVendor(vendorModel.value);
+    // await FireStoreUtils.setProduct(productModel.value);
     ShowToastDialog.closeLoader();
     Get.back();
   }

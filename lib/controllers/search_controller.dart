@@ -1,6 +1,9 @@
+import 'dart:convert';
+
 import 'package:customer/models/product_model.dart';
 import 'package:customer/models/vendor_model.dart';
-import 'package:customer/utils/fire_store_utils.dart';
+import 'package:customer/services/api_service.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 
 class SearchScreenController extends GetxController {
@@ -13,10 +16,10 @@ class SearchScreenController extends GetxController {
 
   RxBool isLoading = true.obs;
   RxList<VendorModel> vendorList = <VendorModel>[].obs;
-  RxList<VendorModel> vendorSearchList = <VendorModel>[].obs;
+  RxList vendorSearchList = [].obs;
 
   RxList<ProductModel> productList = <ProductModel>[].obs;
-  RxList<ProductModel> productSearchList = <ProductModel>[].obs;
+  RxList productSearchList = [].obs;
 
   getArgument() async {
     dynamic argumentData = Get.arguments;
@@ -26,30 +29,30 @@ class SearchScreenController extends GetxController {
     isLoading.value = false;
 
     for (var element in vendorList) {
-      await FireStoreUtils.getProductByVendorId(element.id.toString()).then(
-        (value) {
-          // productList.addAll(value);
-        },
-      );
+      // await FireStoreUtils.getProductByVendorId(element.id.toString()).then(
+      //   (value) {
+      //     // productList.addAll(value);
+      //   },
+      // );
     }
   }
 
-  onSearchTextChanged(String text) {
+  onSearchTextChanged(String text) async {
     if (text.isEmpty) {
       return;
     }
-    vendorSearchList.clear();
-    productSearchList.clear();
-    for (var element in vendorList) {
-      if (element.title!.toLowerCase().contains(text.toLowerCase())) {
-        vendorSearchList.add(element);
+    try {
+      final response = await APIService().searcher(
+        key: text,
+      );
+      debugPrint("RESPONSE HERE ::: ${response.body}");
+      if (response.statusCode >= 200 && response.statusCode <= 299) {
+        Map<String, dynamic> map = jsonDecode(response.body);
+        vendorSearchList.value = map['vendors'];
+        productSearchList.value = map['products'];
       }
-    }
-
-    for (var element in productList) {
-      if (element.name!.toLowerCase().contains(text.toLowerCase())) {
-        productSearchList.add(element);
-      }
+    } catch (e) {
+      debugPrint("$e");
     }
   }
 

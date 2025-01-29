@@ -1,5 +1,7 @@
+import 'dart:convert';
+
 import 'package:customer/constant/show_toast_dialog.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:customer/services/api_service.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -11,7 +13,7 @@ class OtpController extends GetxController {
   RxString emailAddress = "".obs;
   RxString verificationId = "".obs;
   RxInt resendToken = 0.obs;
-  RxBool isLoading = true.obs;
+  RxBool isLoading = false.obs;
 
   @override
   void onInit() {
@@ -21,6 +23,7 @@ class OtpController extends GetxController {
 
   getArgument() async {
     dynamic argumentData = Get.arguments;
+
     if (argumentData != null) {
       countryCode.value = argumentData['countryCode'];
       phoneNumber.value = argumentData['phoneNumber'];
@@ -31,29 +34,51 @@ class OtpController extends GetxController {
     update();
   }
 
-  Future<bool> sendOTP() async {
-    isLoading.value = true;
-    Future.delayed(const Duration(seconds: 2), () {
-      isLoading.value = false;
-      ShowToastDialog.showToast("OTP sent");
-    });
+  sendOTP() async {
+    try {
+      isLoading.value = true;
+      Map body = {
+        "email_address": emailAddress.value,
+      };
 
-    isLoading.value = false;
-    // await FirebaseAuth.instance.verifyPhoneNumber(
-    //   phoneNumber: countryCode.value + phoneNumber.value,
-    //   verificationCompleted: (PhoneAuthCredential credential) {},
-    //   verificationFailed: (FirebaseAuthException e) {},
-    //   codeSent: (String verificationId0, int? resendToken0) async {
-    //     verificationId.value = verificationId0;
-    //     resendToken.value = resendToken0!;
-    //     ShowToastDialog.showToast("OTP sent");
-    //   },
-    //   timeout: const Duration(seconds: 25),
-    //   forceResendingToken: resendToken.value,
-    //   codeAutoRetrievalTimeout: (String verificationId0) {
-    //     verificationId0 = verificationId.value;
-    //   },
-    // );
-    return true;
+      final resp = await APIService().sendOTP(body: body);
+      debugPrint(resp.body);
+      isLoading.value = false;
+      if (resp.statusCode >= 200 && resp.statusCode <= 299) {
+        Map<String, dynamic> map = jsonDecode(resp.body);
+        ShowToastDialog.showToast(map['message']);
+      } else {
+        Map<String, dynamic> errMap = jsonDecode(resp.body);
+        ShowToastDialog.showToast(errMap['message']);
+      }
+    } catch (e) {
+      isLoading.value = false;
+      debugPrint(e.toString());
+    }
+  }
+
+  verifyOTP() async {
+    try {
+      isLoading.value = true;
+      Map body = {
+        "email_address": emailAddress.value,
+        "code": otpController.value.text,
+        "use_case": "account_verification"
+      };
+
+      final resp = await APIService().verifyOTP(body: body);
+      debugPrint(resp.body);
+      isLoading.value = false;
+      if (resp.statusCode >= 200 && resp.statusCode <= 299) {
+        Map<String, dynamic> map = jsonDecode(resp.body);
+        ShowToastDialog.showToast(map['message']);
+      } else {
+        Map<String, dynamic> errMap = jsonDecode(resp.body);
+        ShowToastDialog.showToast(errMap['message']);
+      }
+    } catch (e) {
+      isLoading.value = false;
+      debugPrint(e.toString());
+    }
   }
 }

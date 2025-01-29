@@ -2,10 +2,7 @@ import 'package:customer/app/auth_screen/login_screen.dart';
 import 'package:customer/app/change%20langauge/change_language_screen.dart';
 import 'package:customer/app/chat_screens/driver_inbox_screen.dart';
 import 'package:customer/app/chat_screens/restaurant_inbox_screen.dart';
-import 'package:customer/app/dine_in_booking/dine_in_booking_screen.dart';
-import 'package:customer/app/dine_in_screeen/dine_in_screen.dart';
 import 'package:customer/app/edit_profile_screen/edit_profile_screen.dart';
-import 'package:customer/app/gift_card/gift_card_screen.dart';
 import 'package:customer/app/refer_friend_screen/refer_friend_screen.dart';
 import 'package:customer/app/terms_and_condition/terms_and_condition_screen.dart';
 import 'package:customer/constant/constant.dart';
@@ -15,9 +12,7 @@ import 'package:customer/themes/app_them_data.dart';
 import 'package:customer/themes/custom_dialog_box.dart';
 import 'package:customer/themes/responsive.dart';
 import 'package:customer/utils/dark_theme_provider.dart';
-import 'package:customer/utils/fire_store_utils.dart';
 import 'package:customer/utils/preferences.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -43,7 +38,8 @@ class ProfileScreen extends StatelessWidget {
                 ? Constant.loader()
                 : Padding(
                     padding: EdgeInsets.only(
-                        top: MediaQuery.of(context).viewPadding.top),
+                      top: MediaQuery.of(context).viewPadding.top,
+                    ),
                     child: SingleChildScrollView(
                       child: Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -101,88 +97,33 @@ class ProfileScreen extends StatelessWidget {
                               ),
                               child: Padding(
                                 padding: const EdgeInsets.symmetric(
-                                    horizontal: 10, vertical: 8),
+                                  horizontal: 10,
+                                  vertical: 8,
+                                ),
                                 child: Column(
                                   children: [
-                                    Constant.userModel == null
+                                    controller.userData.value.isEmpty
                                         ? const SizedBox()
                                         : cardDecoration(
                                             themeChange,
                                             controller,
                                             "assets/images/ic_profile.svg",
-                                            "Profile Information".tr, () {
-                                            Get.to(const EditProfileScreen());
-                                          }),
-                                    cardDecoration(
-                                        themeChange,
-                                        controller,
-                                        "assets/images/ic_dinin.svg",
-                                        "Dine-In".tr, () {
-                                      Get.to(const DineInScreen());
-                                    }),
+                                            "Profile Information".tr,
+                                            () {
+                                              Get.to(const EditProfileScreen());
+                                            },
+                                          ),
                                     cardDecoration(
                                         themeChange,
                                         controller,
                                         "assets/images/ic_gift.svg",
                                         "Gift Card".tr, () {
-                                      Get.to(const GiftCardScreen());
+                                      // Get.to(const GiftCardScreen());
                                     }),
                                   ],
                                 ),
                               ),
                             ),
-                            const SizedBox(
-                              height: 20,
-                            ),
-                            Constant.userModel == null
-                                ? const SizedBox()
-                                : Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        "Bookings Information".tr,
-                                        style: TextStyle(
-                                          fontSize: 12,
-                                          color: themeChange.getThem()
-                                              ? AppThemeData.grey400
-                                              : AppThemeData.grey500,
-                                          fontFamily: AppThemeData.semiBold,
-                                          fontWeight: FontWeight.w500,
-                                        ),
-                                      ),
-                                      const SizedBox(
-                                        height: 10,
-                                      ),
-                                      Container(
-                                        width: Responsive.width(100, context),
-                                        decoration: ShapeDecoration(
-                                          color: themeChange.getThem()
-                                              ? AppThemeData.grey900
-                                              : AppThemeData.grey50,
-                                          shape: RoundedRectangleBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(8)),
-                                        ),
-                                        child: Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                              horizontal: 10, vertical: 5),
-                                          child: Column(
-                                            children: [
-                                              cardDecoration(
-                                                  themeChange,
-                                                  controller,
-                                                  "assets/icons/ic_dinin_order.svg",
-                                                  "Dine-In Booking".tr, () {
-                                                Get.to(
-                                                    const DineInBookingScreen());
-                                              }),
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
                             const SizedBox(
                               height: 10,
                             ),
@@ -343,19 +284,19 @@ class ProfileScreen extends StatelessWidget {
                                                   themeChange,
                                                   controller,
                                                   "assets/icons/ic_restaurant_chat.svg",
-                                                  "Restaurant Inbox", () {
-                                                // Get.to(
-                                                //   const RestaurantInboxScreen(),
-                                                // );
+                                                  "Vendor Inbox", () {
+                                                Get.to(
+                                                  const RestaurantInboxScreen(),
+                                                );
                                               }),
                                               cardDecoration(
                                                   themeChange,
                                                   controller,
                                                   "assets/icons/ic_restaurant_driver.svg",
-                                                  "Driver Inbox", () {
-                                                // Get.to(
-                                                //   const DriverInboxScreen(),
-                                                // );
+                                                  "Rider Inbox", () {
+                                                Get.to(
+                                                  const DriverInboxScreen(),
+                                                );
                                               }),
                                             ],
                                           ),
@@ -399,7 +340,7 @@ class ProfileScreen extends StatelessWidget {
                                         controller,
                                         "assets/icons/ic_privacy_policy.svg",
                                         "Privacy Policy", () {
-                                      Get.to(const TermsAndConditionScreen(
+                                      Get.to(TermsAndConditionScreen(
                                         type: "privacy",
                                       ));
                                     }),
@@ -408,7 +349,7 @@ class ProfileScreen extends StatelessWidget {
                                         controller,
                                         "assets/icons/ic_tearm_condition.svg",
                                         "Terms and Conditions", () {
-                                      Get.to(const TermsAndConditionScreen(
+                                      Get.to(TermsAndConditionScreen(
                                         type: "termAndCondition",
                                       ));
                                     }),
@@ -504,24 +445,24 @@ class ProfileScreen extends StatelessWidget {
                                                 positiveString: "Delete".tr,
                                                 negativeString: "Cancel".tr,
                                                 positiveClick: () async {
-                                                  ShowToastDialog.showLoader(
-                                                      "Please wait".tr);
-                                                  await FireStoreUtils
-                                                          .deleteUser()
-                                                      .then((value) {
-                                                    ShowToastDialog
-                                                        .closeLoader();
-                                                    if (value == true) {
-                                                      ShowToastDialog.showToast(
-                                                          "Account deleted successfully"
-                                                              .tr);
-                                                      Get.offAll(LoginScreen());
-                                                    } else {
-                                                      ShowToastDialog.showToast(
-                                                          "Contact Administrator"
-                                                              .tr);
-                                                    }
-                                                  });
+                                                  // ShowToastDialog.showLoader(
+                                                  //     "Please wait".tr);
+                                                  // await FireStoreUtils
+                                                  //         .deleteUser()
+                                                  //     .then((value) {
+                                                  //   ShowToastDialog
+                                                  //       .closeLoader();
+                                                  //   if (value == true) {
+                                                  //     ShowToastDialog.showToast(
+                                                  //         "Account deleted successfully"
+                                                  //             .tr);
+                                                  //     Get.offAll(LoginScreen());
+                                                  //   } else {
+                                                  //     ShowToastDialog.showToast(
+                                                  //         "Contact Administrator"
+                                                  //             .tr);
+                                                  //   }
+                                                  // });
                                                 },
                                                 negativeClick: () {
                                                   Get.back();

@@ -1,6 +1,5 @@
 import 'package:badges/badges.dart' as badges;
 import 'package:customer/app/cart_screen/cart_screen.dart';
-import 'package:customer/app/dine_in_screeen/dine_in_details_screen.dart';
 import 'package:customer/app/review_list_screen/review_list_screen.dart';
 import 'package:customer/constant/constant.dart';
 import 'package:customer/constant/show_toast_dialog.dart';
@@ -17,7 +16,6 @@ import 'package:customer/themes/responsive.dart';
 import 'package:customer/themes/round_button_fill.dart';
 import 'package:customer/themes/text_field_widget.dart';
 import 'package:customer/utils/dark_theme_provider.dart';
-import 'package:customer/utils/fire_store_utils.dart';
 import 'package:customer/utils/network_image_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -68,20 +66,23 @@ class RestaurantDetailsScreen extends StatelessWidget {
                                     controller.vendorModel.value.id)
                                 .isNotEmpty) {
                               FavouriteModel favouriteModel = FavouriteModel(
-                                  restaurantId: controller.vendorModel.value.id,
-                                  userId: FireStoreUtils.getCurrentUid());
+                                restaurantId: controller.vendorModel.value.id,
+                                // userId: FireStoreUtils.getCurrentUid(),
+                              );
                               controller.favouriteList.removeWhere((item) =>
                                   item.restaurantId ==
                                   controller.vendorModel.value.id);
-                              await FireStoreUtils.removeFavouriteRestaurant(
-                                  favouriteModel);
+                              // await FireStoreUtils.removeFavouriteRestaurant(
+                              //     favouriteModel);
                             } else {
                               FavouriteModel favouriteModel = FavouriteModel(
-                                  restaurantId: controller.vendorModel.value.id,
-                                  userId: FireStoreUtils.getCurrentUid());
+                                restaurantId: controller.vendorModel.value.id,
+                                // userId: FireStoreUtils.getCurrentUid(),
+                              );
                               controller.favouriteList.add(favouriteModel);
-                              await FireStoreUtils.setFavouriteRestaurant(
-                                  favouriteModel);
+                              // await FireStoreUtils.setFavouriteRestaurant(
+                              //   favouriteModel,
+                              // );
                             }
                           },
                           child: Obx(
@@ -493,12 +494,12 @@ class RestaurantDetailsScreen extends StatelessWidget {
                                             ),
                                             InkWell(
                                               onTap: () {
-                                                Get.to(
-                                                    const DineInDetailsScreen(),
-                                                    arguments: {
-                                                      "vendorModel": controller
-                                                          .vendorModel.value
-                                                    });
+                                                // Get.to(
+                                                //     const DineInDetailsScreen(),
+                                                //     arguments: {
+                                                //       "vendorModel": controller
+                                                //           .vendorModel.value
+                                                //     });
                                               },
                                               child: Container(
                                                 height: 80,
@@ -1205,8 +1206,9 @@ class CouponListView extends StatelessWidget {
                                   width: 5,
                                 ),
                                 Text(
-                                  Constant.timestampToDateTime(
-                                      offerModel.expiresAt!),
+                                  "",
+                                  // Constant.timestampToDateTime(
+                                  //     offerModel.expiresAt!),
                                   style: TextStyle(
                                     fontSize: 12,
                                     color: themeChange.getThem()
@@ -1536,38 +1538,38 @@ class ProductListView extends StatelessWidget {
                                   top: 10,
                                   child: InkWell(
                                     onTap: () async {
-                                      if (controller.favouriteItemList
-                                          .where((p0) =>
-                                              p0.productId == productModel.id)
-                                          .isNotEmpty) {
-                                        FavouriteItemModel favouriteModel =
-                                            FavouriteItemModel(
-                                                productId: productModel.id,
-                                                storeId: controller
-                                                    .vendorModel.value.id,
-                                                userId: FireStoreUtils
-                                                    .getCurrentUid());
-                                        controller.favouriteItemList
-                                            .removeWhere((item) =>
-                                                item.productId ==
-                                                productModel.id);
-                                        await FireStoreUtils
-                                            .removeFavouriteItem(
-                                                favouriteModel);
-                                      } else {
-                                        FavouriteItemModel favouriteModel =
-                                            FavouriteItemModel(
-                                                productId: productModel.id,
-                                                storeId: controller
-                                                    .vendorModel.value.id,
-                                                userId: FireStoreUtils
-                                                    .getCurrentUid());
-                                        controller.favouriteItemList
-                                            .add(favouriteModel);
+                                      // if (controller.favouriteItemList
+                                      //     .where((p0) =>
+                                      //         p0.productId == productModel.id)
+                                      //     .isNotEmpty) {
+                                      //   FavouriteItemModel favouriteModel =
+                                      //       FavouriteItemModel(
+                                      //           productId: productModel.id,
+                                      //           storeId: controller
+                                      //               .vendorModel.value.id,
+                                      //           userId: FireStoreUtils
+                                      //               .getCurrentUid());
+                                      //   controller.favouriteItemList
+                                      //       .removeWhere((item) =>
+                                      //           item.productId ==
+                                      //           productModel.id);
+                                      //   await FireStoreUtils
+                                      //       .removeFavouriteItem(
+                                      //           favouriteModel);
+                                      // } else {
+                                      //   FavouriteItemModel favouriteModel =
+                                      //       FavouriteItemModel(
+                                      //           productId: productModel.id,
+                                      //           storeId: controller
+                                      //               .vendorModel.value.id,
+                                      //           userId: FireStoreUtils
+                                      //               .getCurrentUid());
+                                      //   controller.favouriteItemList
+                                      //       .add(favouriteModel);
 
-                                        await FireStoreUtils.setFavouriteItem(
-                                            favouriteModel);
-                                      }
+                                      //   await FireStoreUtils.setFavouriteItem(
+                                      //       favouriteModel);
+                                      // }
                                     },
                                     child: Obx(
                                       () => controller.favouriteItemList
@@ -2243,38 +2245,38 @@ class ProductDetailsView extends StatelessWidget {
                                     ),
                                     InkWell(
                                       onTap: () async {
-                                        if (controller.favouriteItemList
-                                            .where((p0) =>
-                                                p0.productId == productModel.id)
-                                            .isNotEmpty) {
-                                          FavouriteItemModel favouriteModel =
-                                              FavouriteItemModel(
-                                                  productId: productModel.id,
-                                                  storeId: controller
-                                                      .vendorModel.value.id,
-                                                  userId: FireStoreUtils
-                                                      .getCurrentUid());
-                                          controller.favouriteItemList
-                                              .removeWhere((item) =>
-                                                  item.productId ==
-                                                  productModel.id);
-                                          await FireStoreUtils
-                                              .removeFavouriteItem(
-                                                  favouriteModel);
-                                        } else {
-                                          FavouriteItemModel favouriteModel =
-                                              FavouriteItemModel(
-                                                  productId: productModel.id,
-                                                  storeId: controller
-                                                      .vendorModel.value.id,
-                                                  userId: FireStoreUtils
-                                                      .getCurrentUid());
-                                          controller.favouriteItemList
-                                              .add(favouriteModel);
+                                        // if (controller.favouriteItemList
+                                        //     .where((p0) =>
+                                        //         p0.productId == productModel.id)
+                                        //     .isNotEmpty) {
+                                        //   FavouriteItemModel favouriteModel =
+                                        //       FavouriteItemModel(
+                                        //           productId: productModel.id,
+                                        //           storeId: controller
+                                        //               .vendorModel.value.id,
+                                        //           userId: FireStoreUtils
+                                        //               .getCurrentUid());
+                                        //   controller.favouriteItemList
+                                        //       .removeWhere((item) =>
+                                        //           item.productId ==
+                                        //           productModel.id);
+                                        //   await FireStoreUtils
+                                        //       .removeFavouriteItem(
+                                        //           favouriteModel);
+                                        // } else {
+                                        //   FavouriteItemModel favouriteModel =
+                                        //       FavouriteItemModel(
+                                        //           productId: productModel.id,
+                                        //           storeId: controller
+                                        //               .vendorModel.value.id,
+                                        //           userId: FireStoreUtils
+                                        //               .getCurrentUid());
+                                        //   controller.favouriteItemList
+                                        //       .add(favouriteModel);
 
-                                          await FireStoreUtils.setFavouriteItem(
-                                              favouriteModel);
-                                        }
+                                        //   await FireStoreUtils.setFavouriteItem(
+                                        //       favouriteModel);
+                                        // }
                                       },
                                       child: Obx(
                                         () => controller.favouriteItemList

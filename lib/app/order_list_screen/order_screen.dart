@@ -1,10 +1,8 @@
 import 'package:customer/app/auth_screen/login_screen.dart';
-import 'package:customer/app/order_list_screen/live_tracking_screen.dart';
 import 'package:customer/app/order_list_screen/order_details_screen.dart';
 import 'package:customer/constant/constant.dart';
-import 'package:customer/constant/show_toast_dialog.dart';
+import 'package:customer/controllers/my_profile_controller.dart';
 import 'package:customer/controllers/order_controller.dart';
-import 'package:customer/models/cart_product_model.dart';
 import 'package:customer/models/order_model.dart';
 import 'package:customer/themes/app_them_data.dart';
 import 'package:customer/themes/responsive.dart';
@@ -14,10 +12,13 @@ import 'package:customer/utils/network_image_widget.dart';
 import 'package:customer/widget/my_separator.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 class OrderScreen extends StatelessWidget {
-  const OrderScreen({super.key});
+  OrderScreen({super.key});
+
+  final _profileController = Get.find<MyProfileController>();
 
   @override
   Widget build(BuildContext context) {
@@ -25,13 +26,14 @@ class OrderScreen extends StatelessWidget {
     return GetX(
         init: OrderController(),
         builder: (controller) {
+          // debugPrint("CHECKITO :: ${controller.myOrders.value}");
           return Scaffold(
             body: Padding(
               padding:
                   EdgeInsets.only(top: MediaQuery.of(context).viewPadding.top),
               child: controller.isLoading.value
                   ? Constant.loader()
-                  : Constant.userModel == null
+                  : _profileController.userData.value.isEmpty
                       ? Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 16),
                           child: Column(
@@ -110,7 +112,7 @@ class OrderScreen extends StatelessWidget {
                                             ),
                                           ),
                                           Text(
-                                            "Keep track your delivered, In Progress and Rejected food all in just one place."
+                                            "Keep track your 'delivered', 'in progress' and 'cancelled' orders all in one place."
                                                 .tr,
                                             style: TextStyle(
                                               color: themeChange.getThem()
@@ -127,17 +129,20 @@ class OrderScreen extends StatelessWidget {
                                 ),
                               ),
                               const SizedBox(
-                                height: 10,
+                                height: 16,
                               ),
                               Expanded(
                                 child: Padding(
                                   padding: const EdgeInsets.symmetric(
-                                      horizontal: 16),
+                                    horizontal: 16,
+                                  ),
                                   child: Column(
                                     children: [
                                       Container(
                                         padding: const EdgeInsets.symmetric(
-                                            vertical: 6, horizontal: 10),
+                                          vertical: 6,
+                                          horizontal: 10,
+                                        ),
                                         decoration: ShapeDecoration(
                                           color: themeChange.getThem()
                                               ? AppThemeData.grey800
@@ -149,10 +154,11 @@ class OrderScreen extends StatelessWidget {
                                         ),
                                         child: TabBar(
                                           indicator: BoxDecoration(
-                                              borderRadius:
-                                                  BorderRadius.circular(
-                                                      50), // Creates border
-                                              color: AppThemeData.primary300),
+                                            borderRadius: BorderRadius.circular(
+                                              50,
+                                            ), // Creates border
+                                            color: AppThemeData.primary300,
+                                          ),
                                           labelColor: AppThemeData.grey50,
                                           isScrollable: true,
                                           tabAlignment: TabAlignment.start,
@@ -168,7 +174,8 @@ class OrderScreen extends StatelessWidget {
                                             Padding(
                                               padding:
                                                   const EdgeInsets.symmetric(
-                                                      horizontal: 18),
+                                                horizontal: 18,
+                                              ),
                                               child: Tab(
                                                 text: 'All'.tr,
                                               ),
@@ -180,7 +187,7 @@ class OrderScreen extends StatelessWidget {
                                               text: 'Delivered'.tr,
                                             ),
                                             Tab(
-                                              text: 'Rejected'.tr,
+                                              text: 'Cancelled'.tr,
                                             ),
                                           ],
                                         ),
@@ -191,105 +198,127 @@ class OrderScreen extends StatelessWidget {
                                       Expanded(
                                         child: TabBarView(
                                           children: [
-                                            controller.allList.isEmpty
+                                            controller.myOrders.value['data']
+                                                    .isEmpty
                                                 ? Constant.showEmptyView(
                                                     message:
-                                                        "Order Not Found".tr)
+                                                        "No orders found".tr)
                                                 : RefreshIndicator(
                                                     onRefresh: () =>
                                                         controller.getOrder(),
                                                     child: ListView.builder(
                                                       itemCount: controller
-                                                          .allList.length,
+                                                          .myOrders
+                                                          .value['data']
+                                                          ?.length,
                                                       shrinkWrap: true,
                                                       padding: EdgeInsets.zero,
                                                       itemBuilder:
                                                           (context, index) {
-                                                        OrderModel orderModel =
-                                                            controller
-                                                                .allList[index];
+                                                        // OrderModel orderModel =
+                                                        //     controller
+                                                        //         .allList[index];
+                                                        final item = controller
+                                                                .myOrders
+                                                                .value['data']
+                                                            [index];
                                                         return itemView(
-                                                            themeChange,
-                                                            context,
-                                                            orderModel,
-                                                            controller);
+                                                          themeChange,
+                                                          context,
+                                                          item,
+                                                          controller,
+                                                        );
                                                       },
                                                     ),
                                                   ),
-                                            controller.inProgressList.isEmpty
+                                            controller.myInprogressOrders
+                                                    .value['data'].isEmpty
                                                 ? Constant.showEmptyView(
                                                     message:
-                                                        "Order Not Found".tr)
+                                                        "No orders found".tr)
                                                 : RefreshIndicator(
                                                     onRefresh: () =>
                                                         controller.getOrder(),
                                                     child: ListView.builder(
                                                       itemCount: controller
-                                                          .inProgressList
-                                                          .length,
+                                                          .myInprogressOrders
+                                                          .value['data']
+                                                          ?.length,
                                                       shrinkWrap: true,
                                                       padding: EdgeInsets.zero,
                                                       itemBuilder:
                                                           (context, index) {
-                                                        OrderModel orderModel =
-                                                            controller
-                                                                    .inProgressList[
-                                                                index];
+                                                        // OrderModel orderModel =
+                                                        //     controller
+                                                        //         .allList[index];
+                                                        final item = controller
+                                                            .myInprogressOrders
+                                                            .value['data'][index];
                                                         return itemView(
-                                                            themeChange,
-                                                            context,
-                                                            orderModel,
-                                                            controller);
+                                                          themeChange,
+                                                          context,
+                                                          item,
+                                                          controller,
+                                                        );
                                                       },
                                                     ),
                                                   ),
-                                            controller.deliveredList.isEmpty
+                                            controller.myDeliveredOrders
+                                                    .value['data'].isEmpty
                                                 ? Constant.showEmptyView(
-                                                    message: "Order Not Found")
+                                                    message: "No orders found")
                                                 : RefreshIndicator(
                                                     onRefresh: () =>
                                                         controller.getOrder(),
                                                     child: ListView.builder(
                                                       itemCount: controller
-                                                          .deliveredList.length,
+                                                          .myDeliveredOrders
+                                                          .value['data']
+                                                          ?.length,
                                                       shrinkWrap: true,
                                                       padding: EdgeInsets.zero,
                                                       itemBuilder:
                                                           (context, index) {
-                                                        OrderModel orderModel =
-                                                            controller
-                                                                    .deliveredList[
-                                                                index];
+                                                        // OrderModel orderModel =
+                                                        //     controller
+                                                        //         .allList[index];
+                                                        final item = controller
+                                                            .myDeliveredOrders
+                                                            .value['data'][index];
                                                         return itemView(
-                                                            themeChange,
-                                                            context,
-                                                            orderModel,
-                                                            controller);
+                                                          themeChange,
+                                                          context,
+                                                          item,
+                                                          controller,
+                                                        );
                                                       },
                                                     ),
                                                   ),
-                                            controller.rejectedList.isEmpty
+                                            controller.myCancelledOrders
+                                                    .value['data'].isEmpty
                                                 ? Constant.showEmptyView(
-                                                    message: "Order Not Found")
+                                                    message: "No orders found")
                                                 : RefreshIndicator(
                                                     onRefresh: () =>
                                                         controller.getOrder(),
                                                     child: ListView.builder(
                                                       itemCount: controller
-                                                          .rejectedList.length,
+                                                          .myCancelledOrders
+                                                          .value['data']
+                                                          ?.length,
                                                       shrinkWrap: true,
                                                       padding: EdgeInsets.zero,
                                                       itemBuilder:
                                                           (context, index) {
-                                                        OrderModel orderModel =
-                                                            controller
-                                                                    .rejectedList[
-                                                                index];
+                                                        final item = controller
+                                                            .myCancelledOrders
+                                                            .value['data'][index];
                                                         return itemView(
-                                                            themeChange,
-                                                            context,
-                                                            orderModel,
-                                                            controller);
+                                                          themeChange,
+                                                          context,
+                                                          item,
+                                                          controller,
+                                                        );
                                                       },
                                                     ),
                                                   ),
@@ -308,8 +337,8 @@ class OrderScreen extends StatelessWidget {
         });
   }
 
-  itemView(DarkThemeProvider themeChange, BuildContext context,
-      OrderModel orderModel, OrderController controller) {
+  itemView(DarkThemeProvider themeChange, BuildContext context, var item,
+      OrderController controller) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 5),
       child: Container(
@@ -332,7 +361,9 @@ class OrderScreen extends StatelessWidget {
                     child: Stack(
                       children: [
                         NetworkImageWidget(
-                          imageUrl: orderModel.vendor!.photo.toString(),
+                          imageUrl: item['vendor'] == null
+                              ? "https://i.imgur.com/ZmYTJoA.png"
+                              : "${item['vendor']['logo']}",
                           fit: BoxFit.cover,
                           height: Responsive.height(10, context),
                           width: Responsive.width(20, context),
@@ -362,11 +393,11 @@ class OrderScreen extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          orderModel.status.toString(),
+                          "${item['order_status']}",
                           textAlign: TextAlign.right,
                           style: TextStyle(
                             color: Constant.statusColor(
-                                status: orderModel.status.toString()),
+                                status: "${item['order_status']}"),
                             fontFamily: AppThemeData.semiBold,
                             fontWeight: FontWeight.w500,
                             fontSize: 12,
@@ -376,7 +407,9 @@ class OrderScreen extends StatelessWidget {
                           height: 5,
                         ),
                         Text(
-                          orderModel.vendor!.title.toString(),
+                          item['vendor'] == null
+                              ? "FastBuy Logistics"
+                              : "${item['vendor']['name']}",
                           style: TextStyle(
                             fontSize: 16,
                             color: themeChange.getThem()
@@ -390,7 +423,8 @@ class OrderScreen extends StatelessWidget {
                           height: 5,
                         ),
                         Text(
-                          Constant.timestampToDateTime(orderModel.createdAt!),
+                          "${DateFormat("EEE, dd/MMM/y hh:mm a").format(DateTime.parse("${item['created_at']}"))}",
+                          // Constant.timestampToDateTime(orderModel.createdAt!),
                           style: TextStyle(
                             color: themeChange.getThem()
                                 ? AppThemeData.grey300
@@ -408,17 +442,18 @@ class OrderScreen extends StatelessWidget {
                 height: 10,
               ),
               ListView.builder(
-                itemCount: orderModel.products!.length,
+                itemCount: item['items'].length,
                 shrinkWrap: true,
                 padding: EdgeInsets.zero,
                 physics: const NeverScrollableScrollPhysics(),
-                itemBuilder: (context, index) {
-                  CartProductModel cartProduct = orderModel.products![index];
+                itemBuilder: (context, ind) {
+                  // CartProductModel cartProduct = orderModel.products![index];
+                  final elem = item['items'][ind];
                   return Row(
                     children: [
                       Expanded(
                         child: Text(
-                          "${cartProduct.quantity} x 3",
+                          "${elem['name']}",
                           style: TextStyle(
                             color: themeChange.getThem()
                                 ? AppThemeData.grey50
@@ -429,13 +464,13 @@ class OrderScreen extends StatelessWidget {
                         ),
                       ),
                       Text(
-                        "12.0",
-                        // Constant.amountShow(amount: double.parse(cartProduct.discountPrice.toString() ?? "12.0") <= 0 ? cartProduct.price : cartProduct.discountPrice),
+                        item['order_type'] == "parcel_order"
+                            ? "${elem['weight']} kg"
+                            : "₦${Constant.formatNumber(elem['amount'])}",
                         style: TextStyle(
                           color: themeChange.getThem()
                               ? AppThemeData.grey50
                               : AppThemeData.grey900,
-                          fontFamily: AppThemeData.semiBold,
                           fontWeight: FontWeight.w500,
                         ),
                       )
@@ -452,15 +487,15 @@ class OrderScreen extends StatelessWidget {
               ),
               Row(
                 children: [
-                  orderModel.status == Constant.orderCompleted
+                  item['order_status'] == "completed"
                       ? Expanded(
                           child: InkWell(
                             onTap: () {
-                              for (var element in orderModel.products!) {
-                                controller.addToCart(cartProductModel: element);
-                                ShowToastDialog.showToast(
-                                    "Item Added In a cart");
-                              }
+                              // for (var element in orderModel.products!) {
+                              //   controller.addToCart(cartProductModel: element);
+                              //   ShowToastDialog.showToast(
+                              //       "Item Added In a cart");
+                              // }
                             },
                             child: Text(
                               "Reorder".tr,
@@ -475,13 +510,13 @@ class OrderScreen extends StatelessWidget {
                             ),
                           ),
                         )
-                      : orderModel.status == Constant.orderShipped ||
-                              orderModel.status == Constant.orderInTransit
+                      : item['order_status'] == "ready_for_delivery" ||
+                              item['order_status'] == "in_delivery"
                           ? Expanded(
                               child: InkWell(
                                 onTap: () {
-                                  Get.to(const LiveTrackingScreen(),
-                                      arguments: {"orderModel": orderModel});
+                                  // Get.to(const LiveTrackingScreen(),
+                                  //     arguments: {"orderModel": orderModel});
                                 },
                                 child: Text(
                                   "Track Order".tr,
@@ -501,20 +536,24 @@ class OrderScreen extends StatelessWidget {
                   Expanded(
                     child: InkWell(
                       onTap: () {
-                        Get.to(const OrderDetailsScreen(),
-                            arguments: {"orderModel": orderModel});
+                        Get.to(
+                            OrderDetailsScreen(
+                              item: item,
+                            ),
+                            arguments: {"orderModel": item});
                         // Get.off(const OrderPlacingScreen(), arguments: {"orderModel": orderModel});
                       },
                       child: Text(
                         "View Details".tr,
                         textAlign: TextAlign.center,
                         style: TextStyle(
-                            color: themeChange.getThem()
-                                ? AppThemeData.grey50
-                                : AppThemeData.grey900,
-                            fontFamily: AppThemeData.semiBold,
-                            fontWeight: FontWeight.w600,
-                            fontSize: 16),
+                          color: themeChange.getThem()
+                              ? AppThemeData.grey50
+                              : AppThemeData.grey900,
+                          fontFamily: AppThemeData.semiBold,
+                          fontWeight: FontWeight.w600,
+                          fontSize: 16,
+                        ),
                       ),
                     ),
                   ),

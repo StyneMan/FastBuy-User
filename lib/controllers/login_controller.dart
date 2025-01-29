@@ -1,16 +1,20 @@
-import 'package:customer/app/auth_screen/login_screen.dart';
+import 'dart:convert';
+
+import 'package:customer/app/auth_screen/otp_screen.dart';
 import 'package:customer/app/dash_board_screens/dash_board_screen.dart';
-import 'package:customer/app/location_permission_screen/location_permission_screen.dart';
 import 'package:customer/constant/constant.dart';
 import 'package:customer/constant/show_toast_dialog.dart';
-import 'package:customer/models/user_model.dart';
-import 'package:customer/utils/fire_store_utils.dart';
-import 'package:customer/utils/notification_service.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:customer/controllers/my_profile_controller.dart';
+import 'package:customer/services/api_service.dart';
+import 'package:customer/utils/preferences.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 
 class LoginController extends GetxController {
+  // Inject ProfileController
+  final MyProfileController _profileController =
+      Get.find<MyProfileController>();
+
   Rx<TextEditingController> emailEditingController =
       TextEditingController().obs;
   Rx<TextEditingController> passwordEditingController =
@@ -25,51 +29,54 @@ class LoginController extends GetxController {
   }
 
   loginWithEmailAndPassword() async {
-    ShowToastDialog.showLoader("Please wait".tr);
-    // try {
-    //   final credential = await FirebaseAuth.instance.signInWithEmailAndPassword(
-    //     email: emailEditingController.value.text.trim(),
-    //     password: passwordEditingController.value.text.trim(),
-    //   );
-    //   UserModel? userModel = await FireStoreUtils.getUserProfile(credential.user!.uid);
-    //   if (userModel!.role == Constant.userRoleCustomer) {
-    //     if (userModel.active == true) {
-    //       userModel.fcmToken = await NotificationService.getToken();
-    //       await FireStoreUtils.updateUser(userModel);
-    //       if (userModel.shippingAddress != null && userModel.shippingAddress!.isNotEmpty) {
-    //         if (userModel.shippingAddress!.where((element) => element.isDefault == true).isNotEmpty) {
-    //           Constant.selectedLocation = userModel.shippingAddress!.where((element) => element.isDefault == true).single;
-    //         } else {
-    //           Constant.selectedLocation = userModel.shippingAddress!.first;
-    //         }
-    //         Get.offAll(const DashBoardScreen());
-    //       } else {
-    //         Get.offAll(const LocationPermissionScreen());
-    //       }
-    //     } else {
-    //       ShowToastDialog.showToast("This user is disable please contact to administrator");
-    //       await FirebaseAuth.instance.signOut();
-    //       Get.offAll(const LoginScreen());
-    //     }
-    //   } else {
-    //     await FirebaseAuth.instance.signOut();
-    //     Get.offAll(const LoginScreen());
-    //   }
-    // } on FirebaseAuthException catch (e) {
-    //   print(e.code);
-    //   if (e.code == 'user-not-found') {
-    //     ShowToastDialog.showToast("No user found for that email.");
-    //   } else if (e.code == 'wrong-password') {
-    //     ShowToastDialog.showToast("Wrong password provided for that user.");
-    //   } else if (e.code == 'invalid-email') {
-    //     ShowToastDialog.showToast("Invalid Email.");
-    //   } else {
-    //     ShowToastDialog.showToast("${e.message}");
-    //   }
-    // }
-    Future.delayed(const Duration(seconds: 3), () {
+    try {
+      ShowToastDialog.showLoader("Please wait".tr);
+      Map body = {
+        "email_address": emailEditingController.value.text,
+        "password": passwordEditingController.value.text,
+      };
+
+      var resp = await APIService().login(body);
+      debugPrint(resp.body);
       ShowToastDialog.closeLoader();
-       Get.offAll(const DashBoardScreen());
-    });
+      if (resp.statusCode >= 200 && resp.statusCode <= 299) {
+        // all good here
+        Map<String, dynamic> map = jsonDecode("${resp.body}");
+        Constant.toast(map['message']);
+
+        if (map.containsKey('user') && map['user'] != null) {
+          // Go to dashboard here and persist token and user data here
+          Preferences.setString(Preferences.accessTokenKey, map['accessToken']);
+          Constant.toast(map['message']);
+          //Store access token her
+          _profileController.setProfile(map['user']);
+
+          // Now navigate to dashboard from here
+          Get.off(
+            const DashBoardScreen(),
+            transition: Transition.cupertino,
+          );
+        } else {
+          // Prompt user to verify account first
+          debugPrint(
+              "EMAIL ADDRESS CHECK ::: ${emailEditingController.value.text}");
+          Get.to(
+            OtpScreen(
+              type: "signup",
+              email: emailEditingController.value.text,
+            ),
+            arguments: {
+              "emailAddress": emailEditingController.value.text,
+            },
+          );
+        }
+      } else {
+        Map<String, dynamic> errorMap = jsonDecode("${resp.body}");
+        Constant.toast(errorMap['message']);
+      }
+    } catch (e) {
+      ShowToastDialog.closeLoader();
+      debugPrint(e.toString());
+    }
   }
 }

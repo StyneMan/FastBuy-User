@@ -1,7 +1,6 @@
 import 'package:customer/constant/constant.dart';
 import 'package:customer/models/favourite_model.dart';
 import 'package:customer/models/vendor_model.dart';
-import 'package:customer/utils/fire_store_utils.dart';
 import 'package:get/get.dart';
 
 class RestaurantListController extends GetxController {
@@ -29,11 +28,11 @@ class RestaurantListController extends GetxController {
     }
 
     if (Constant.userModel != null) {
-      await FireStoreUtils.getFavouriteRestaurant().then(
-        (value) {
-          // favouriteList.value = value;
-        },
-      );
+      // await FireStoreUtils.getFavouriteRestaurant().then(
+      //   (value) {
+      //     // favouriteList.value = value;
+      //   },
+      // );
     }
     isLoading.value = false;
   }

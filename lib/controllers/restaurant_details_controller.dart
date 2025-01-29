@@ -11,7 +11,6 @@ import 'package:customer/models/product_model.dart';
 import 'package:customer/models/vendor_category_model.dart';
 import 'package:customer/models/vendor_model.dart';
 import 'package:customer/services/cart_provider.dart';
-import 'package:customer/utils/fire_store_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -92,24 +91,24 @@ class RestaurantDetailsController extends GetxController {
   }
 
   getProduct() async {
-    await FireStoreUtils.getProductByVendorId(vendorModel.value.id.toString())
-        .then(
-      (value) {
-        // allProductList.value = value;
-        // productList.value = value;
-      },
-    );
+    // await FireStoreUtils.getProductByVendorId(vendorModel.value.id.toString())
+    //     .then(
+    //   (value) {
+    //     // allProductList.value = value;
+    //     // productList.value = value;
+    //   },
+    // );
 
-    for (var element in productList) {
-      await FireStoreUtils.getVendorCategoryById(element.categoryID.toString())
-          .then(
-        (value) {
-          if (value != null) {
-            // vendorCategoryList.add(value);
-          }
-        },
-      );
-    }
+    // for (var element in productList) {
+    //   await FireStoreUtils.getVendorCategoryById(element.categoryID.toString())
+    //       .then(
+    //     (value) {
+    //       if (value != null) {
+    //         // vendorCategoryList.add(value);
+    //       }
+    //     },
+    //   );
+    // }
     // var seen = <String>{};
     // vendorCategoryList.value = vendorCategoryList
     //     .where((element) => seen.add(element.id.toString()))
@@ -157,24 +156,24 @@ class RestaurantDetailsController extends GetxController {
 
   getFavouriteList() async {
     if (Constant.userModel != null) {
-      await FireStoreUtils.getFavouriteRestaurant().then(
-        (value) {
-          // favouriteList.value = value;
-        },
-      );
+      // await FireStoreUtils.getFavouriteRestaurant().then(
+      //   (value) {
+      //     // favouriteList.value = value;
+      //   },
+      // );
 
-      await FireStoreUtils.getFavouriteItem().then(
-        (value) {
-          favouriteItemList.value = value;
-        },
-      );
+      // await FireStoreUtils.getFavouriteItem().then(
+      //   (value) {
+      //     favouriteItemList.value = value;
+      //   },
+      // );
 
-      await FireStoreUtils.getOfferByVendorId(vendorModel.value.id.toString())
-          .then(
-        (value) {
-          couponList.value = value;
-        },
-      );
+      // await FireStoreUtils.getOfferByVendorId(vendorModel.value.id.toString())
+      //     .then(
+      //   (value) {
+      //     couponList.value = value;
+      //   },
+      // );
     }
     await getAttributeData();
     update();
@@ -267,11 +266,11 @@ class RestaurantDetailsController extends GetxController {
   }
 
   getAttributeData() async {
-    await FireStoreUtils.getAttributes().then((value) {
-      if (value != null) {
-        attributesList.value = value;
-      }
-    });
+    // await FireStoreUtils.getAttributes().then((value) {
+    //   if (value != null) {
+    //     attributesList.value = value;
+    //   }
+    // });
   }
 
   addToCart({

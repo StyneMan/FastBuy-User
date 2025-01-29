@@ -1,6 +1,9 @@
+import 'dart:convert';
+
 import 'package:customer/app/auth_screen/login_screen.dart';
+import 'package:customer/constant/constant.dart';
 import 'package:customer/constant/show_toast_dialog.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:customer/services/api_service.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -11,25 +14,33 @@ class ResetPasswordController extends GetxController {
 
   RxBool passwordVisible = true.obs;
   RxBool confirmPasswordVisible = true.obs;
-  resetPassword() async {
+
+  resetPassword({required String email}) async {
     try {
       ShowToastDialog.showLoader("Please wait".tr);
-      // await FirebaseAuth.instance.sendPasswordResetEmail(
-      //   email: emailEditingController.value.text,
-      // );
-      Future.delayed(const Duration(seconds: 2), () {
-        ShowToastDialog.closeLoader();
-        ShowToastDialog.showToast(
-            'Password reset successfully. Login to continue');
+
+      Map payload = {
+        "email_address": email,
+        "new_password": passwordController.value.text,
+        "confirm_password": confirmpasswordController.value.text,
+      };
+
+      final resp = await APIService().resetPassword(body: payload);
+      ShowToastDialog.closeLoader();
+      debugPrint("${resp.body}");
+      if (resp.statusCode >= 200 && resp.statusCode <= 299) {
+        Map<String, dynamic> map = jsonDecode(resp.body);
+        ShowToastDialog.showToast(map['message']);
         Get.to(
           LoginScreen(),
           transition: Transition.cupertino,
         );
-      });
-    } on FirebaseAuthException catch (e) {
-      if (e.code == 'user-not-found') {
-        ShowToastDialog.showToast('No user found for that email.');
+      } else {
+        Map<String, dynamic> errMap = jsonDecode(resp.body);
+        Constant.toast(errMap['message']);
       }
+    } catch (e) {
+      ShowToastDialog.closeLoader();
     }
   }
 }

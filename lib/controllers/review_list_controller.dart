@@ -1,6 +1,5 @@
 import 'package:customer/models/rating_model.dart';
 import 'package:customer/models/vendor_model.dart';
-import 'package:customer/utils/fire_store_utils.dart';
 import 'package:get/get.dart';
 
 class ReviewListController extends GetxController {
@@ -26,11 +25,11 @@ class ReviewListController extends GetxController {
   }
 
   getAllReview() async {
-    await FireStoreUtils.getVendorReviews(vendorModel.value.id.toString()).then(
-      (value) {
-        ratingList.value = value;
-      },
-    );
+    // await FireStoreUtils.getVendorReviews(vendorModel.value.id.toString()).then(
+    //   (value) {
+    //     ratingList.value = value;
+    //   },
+    // );
     update();
   }
 }

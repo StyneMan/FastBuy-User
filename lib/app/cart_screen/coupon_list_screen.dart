@@ -22,9 +22,13 @@ class CouponListScreen extends StatelessWidget {
         init: CartController(),
         builder: (controller) {
           return Scaffold(
-            backgroundColor: themeChange.getThem() ? AppThemeData.surfaceDark : AppThemeData.surface,
+            backgroundColor: themeChange.getThem()
+                ? AppThemeData.surfaceDark
+                : AppThemeData.surface,
             appBar: AppBar(
-              backgroundColor: themeChange.getThem() ? AppThemeData.surfaceDark : AppThemeData.surface,
+              backgroundColor: themeChange.getThem()
+                  ? AppThemeData.surfaceDark
+                  : AppThemeData.surface,
               centerTitle: false,
               titleSpacing: 0,
               title: Text(
@@ -33,7 +37,9 @@ class CouponListScreen extends StatelessWidget {
                 style: TextStyle(
                   fontFamily: AppThemeData.medium,
                   fontSize: 16,
-                  color: themeChange.getThem() ? AppThemeData.grey50 : AppThemeData.grey900,
+                  color: themeChange.getThem()
+                      ? AppThemeData.grey50
+                      : AppThemeData.grey900,
                 ),
               ),
               bottom: PreferredSize(
@@ -44,13 +50,23 @@ class CouponListScreen extends StatelessWidget {
                     hintText: 'Enter coupon code'.tr,
                     controller: controller.couponCodeController.value,
                     suffix: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 12),
                       child: InkWell(
                         onTap: () {
-                          if (controller.allCouponList.where((p0) => p0.code!.toLowerCase() == controller.couponCodeController.value.text.toLowerCase()).isNotEmpty) {
-                            CouponModel element = controller.allCouponList.firstWhere((p0) => p0.code!.toLowerCase() == controller.couponCodeController.value.text.toLowerCase());
+                          if (controller.allCouponList
+                              .where((p0) =>
+                                  p0.code!.toLowerCase() ==
+                                  controller.couponCodeController.value.text
+                                      .toLowerCase())
+                              .isNotEmpty) {
+                            CouponModel element = controller.allCouponList
+                                .firstWhere((p0) =>
+                                    p0.code!.toLowerCase() ==
+                                    controller.couponCodeController.value.text
+                                        .toLowerCase());
                             controller.selectedCouponModel.value = element;
-                            controller.calculatePrice();
+                            // controller.calculatePrice();
                             Get.back();
                           } else {
                             ShowToastDialog.showToast("Invalid Coupon");
@@ -62,7 +78,9 @@ class CouponListScreen extends StatelessWidget {
                           style: TextStyle(
                             fontFamily: AppThemeData.semiBold,
                             fontSize: 16,
-                            color: themeChange.getThem() ? AppThemeData.primary300 : AppThemeData.primary300,
+                            color: themeChange.getThem()
+                                ? AppThemeData.primary300
+                                : AppThemeData.primary300,
                           ),
                         ),
                       ),
@@ -77,17 +95,23 @@ class CouponListScreen extends StatelessWidget {
               itemBuilder: (context, index) {
                 CouponModel couponModel = controller.couponList[index];
                 return Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                   child: Container(
                     height: Responsive.height(16, context),
                     decoration: ShapeDecoration(
-                      color: themeChange.getThem() ? AppThemeData.grey900 : AppThemeData.grey50,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                      color: themeChange.getThem()
+                          ? AppThemeData.grey900
+                          : AppThemeData.grey50,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10)),
                     ),
                     child: Row(
                       children: [
                         ClipRRect(
-                          borderRadius: const BorderRadius.only(topLeft: Radius.circular(10), bottomLeft: Radius.circular(10)),
+                          borderRadius: const BorderRadius.only(
+                              topLeft: Radius.circular(10),
+                              bottomLeft: Radius.circular(10)),
                           child: Stack(
                             children: [
                               Image.asset(
@@ -107,7 +131,9 @@ class CouponListScreen extends StatelessWidget {
                                       style: TextStyle(
                                         fontFamily: AppThemeData.semiBold,
                                         fontSize: 16,
-                                        color: themeChange.getThem() ? AppThemeData.grey50 : AppThemeData.grey50,
+                                        color: themeChange.getThem()
+                                            ? AppThemeData.grey50
+                                            : AppThemeData.grey50,
                                       ),
                                     ),
                                   ),
@@ -118,26 +144,32 @@ class CouponListScreen extends StatelessWidget {
                         ),
                         Expanded(
                           child: Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 18),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 16, vertical: 18),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Row(
                                   children: [
                                     DottedBorder(
-                                      color: themeChange.getThem() ? AppThemeData.grey400 : AppThemeData.grey500,
+                                      color: themeChange.getThem()
+                                          ? AppThemeData.grey400
+                                          : AppThemeData.grey500,
                                       strokeWidth: 1,
                                       borderType: BorderType.RRect,
                                       radius: const Radius.circular(6),
                                       child: Padding(
-                                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 16),
                                         child: Text(
                                           "${couponModel.code}",
                                           textAlign: TextAlign.start,
                                           style: TextStyle(
                                             fontFamily: AppThemeData.semiBold,
                                             fontSize: 16,
-                                            color: themeChange.getThem() ? AppThemeData.grey400 : AppThemeData.grey500,
+                                            color: themeChange.getThem()
+                                                ? AppThemeData.grey400
+                                                : AppThemeData.grey500,
                                           ),
                                         ),
                                       ),
@@ -148,8 +180,9 @@ class CouponListScreen extends StatelessWidget {
                                     )),
                                     InkWell(
                                       onTap: () {
-                                        controller.selectedCouponModel.value = couponModel;
-                                        controller.calculatePrice();
+                                        controller.selectedCouponModel.value =
+                                            couponModel;
+                                        // controller.calculatePrice();
                                         Get.back();
                                       },
                                       child: Text(
@@ -157,7 +190,9 @@ class CouponListScreen extends StatelessWidget {
                                         textAlign: TextAlign.start,
                                         style: TextStyle(
                                           fontFamily: AppThemeData.medium,
-                                          color: themeChange.getThem() ? AppThemeData.primary300 : AppThemeData.primary300,
+                                          color: themeChange.getThem()
+                                              ? AppThemeData.primary300
+                                              : AppThemeData.primary300,
                                         ),
                                       ),
                                     ),
@@ -166,7 +201,10 @@ class CouponListScreen extends StatelessWidget {
                                 const SizedBox(
                                   height: 20,
                                 ),
-                                MySeparator(color: themeChange.getThem() ? AppThemeData.grey700 : AppThemeData.grey200),
+                                MySeparator(
+                                    color: themeChange.getThem()
+                                        ? AppThemeData.grey700
+                                        : AppThemeData.grey200),
                                 const SizedBox(
                                   height: 20,
                                 ),
@@ -176,7 +214,9 @@ class CouponListScreen extends StatelessWidget {
                                   style: TextStyle(
                                     fontFamily: AppThemeData.medium,
                                     fontSize: 16,
-                                    color: themeChange.getThem() ? AppThemeData.grey50 : AppThemeData.grey900,
+                                    color: themeChange.getThem()
+                                        ? AppThemeData.grey50
+                                        : AppThemeData.grey900,
                                   ),
                                 )
                               ],

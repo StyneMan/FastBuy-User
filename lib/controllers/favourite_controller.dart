@@ -1,84 +1,70 @@
-import 'package:customer/constant/constant.dart';
-import 'package:customer/data/dummy_product.dart';
-import 'package:customer/models/favourite_item_model.dart';
-import 'package:customer/models/favourite_model.dart';
-import 'package:customer/models/product_model.dart';
-import 'package:customer/models/vendor_model.dart';
+import 'dart:convert';
+
+import 'package:customer/services/api_service.dart';
+import 'package:customer/utils/preferences.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-import '../data/dummy_vendor.dart';
+import 'my_profile_controller.dart';
 
 class FavouriteController extends GetxController {
   RxBool favouriteRestaurant = true.obs;
-  RxList<FavouriteModel> favouriteList = <FavouriteModel>[].obs;
-  RxList<VendorModel> favouriteVendorList = <VendorModel>[].obs;
+  final profileController = Get.find<MyProfileController>();
+  // RxList<FavouriteItemModel> favouriteItemList = <FavouriteItemModel>[].obs;
+  // // RxList<FavouriteModel> favouriteList = <FavouriteModel>[].obs;
+  // RxList<VendorModel> favouriteVendorList = <VendorModel>[].obs;
+  // RxList<ProductModel> favouriteFoodList = <ProductModel>[].obs;
 
-  RxList<FavouriteItemModel> favouriteItemList = <FavouriteItemModel>[].obs;
-  RxList<ProductModel> favouriteFoodList = <ProductModel>[].obs;
+  var favouriteList = {}.obs;
+  var favouriteStores = {}.obs;
+  var favouriteRestaurants = {}.obs;
 
   RxBool isLoading = true.obs;
 
   @override
   void onInit() {
-    // TODO: implement onInit
-    getData();
     super.onInit();
+    refreshData();
   }
 
-  getData() async {
-    if (Constant.userModel != null) {
-      favouriteList.value = [
-        FavouriteModel(restaurantId: "restaurant_001", userId: "user_001"),
-        FavouriteModel(restaurantId: "restaurant_002", userId: "user_001"),
-        FavouriteModel(restaurantId: "restaurant_003", userId: "user_001"),
-      ];
+  refreshData() async {
+    try {
+      final accessToken = Preferences.getString(Preferences.accessTokenKey);
+      if (accessToken.isNotEmpty) {
+        APIService()
+            .getFavouritesStreamed(
+          accessToken: accessToken,
+          customerId: profileController.userData.value['id'],
+          vendorType: "restaurant",
+          page: 1,
+        )
+            .listen((onData) {
+          debugPrint("RESTAURANT FAVOURITES :: ${onData.body}");
+          isLoading.value = false;
+          if (onData.statusCode >= 200 && onData.statusCode <= 299) {
+            Map<String, dynamic> map = jsonDecode(onData.body);
+            favouriteRestaurants.value = map;
+          }
+        });
 
-      favouriteItemList.value = [
-        FavouriteItemModel(
-            storeId: "store_123", userId: "user_001", productId: "product_abc"),
-        FavouriteItemModel(
-            storeId: "store_456", userId: "user_002", productId: "product_xyz"),
-        FavouriteItemModel(
-            storeId: "store_789", userId: "user_003", productId: "product_lmn"),
-      ];
-
-      // await FireStoreUtils.getFavouriteRestaurant().then(
-      //   (value) {
-      //     favouriteList.value = value;
-      //   },
-      // );
-
-      favouriteVendorList.value = [dummyVendor];
-      favouriteFoodList.value = dummyProducts;
-
-      // await FireStoreUtils.getFavouriteItem().then(
-      //   (value) {
-      //     favouriteItemList.value = value;
-      //   },
-      // );
-
-      // for (var element in favouriteList) {
-      //   await FireStoreUtils.getVendorById(element.restaurantId.toString())
-      //       .then(
-      //     (value) {
-      //       if (value != null) {
-      //         favouriteVendorList.add(value);
-      //       }
-      //     },
-      //   );
-      // }
-
-      // for (var element in favouriteItemList) {
-      //   await FireStoreUtils.getProductById(element.productId.toString()).then(
-      //     (value) {
-      //       if (value != null) {
-      //         favouriteFoodList.add(value);
-      //       }
-      //     },
-      //   );
-      // }
+        APIService()
+            .getFavouritesStreamed(
+          accessToken: accessToken,
+          customerId: profileController.userData.value['id'],
+          vendorType: "grocery_store",
+          page: 1,
+        )
+            .listen((onData) {
+          debugPrint("STORE  FAVOURITES :: ${onData.body}");
+          isLoading.value = false;
+          if (onData.statusCode >= 200 && onData.statusCode <= 299) {
+            Map<String, dynamic> map = jsonDecode(onData.body);
+            favouriteStores.value = map;
+          }
+        });
+      }
+    } catch (e) {
+      debugPrint("$e");
     }
-
-    isLoading.value = false;
   }
 }

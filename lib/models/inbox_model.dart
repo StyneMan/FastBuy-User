@@ -1,5 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-
 class InboxModel {
   String? customerId;
   String? customerName;
@@ -11,7 +9,7 @@ class InboxModel {
   String? restaurantProfileImage;
   String? lastSenderId;
   String? chatType;
-  Timestamp? createdAt;
+  String? createdAt;
 
   InboxModel({
     this.customerId,
@@ -39,7 +37,7 @@ class InboxModel {
       lastSenderId: parsedJson['lastSenderId'] ?? '',
       chatType: parsedJson['chatType'] ?? '',
       restaurantProfileImage: parsedJson['restaurantProfileImage'] ?? '',
-      createdAt: parsedJson['createdAt'] ?? Timestamp.now(),
+      createdAt: parsedJson['createdAt'],
     );
   }
 

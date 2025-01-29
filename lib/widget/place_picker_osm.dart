@@ -1,4 +1,3 @@
-
 import 'package:customer/themes/app_them_data.dart';
 import 'package:customer/utils/dark_theme_provider.dart';
 import 'package:customer/utils/utils.dart';
@@ -27,7 +26,8 @@ class _LocationPickerState extends State<LocationPicker> {
   void initState() {
     super.initState();
     mapController = MapController(
-      initMapWithUserPosition: const UserTrackingOption(enableTracking: false, unFollowUser: true),
+      initMapWithUserPosition:
+          const UserTrackingOption(enableTracking: true, unFollowUser: true),
     );
   }
 
@@ -75,7 +75,7 @@ class _LocationPickerState extends State<LocationPicker> {
           nameDetails: true,
         );
         setState(() {});
-        mapController.goToLocation(position);
+        mapController.moveTo(position);
       });
     }
   }
@@ -89,7 +89,7 @@ class _LocationPickerState extends State<LocationPicker> {
           longitude: locationData.longitude,
         );
         await addMarker(selectedLocation!);
-        mapController.goToLocation(selectedLocation!);
+        mapController.moveTo(selectedLocation!);
         place = await Nominatim.reverseSearch(
           lat: selectedLocation!.latitude,
           lon: selectedLocation!.longitude,
@@ -116,7 +116,7 @@ class _LocationPickerState extends State<LocationPicker> {
     final themeChange = Provider.of<DarkThemeProvider>(context);
     return Scaffold(
       appBar: AppBar(
-        title:  Text('Location Picker'.tr),
+        title: Text('Location Picker'.tr),
       ),
       body: Stack(
         children: [
@@ -125,8 +125,10 @@ class _LocationPickerState extends State<LocationPicker> {
             mapIsLoading: const Center(child: CircularProgressIndicator()),
             osmOption: OSMOption(
               userLocationMarker: UserLocationMaker(
-                  personMarker: MarkerIcon(iconWidget: Image.asset("assets/images/pickup.png")),
-                  directionArrowMarker: MarkerIcon(iconWidget: Image.asset("assets/images/pickup.png"))),
+                  personMarker: MarkerIcon(
+                      iconWidget: Image.asset("assets/images/pickup.png")),
+                  directionArrowMarker: MarkerIcon(
+                      iconWidget: Image.asset("assets/images/pickup.png"))),
               isPicker: true,
               zoomOption: const ZoomOption(initZoom: 14),
             ),
@@ -178,7 +180,8 @@ class _LocationPickerState extends State<LocationPicker> {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
             child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 4),
+                padding:
+                    const EdgeInsets.symmetric(vertical: 4.0, horizontal: 4),
                 child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 00),
                   child: InkWell(
@@ -186,7 +189,8 @@ class _LocationPickerState extends State<LocationPicker> {
                       Get.to(const OsmSearchPlacesApi())?.then((value) async {
                         if (value != null) {
                           SearchInfo place = value;
-                          textController = TextEditingController(text: place.address.toString());
+                          textController = TextEditingController(
+                              text: place.address.toString());
                           await addMarker(place.point);
                           print("Search :: ${place.point.toString()}");
                         }
@@ -203,12 +207,16 @@ class _LocationPickerState extends State<LocationPicker> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: _setUserLocation,
-        child: Icon(Icons.my_location, color: themeChange.getThem() ? AppThemeData.primary300 :  AppThemeData.primary300),
+        child: Icon(Icons.my_location,
+            color: themeChange.getThem()
+                ? AppThemeData.primary300
+                : AppThemeData.primary300),
       ),
     );
   }
 
-  Widget buildTextField({required title, required TextEditingController textController}) {
+  Widget buildTextField(
+      {required title, required TextEditingController textController}) {
     return Padding(
       padding: const EdgeInsets.only(left: 4.0),
       child: TextField(

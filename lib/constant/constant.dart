@@ -3,13 +3,11 @@ import 'dart:io';
 import 'dart:math' as math;
 import 'dart:ui' as ui;
 
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:customer/constant/show_toast_dialog.dart';
 import 'package:customer/models/admin_commission.dart';
 import 'package:customer/models/cart_product_model.dart';
 import 'package:customer/models/coupon_model.dart';
 import 'package:customer/models/currency_model.dart';
-import 'package:customer/models/email_template_model.dart';
 import 'package:customer/models/language_model.dart';
 import 'package:customer/models/mail_setting.dart';
 import 'package:customer/models/order_model.dart';
@@ -17,27 +15,27 @@ import 'package:customer/models/tax_model.dart';
 import 'package:customer/models/user_model.dart';
 import 'package:customer/models/zone_model.dart';
 import 'package:customer/themes/app_them_data.dart';
-import 'package:customer/utils/fire_store_utils.dart';
 import 'package:customer/utils/preferences.dart';
 import 'package:customer/widget/permission_dialog.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_osm_plugin/flutter_osm_plugin.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:uuid/uuid.dart';
-import 'package:mailer/mailer.dart';
-import 'package:mailer/smtp_server.dart';
 
-import '../data/dummy_user.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+// import 'package:timeago/timeago.dart' as timeago;
 
 RxList<CartProductModel> cartItem = <CartProductModel>[].obs;
 
 class Constant {
+  static String baseURL = "http://192.168.57.247:3880/api/v1";
+  static String baseURL2 = "http://192.168.57.247:3880";
   static String userRoleDriver = 'driver';
   static String userRoleCustomer = 'customer';
   static String userRoleVendor = 'vendor';
@@ -48,17 +46,18 @@ class Constant {
     addressAs: "Home",
     landmark: "Near Central Park",
     locality: "Lagos state",
-    location: UserLocation(latitude: 40.7128, longitude: -74.0060),
+    // location: UserLocation(latitude: 40.7128, longitude: -74.0060),
     isDefault: true,
-  ); // ShippingAddress();
-  static UserModel? userModel = johnDoe;
+  );
+
+  static UserModel? userModel; // johnDoe;
   static const globalUrl = "Replace Your website";
 
   static bool isZoneAvailable = true;
   static ZoneModel? selectedZone;
 
   static String theme = "theme_1";
-  static String mapAPIKey = "";
+  static String mapAPIKey = "AIzaSyD1e9zjiopg9wyMownCMQkKwGGUIdCd-Us";
   static String placeHolderImage = "";
 
   static String senderId = '';
@@ -111,8 +110,59 @@ class Constant {
   static String restaurantAccepted = "restaurant_accepted";
   static String takeawayCompleted = "takeaway_completed";
 
-  static String selectedMapType = 'osm';
+  static String selectedMapType = 'google';
   static String? mapType = "google";
+
+  static toast(String message) {
+    Fluttertoast.showToast(
+      msg: "" + message,
+      toastLength: Toast.LENGTH_LONG,
+      gravity: ToastGravity.CENTER,
+      timeInSecForIosWeb: 3,
+      backgroundColor: Colors.grey[800],
+      textColor: Colors.white,
+      fontSize: 16.0,
+    );
+  }
+
+  // Helper function to process the input value
+  static double? _processInput(dynamic inputValue) {
+    if (inputValue == null) return null;
+
+    if (inputValue is num) {
+      return inputValue.toDouble();
+    } else if (inputValue is String) {
+      return double.tryParse(inputValue);
+    }
+    return null; // Invalid input
+  }
+
+  static String formatNumber(dynamic inputValue,
+      {int? minimumFractionDigits, int? maximumFractionDigits}) {
+    const String defaultLocale = 'en_US';
+
+    // Convert input to a number
+    final double? number = _processInput(inputValue);
+    if (number == null) return '';
+
+    // Create a NumberFormat instance with options
+    final NumberFormat formatter = NumberFormat()
+      ..minimumFractionDigits = minimumFractionDigits ?? 0
+      ..maximumFractionDigits = maximumFractionDigits ?? 2;
+    // ..locale = defaultLocale;
+
+    return formatter.format(number);
+  }
+
+  // static String timeUntil(DateTime date) {
+  //   return timeago
+  //       .format(date, locale: "en", allowFromNow: true)
+  //       .replaceAll("minute", "min")
+  //       .replaceAll("second", "sec")
+  //       .replaceAll("hour", "hr")
+  //       .replaceAll("a moment ago", "just now")
+  //       .replaceAll("about", "");
+  // }
 
   static String amountShow({required String? amount}) {
     if (currencyModel!.symbolAtRight == true) {
@@ -223,9 +273,18 @@ class Constant {
 
   static Widget showEmptyView({required String message}) {
     return Center(
-      child: Text(message,
-          style:
-              const TextStyle(fontFamily: AppThemeData.medium, fontSize: 18)),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Image.asset(
+            "assets/images/empty.png",
+          ),
+          Text(message,
+              style: const TextStyle(
+                  fontFamily: AppThemeData.medium, fontSize: 18)),
+        ],
+      ),
     );
   }
 
@@ -294,16 +353,6 @@ class Constant {
       return false;
     }
     return true;
-  }
-
-  static Future<String> uploadUserImageToFireStorage(
-      File image, String filePath, String fileName) async {
-    Reference upload =
-        FirebaseStorage.instance.ref().child('$filePath/$fileName');
-    UploadTask uploadTask = upload.putFile(image);
-    var downloadUrl =
-        await (await uploadTask.whenComplete(() {})).ref.getDownloadURL();
-    return downloadUrl.toString();
   }
 
   static Future<void> makePhoneCall(String phoneNumber) async {
@@ -380,26 +429,6 @@ class Constant {
         .inDays;
   }
 
-  static String timestampToDate(Timestamp timestamp) {
-    DateTime dateTime = timestamp.toDate();
-    return DateFormat('MMM dd,yyyy').format(dateTime);
-  }
-
-  static String timestampToDateTime(Timestamp timestamp) {
-    DateTime dateTime = timestamp.toDate();
-    return DateFormat('MMM dd,yyyy hh:mm aa').format(dateTime);
-  }
-
-  static String timestampToTime(Timestamp timestamp) {
-    DateTime dateTime = timestamp.toDate();
-    return DateFormat('hh:mm aa').format(dateTime);
-  }
-
-  static String timestampToDateChat(Timestamp timestamp) {
-    DateTime dateTime = timestamp.toDate();
-    return DateFormat('dd/MM/yyyy').format(dateTime);
-  }
-
   static DateTime stringToDate(String openDineTime) {
     return DateFormat('HH:mm').parse(DateFormat('HH:mm').format(
         DateFormat("hh:mm a").parse((Intl.getCurrentLocale() == "en_US")
@@ -419,6 +448,13 @@ class Constant {
 
   static checkPermission(
       {required BuildContext context, required Function() onTap}) async {
+    bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      // Location services are not enabled, request the user to enable it
+      await Geolocator.openLocationSettings();
+      return;
+    }
+
     LocationPermission permission = await Geolocator.checkPermission();
     if (permission == LocationPermission.denied) {
       permission = await Geolocator.requestPermission();
@@ -457,50 +493,6 @@ class Constant {
     return (crossings % 2 != 0);
   }
 
-  static final smtpServer = SmtpServer(mailSettings!.host.toString(),
-      username: mailSettings!.userName.toString(),
-      password: mailSettings!.password.toString(),
-      port: 465,
-      ignoreBadCertificate: false,
-      ssl: true,
-      allowInsecure: true);
-
-  static sendMail(
-      {String? subject,
-      String? body,
-      bool? isAdmin = false,
-      List<dynamic>? recipients}) async {
-    // Create our message.
-    if (mailSettings != null) {
-      if (isAdmin == true) {
-        recipients!.add(mailSettings!.userName.toString());
-      }
-      final message = Message()
-        ..from = Address(mailSettings!.userName.toString(),
-            mailSettings!.fromName.toString())
-        ..recipients = recipients!
-        ..subject = subject
-        ..text = body
-        ..html = body;
-
-      try {
-        final sendReport = await send(message, smtpServer);
-        print('Message sent: $sendReport');
-      } on MailerException catch (e) {
-        print(e);
-        print('Message not sent.');
-        for (var p in e.problems) {
-          print('Problem: ${p.code}: ${p.msg}');
-        }
-      }
-    }
-
-    // var connection = PersistentConnection(smtpServer);
-    //
-    // // Send the first message
-    // await connection.send(message);
-  }
-
   static Uri createCoordinatesUrl(double latitude, double longitude,
       [String? label]) {
     Uri uri;
@@ -524,150 +516,145 @@ class Constant {
   }
 
   static sendOrderEmail({required OrderModel orderModel}) async {
-    EmailTemplateModel? emailTemplateModel =
-        await FireStoreUtils.getEmailTemplates(newOrderPlaced);
-    if (emailTemplateModel != null) {
-      String firstHTML = """
-       <table style="width: 100%; border-collapse: collapse; border: 1px solid rgb(0, 0, 0);">
-    <thead>
-        <tr>
-            <th style="text-align: left; border: 1px solid rgb(0, 0, 0);">Product Name<br></th>
-            <th style="text-align: left; border: 1px solid rgb(0, 0, 0);">Quantity<br></th>
-            <th style="text-align: left; border: 1px solid rgb(0, 0, 0);">Price<br></th>
-            <th style="text-align: left; border: 1px solid rgb(0, 0, 0);">Extra Item Price<br></th>
-            <th style="text-align: left; border: 1px solid rgb(0, 0, 0);">Total<br></th>
-        </tr>
-    </thead>
-    <tbody>
-    """;
+    // EmailTemplateModel? emailTemplateModel = "";
+    // // await FireStoreUtils.getEmailTemplates(newOrderPlaced);
+    // if (emailTemplateModel != null) {
+    //   String firstHTML = """
+    //    <table style="width: 100%; border-collapse: collapse; border: 1px solid rgb(0, 0, 0);">
+    // <thead>
+    //     <tr>
+    //         <th style="text-align: left; border: 1px solid rgb(0, 0, 0);">Product Name<br></th>
+    //         <th style="text-align: left; border: 1px solid rgb(0, 0, 0);">Quantity<br></th>
+    //         <th style="text-align: left; border: 1px solid rgb(0, 0, 0);">Price<br></th>
+    //         <th style="text-align: left; border: 1px solid rgb(0, 0, 0);">Extra Item Price<br></th>
+    //         <th style="text-align: left; border: 1px solid rgb(0, 0, 0);">Total<br></th>
+    //     </tr>
+    // </thead>
+    // <tbody>
+    // """;
 
-      String newString = emailTemplateModel.message.toString();
-      newString = newString.replaceAll("{username}",
-          "${Constant.userModel!.firstName} ${Constant.userModel!.lastName}");
-      newString = newString.replaceAll("{orderid}", orderModel.id.toString());
-      newString = newString.replaceAll("{date}",
-          DateFormat('yyyy-MM-dd').format(orderModel.createdAt!.toDate()));
-      newString = newString.replaceAll(
-        "{address}",
-        orderModel.address!.getFullAddress(),
-      );
-      newString = newString.replaceAll(
-        "{paymentmethod}",
-        orderModel.paymentMethod.toString(),
-      );
+    //   String newString = emailTemplateModel.message.toString();
+    //   newString = newString.replaceAll("{username}",
+    //       "${Constant.userModel!.firstName} ${Constant.userModel!.lastName}");
+    //   newString = newString.replaceAll("{orderid}", orderModel.id.toString());
+    //   // newString = newString.replaceAll("{date}",
+    //   //     DateFormat('yyyy-MM-dd').format(orderModel.createdAt!.toDate()));
+    //   newString = newString.replaceAll(
+    //     "{address}",
+    //     orderModel.address!.getFullAddress(),
+    //   );
+    //   newString = newString.replaceAll(
+    //     "{paymentmethod}",
+    //     orderModel.paymentMethod.toString(),
+    //   );
 
-      double deliveryCharge = 0.0;
-      double total = 0.0;
-      double specialDiscount = 0.0;
-      double discount = 0.0;
-      double taxAmount = 0.0;
-      double tipValue = 0.0;
-      String specialLabel =
-          '(${orderModel.specialDiscount!['special_discount_label']}${orderModel.specialDiscount!['specialType'] == "amount" ? currencyModel!.symbol : "%"})';
-      List<String> htmlList = [];
+    //   double deliveryCharge = 0.0;
+    //   double total = 0.0;
+    //   double specialDiscount = 0.0;
+    //   double discount = 0.0;
+    //   double taxAmount = 0.0;
+    //   double tipValue = 0.0;
+    //   String specialLabel =
+    //       '(${orderModel.specialDiscount!['special_discount_label']}${orderModel.specialDiscount!['specialType'] == "amount" ? currencyModel!.symbol : "%"})';
+    //   List<String> htmlList = [];
 
-      if (orderModel.deliveryCharge != null) {
-        deliveryCharge = double.parse(orderModel.deliveryCharge.toString());
-      }
-      if (orderModel.tipAmount != null) {
-        tipValue = double.parse(orderModel.tipAmount.toString());
-      }
-      for (var element in orderModel.products!) {
-        if (element.extrasPrice != null &&
-            element.extrasPrice!.isNotEmpty &&
-            double.parse(element.extrasPrice!) != 0.0) {
-          total += double.parse(element.quantity.toString()) *
-              double.parse(element.extrasPrice!);
-        }
-        total += double.parse(element.quantity.toString()) *
-            double.parse(element.price.toString());
+    //   if (orderModel.deliveryCharge != null) {
+    //     deliveryCharge = double.parse(orderModel.deliveryCharge.toString());
+    //   }
+    //   if (orderModel.tipAmount != null) {
+    //     tipValue = double.parse(orderModel.tipAmount.toString());
+    //   }
+    //   for (var element in orderModel.products!) {
+    //     if (element.extrasPrice != null &&
+    //         element.extrasPrice!.isNotEmpty &&
+    //         double.parse(element.extrasPrice!) != 0.0) {
+    //       total += double.parse(element.quantity.toString()) *
+    //           double.parse(element.extrasPrice!);
+    //     }
+    //     total += double.parse(element.quantity.toString()) *
+    //         double.parse(element.price.toString());
 
-        List<dynamic>? addon = element.extras;
-        String extrasDisVal = '';
-        for (int i = 0; i < addon!.length; i++) {
-          extrasDisVal +=
-              '${addon[i].toString().replaceAll("\"", "")} ${(i == addon.length - 1) ? "" : ","}';
-        }
-        String product = """
-        <tr>
-            <td style="width: 20%; border-top: 1px solid rgb(0, 0, 0);">${element.name}</td>
-            <td style="width: 20%; border: 1px solid rgb(0, 0, 0);" rowspan="2">${element.quantity}</td>
-            <td style="width: 20%; border: 1px solid rgb(0, 0, 0);" rowspan="2">${amountShow(amount: element.price.toString())}</td>
-            <td style="width: 20%; border: 1px solid rgb(0, 0, 0);" rowspan="2">${amountShow(amount: element.extrasPrice.toString())}</td>
-            <td style="width: 20%; border: 1px solid rgb(0, 0, 0);" rowspan="2">${amountShow(amount: ((double.parse(element.quantity.toString()) * double.parse(element.extrasPrice!) + (double.parse(element.quantity.toString()) * double.parse(element.price.toString())))).toString())}</td>
-        </tr>
-        <tr>
-            <td style="width: 20%;">${extrasDisVal.isEmpty ? "" : "Extra Item : $extrasDisVal"}</td>
-        </tr>
-    """;
-        htmlList.add(product);
-      }
+    //     List<dynamic>? addon = element.extras;
+    //     String extrasDisVal = '';
+    //     for (int i = 0; i < addon!.length; i++) {
+    //       extrasDisVal +=
+    //           '${addon[i].toString().replaceAll("\"", "")} ${(i == addon.length - 1) ? "" : ","}';
+    //     }
+    //     String product = """
+    //     <tr>
+    //         <td style="width: 20%; border-top: 1px solid rgb(0, 0, 0);">${element.name}</td>
+    //         <td style="width: 20%; border: 1px solid rgb(0, 0, 0);" rowspan="2">${element.quantity}</td>
+    //         <td style="width: 20%; border: 1px solid rgb(0, 0, 0);" rowspan="2">${amountShow(amount: element.price.toString())}</td>
+    //         <td style="width: 20%; border: 1px solid rgb(0, 0, 0);" rowspan="2">${amountShow(amount: element.extrasPrice.toString())}</td>
+    //         <td style="width: 20%; border: 1px solid rgb(0, 0, 0);" rowspan="2">${amountShow(amount: ((double.parse(element.quantity.toString()) * double.parse(element.extrasPrice!) + (double.parse(element.quantity.toString()) * double.parse(element.price.toString())))).toString())}</td>
+    //     </tr>
+    //     <tr>
+    //         <td style="width: 20%;">${extrasDisVal.isEmpty ? "" : "Extra Item : $extrasDisVal"}</td>
+    //     </tr>
+    // """;
+    //     htmlList.add(product);
+    //   }
 
-      if (orderModel.specialDiscount!.isNotEmpty) {
-        specialDiscount = double.parse(
-            orderModel.specialDiscount!['special_discount'].toString());
-      }
+    //   if (orderModel.specialDiscount!.isNotEmpty) {
+    //     specialDiscount = double.parse(
+    //         orderModel.specialDiscount!['special_discount'].toString());
+    //   }
 
-      if (orderModel.couponId != null && orderModel.couponId!.isNotEmpty) {
-        discount = double.parse(orderModel.discount.toString());
-      }
+    //   if (orderModel.couponId != null && orderModel.couponId!.isNotEmpty) {
+    //     discount = double.parse(orderModel.discount.toString());
+    //   }
 
-      List<String> taxHtmlList = [];
-      if (taxList != null) {
-        for (var element in taxList!) {
-          taxAmount = taxAmount +
-              calculateTax(
-                  amount: (total - discount - specialDiscount).toString(),
-                  taxModel: element);
-          String taxHtml =
-              """<span style="font-size: 1rem;">${element.title}: ${amountShow(amount: calculateTax(amount: (total - discount - specialDiscount).toString(), taxModel: element).toString())}${taxList!.indexOf(element) == taxList!.length - 1 ? "</span>" : "<br></span>"}""";
-          taxHtmlList.add(taxHtml);
-        }
-      }
+    //   List<String> taxHtmlList = [];
+    //   if (taxList != null) {
+    //     for (var element in taxList!) {
+    //       taxAmount = taxAmount +
+    //           calculateTax(
+    //               amount: (total - discount - specialDiscount).toString(),
+    //               taxModel: element);
+    //       String taxHtml =
+    //           """<span style="font-size: 1rem;">${element.title}: ${amountShow(amount: calculateTax(amount: (total - discount - specialDiscount).toString(), taxModel: element).toString())}${taxList!.indexOf(element) == taxList!.length - 1 ? "</span>" : "<br></span>"}""";
+    //       taxHtmlList.add(taxHtml);
+    //     }
+    //   }
 
-      var totalamount = orderModel.deliveryCharge == null ||
-              orderModel.deliveryCharge!.isEmpty
-          ? total + taxAmount - discount - specialDiscount
-          : total +
-              taxAmount +
-              double.parse(orderModel.deliveryCharge!) +
-              double.parse(orderModel.tipAmount!) -
-              discount -
-              specialDiscount;
+    //   var totalamount = orderModel.deliveryCharge == null ||
+    //           orderModel.deliveryCharge!.isEmpty
+    //       ? total + taxAmount - discount - specialDiscount
+    //       : total +
+    //           taxAmount +
+    //           double.parse(orderModel.deliveryCharge!) +
+    //           double.parse(orderModel.tipAmount!) -
+    //           discount -
+    //           specialDiscount;
 
-      newString = newString.replaceAll(
-          "{subtotal}", amountShow(amount: total.toString()));
-      newString =
-          newString.replaceAll("{coupon}", orderModel.couponId.toString());
-      newString = newString.replaceAll("{discountamount}",
-          amountShow(amount: orderModel.discount.toString()));
-      newString = newString.replaceAll("{specialcoupon}", specialLabel);
-      newString = newString.replaceAll("{specialdiscountamount}",
-          amountShow(amount: specialDiscount.toString()));
-      newString = newString.replaceAll(
-          "{shippingcharge}", amountShow(amount: deliveryCharge.toString()));
-      newString = newString.replaceAll(
-          "{tipamount}", amountShow(amount: tipValue.toString()));
-      newString = newString.replaceAll(
-          "{totalAmount}", amountShow(amount: totalamount.toString()));
+    //   newString = newString.replaceAll(
+    //       "{subtotal}", amountShow(amount: total.toString()));
+    //   newString =
+    //       newString.replaceAll("{coupon}", orderModel.couponId.toString());
+    //   newString = newString.replaceAll("{discountamount}",
+    //       amountShow(amount: orderModel.discount.toString()));
+    //   newString = newString.replaceAll("{specialcoupon}", specialLabel);
+    //   newString = newString.replaceAll("{specialdiscountamount}",
+    //       amountShow(amount: specialDiscount.toString()));
+    //   newString = newString.replaceAll(
+    //       "{shippingcharge}", amountShow(amount: deliveryCharge.toString()));
+    //   newString = newString.replaceAll(
+    //       "{tipamount}", amountShow(amount: tipValue.toString()));
+    //   newString = newString.replaceAll(
+    //       "{totalAmount}", amountShow(amount: totalamount.toString()));
 
-      String tableHTML = htmlList.join();
-      String lastHTML = "</tbody></table>";
-      newString = newString.replaceAll(
-          "{productdetails}", firstHTML + tableHTML + lastHTML);
-      newString = newString.replaceAll("{taxdetails}", taxHtmlList.join());
-      newString = newString.replaceAll("{newwalletbalance}.",
-          amountShow(amount: Constant.userModel!.walletAmount.toString()));
+    //   String tableHTML = htmlList.join();
+    //   String lastHTML = "</tbody></table>";
+    //   newString = newString.replaceAll(
+    //       "{productdetails}", firstHTML + tableHTML + lastHTML);
+    //   newString = newString.replaceAll("{taxdetails}", taxHtmlList.join());
+    //   newString = newString.replaceAll("{newwalletbalance}.",
+    //       amountShow(amount: Constant.userModel!.walletAmount.toString()));
 
-      String subjectNewString = emailTemplateModel.subject.toString();
-      subjectNewString =
-          subjectNewString.replaceAll("{orderid}", orderModel.id.toString());
-      await sendMail(
-          subject: subjectNewString,
-          isAdmin: emailTemplateModel.isSendToAdmin,
-          body: newString,
-          recipients: [Constant.userModel!.email]);
-    }
+    //   String subjectNewString = emailTemplateModel.subject.toString();
+    //   subjectNewString =
+    //       subjectNewString.replaceAll("{orderid}", orderModel.id.toString());
+    // }
   }
 }
 

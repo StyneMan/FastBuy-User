@@ -1,5 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-
 import '../utils/math.dart';
 
 class GeoFirePoint {
@@ -29,10 +27,10 @@ class GeoFirePoint {
     return _util.neighbors(hash);
   }
 
-  /// return [GeoPoint] of [GeoFirePoint]
-  GeoPoint get geoPoint {
-    return GeoPoint(latitude, longitude);
-  }
+  // /// return [GeoPoint] of [GeoFirePoint]
+  // GeoPoint get geoPoint {
+  //   return GeoPoint(latitude, longitude);
+  // }
 
   Coordinates get coords {
     return Coordinates(latitude, longitude);
@@ -43,9 +41,9 @@ class GeoFirePoint {
     return kmDistanceBetween(from: coords, to: Coordinates(lat, lng));
   }
 
-  get data {
-    return {'geopoint': geoPoint, 'geohash': hash};
-  }
+  // get data {
+  //   return {'geopoint': geoPoint, 'geohash': hash};
+  // }
 
   /// haversine distance between [GeoFirePoint] and ([lat], [lng])
   haversineDistance({required double lat, required double lng}) {

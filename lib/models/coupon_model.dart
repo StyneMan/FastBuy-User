@@ -1,12 +1,10 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-
 class CouponModel {
   String? discountType;
   String? id;
   String? code;
   String? discount;
   String? image;
-  Timestamp? expiresAt;
+  String? expiresAt;
   String? description;
   bool? isPublic;
   String? resturantId;
@@ -14,15 +12,15 @@ class CouponModel {
 
   CouponModel(
       {this.discountType,
-        this.id,
-        this.code,
-        this.discount,
-        this.image,
-        this.expiresAt,
-        this.description,
-        this.isPublic,
-        this.resturantId,
-        this.isEnabled});
+      this.id,
+      this.code,
+      this.discount,
+      this.image,
+      this.expiresAt,
+      this.description,
+      this.isPublic,
+      this.resturantId,
+      this.isEnabled});
 
   CouponModel.fromJson(Map<String, dynamic> json) {
     discountType = json['discountType'];

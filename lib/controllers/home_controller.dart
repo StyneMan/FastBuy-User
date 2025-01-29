@@ -1,9 +1,6 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:customer/constant/constant.dart';
 import 'package:customer/controllers/dash_board_controller.dart';
 import 'package:customer/data/dummy_banners.dart';
-import 'package:customer/data/dummy_coupons.dart';
-import 'package:customer/data/dummy_vendor.dart';
 import 'package:customer/data/dummy_vendor_category.dart';
 import 'package:customer/models/BannerModel.dart';
 import 'package:customer/models/favourite_model.dart';
@@ -12,7 +9,6 @@ import 'package:customer/models/story_model.dart';
 import 'package:customer/models/vendor_category_model.dart';
 import 'package:customer/models/vendor_model.dart';
 import 'package:customer/services/cart_provider.dart';
-import 'package:customer/utils/fire_store_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -74,10 +70,10 @@ class HomeController extends GetxController {
     // getCartData();
     // selectedOrderTypeValue.value = Preferences.getString(Preferences.foodDeliveryType, defaultValue: "Delivery".tr).tr;
     // await getZone();
-    allNearestRestaurant.value = [dummyVendor];
-    newArrivalRestaurantList.value = [dummyVendor];
-    popularRestaurantList.value = [dummyVendor];
-    couponRestaurantList.value = [dummyVendor];
+    // allNearestRestaurant.value = [dummyVendor];
+    // newArrivalRestaurantList.value = [dummyVendor];
+    // popularRestaurantList.value = [dummyVendor];
+    // couponRestaurantList.value = [dummyVendor];
     bannerModel.value = bannerModels;
     bannerBottomModel.value = bannerModels;
 
@@ -87,7 +83,7 @@ class HomeController extends GetxController {
       FavouriteModel(restaurantId: "restaurant_003", userId: "user_001"),
     ];
 
-    couponList.value = dummyCouponModels;
+    // couponList.value = dummyCouponModels;
 
     vendorCategoryModel.value = vendorCategories;
     // FireStoreUtils.getAllNearestRestaurant().listen((event) async {
@@ -150,7 +146,7 @@ class HomeController extends GetxController {
           'assets/videos/sample_video.mp4',
         ],
         vendorID: 'vendor123',
-        createdAt: Timestamp.now(),
+        // createdAt: Timestamp.now(),
       ),
       StoryModel(
         videoThumbnail:
@@ -160,7 +156,7 @@ class HomeController extends GetxController {
           'https://example.com/video4.mp4',
         ],
         vendorID: 'vendor456',
-        createdAt: Timestamp.now(),
+        // createdAt: Timestamp.now(),
       ),
       StoryModel(
         videoThumbnail:
@@ -169,7 +165,7 @@ class HomeController extends GetxController {
           'https://example.com/video5.mp4',
         ],
         vendorID: 'vendor789',
-        createdAt: Timestamp.now(),
+        // createdAt: Timestamp.now(),
       ),
       StoryModel(
         videoThumbnail:
@@ -179,7 +175,7 @@ class HomeController extends GetxController {
           'assets/videos/sample_video.mp4',
         ],
         vendorID: 'vendor101',
-        createdAt: Timestamp.now(),
+        // createdAt: Timestamp.now(),
       ),
       StoryModel(
         videoThumbnail:
@@ -188,7 +184,7 @@ class HomeController extends GetxController {
           'https://example.com/video8.mp4',
         ],
         vendorID: 'vendor102',
-        createdAt: Timestamp.now(),
+        // createdAt: Timestamp.now(),
       ),
     ];
     // });
@@ -198,11 +194,11 @@ class HomeController extends GetxController {
   }
 
   getVendorCategory() async {
-    await FireStoreUtils.getHomeVendorCategory().then(
-      (value) {
-        // vendorCategoryModel.value = value;
-      },
-    );
+    // await FireStoreUtils.getHomeVendorCategory().then(
+    //   (value) {
+    //     // vendorCategoryModel.value = value;
+    //   },
+    // );
 
     // await FireStoreUtils.getHomeTopBanner().then(
     //   (value) {
@@ -226,22 +222,22 @@ class HomeController extends GetxController {
   }
 
   getZone() async {
-    await FireStoreUtils.getZone().then((value) {
-      if (value != null) {
-        for (int i = 0; i < value.length; i++) {
-          if (Constant.isPointInPolygon(
-              LatLng(Constant.selectedLocation.location!.latitude ?? 0.0,
-                  Constant.selectedLocation.location!.longitude ?? 0.0),
-              value[i].area!)) {
-            Constant.selectedZone = value[i];
-            Constant.isZoneAvailable = true;
-            break;
-          } else {
-            Constant.selectedZone = value[i];
-            Constant.isZoneAvailable = false;
-          }
-        }
-      }
-    });
+    // await FireStoreUtils.getZone().then((value) {
+    //   if (value != null) {
+    //     for (int i = 0; i < value.length; i++) {
+    //       if (Constant.isPointInPolygon(
+    //           LatLng(Constant.selectedLocation.location!.latitude ?? 0.0,
+    //               Constant.selectedLocation.location!.longitude ?? 0.0),
+    //           value[i].area!)) {
+    //         Constant.selectedZone = value[i];
+    //         Constant.isZoneAvailable = true;
+    //         break;
+    //       } else {
+    //         Constant.selectedZone = value[i];
+    //         Constant.isZoneAvailable = false;
+    //       }
+    //     }
+    //   }
+    // });
   }
 }

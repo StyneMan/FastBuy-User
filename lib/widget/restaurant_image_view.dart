@@ -6,9 +6,11 @@ import 'package:customer/utils/network_image_widget.dart';
 import 'package:flutter/material.dart';
 
 class RestaurantImageView extends StatefulWidget {
-  final VendorModel vendorModel;
-
-  const RestaurantImageView({super.key, required this.vendorModel});
+  final images;
+  const RestaurantImageView({
+    super.key,
+    required this.images,
+  });
 
   @override
   State<RestaurantImageView> createState() => _RestaurantImageViewState();
@@ -21,16 +23,15 @@ class _RestaurantImageViewState extends State<RestaurantImageView> {
 
   @override
   void initState() {
-    animateSlider();
+    // animateSlider();
     super.initState();
   }
 
   void animateSlider() {
-    if (widget.vendorModel.photos != null &&
-        widget.vendorModel.photos!.isNotEmpty) {
-      if (widget.vendorModel.photos!.length > 1) {
+    if (widget.images != null && widget.images!.isNotEmpty) {
+      if (widget.images!.length > 1) {
         Timer.periodic(const Duration(seconds: 2), (Timer timer) {
-          if (currentPage < widget.vendorModel.photos!.length - 1) {
+          if (currentPage < widget.images!.length - 1) {
             currentPage++;
           } else {
             currentPage = 0;
@@ -51,33 +52,38 @@ class _RestaurantImageViewState extends State<RestaurantImageView> {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: Responsive.height(20, context),
-      child: widget.vendorModel.photos == null ||
-              widget.vendorModel.photos!.isEmpty
-          ? NetworkImageWidget(
-              imageUrl: widget.vendorModel.photo.toString(),
-              fit: BoxFit.cover,
-              height: Responsive.height(20, context),
-              width: Responsive.width(100, context),
-            )
-          : PageView.builder(
-              physics: const BouncingScrollPhysics(),
-              controller: pageController,
-              scrollDirection: Axis.horizontal,
-              allowImplicitScrolling: true,
-              itemCount: widget.vendorModel.photos!.length,
-              padEnds: false,
-              pageSnapping: true,
-              itemBuilder: (BuildContext context, int index) {
-                String image = widget.vendorModel.photos![index];
-                return NetworkImageWidget(
-                  imageUrl: image.toString(),
-                  fit: BoxFit.cover,
-                  height: Responsive.height(20, context),
-                  width: Responsive.width(100, context),
-                );
-              },
-            ),
-    );
+        height: Responsive.height(20, context),
+        child:
+            // widget.images == null || widget.images!.isEmpty
+            // ?
+            NetworkImageWidget(
+          imageUrl: "${widget.images}",
+          fit: BoxFit.cover,
+          height: Responsive.height(20, context),
+          width: Responsive.width(100, context),
+          errorWidget: const Icon(
+            Icons.photo_size_select_actual_rounded,
+            size: 100,
+          ),
+        )
+        // : PageView.builder(
+        //     physics: const BouncingScrollPhysics(),
+        //     controller: pageController,
+        //     scrollDirection: Axis.horizontal,
+        //     allowImplicitScrolling: true,
+        //     itemCount: widget.images!.length,
+        //     padEnds: false,
+        //     pageSnapping: true,
+        //     itemBuilder: (BuildContext context, int index) {
+        //       String image = widget.images;
+        //       return NetworkImageWidget(
+        //         imageUrl: image.toString(),
+        //         fit: BoxFit.cover,
+        //         height: Responsive.height(20, context),
+        //         width: Responsive.width(100, context),
+        //       );
+        //     },
+        //   ),
+        );
   }
 }

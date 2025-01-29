@@ -19,9 +19,13 @@ class ReviewListScreen extends StatelessWidget {
         init: ReviewListController(),
         builder: (controller) {
           return Scaffold(
-            backgroundColor: themeChange.getThem() ? AppThemeData.surfaceDark : AppThemeData.surface,
+            backgroundColor: themeChange.getThem()
+                ? AppThemeData.surfaceDark
+                : AppThemeData.surface,
             appBar: AppBar(
-              backgroundColor: themeChange.getThem() ? AppThemeData.surfaceDark : AppThemeData.surface,
+              backgroundColor: themeChange.getThem()
+                  ? AppThemeData.surfaceDark
+                  : AppThemeData.surface,
               centerTitle: false,
               titleSpacing: 0,
               title: Text(
@@ -30,14 +34,17 @@ class ReviewListScreen extends StatelessWidget {
                 style: TextStyle(
                   fontFamily: AppThemeData.medium,
                   fontSize: 16,
-                  color: themeChange.getThem() ? AppThemeData.grey50 : AppThemeData.grey900,
+                  color: themeChange.getThem()
+                      ? AppThemeData.grey50
+                      : AppThemeData.grey900,
                 ),
               ),
             ),
             body: controller.isLoading.value
                 ? Constant.loader()
                 : Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 10),
                     child: ListView.builder(
                       itemCount: controller.ratingList.length,
                       itemBuilder: (context, index) {
@@ -46,9 +53,15 @@ class ReviewListScreen extends StatelessWidget {
                           padding: const EdgeInsets.symmetric(vertical: 5),
                           child: Container(
                             decoration: ShapeDecoration(
-                              color: themeChange.getThem() ? AppThemeData.grey900 : AppThemeData.grey50,
+                              color: themeChange.getThem()
+                                  ? AppThemeData.grey900
+                                  : AppThemeData.grey50,
                               shape: RoundedRectangleBorder(
-                                side: BorderSide(width: 1, color: themeChange.getThem() ? AppThemeData.grey700 : AppThemeData.grey200),
+                                side: BorderSide(
+                                    width: 1,
+                                    color: themeChange.getThem()
+                                        ? AppThemeData.grey700
+                                        : AppThemeData.grey200),
                                 borderRadius: BorderRadius.circular(12),
                               ),
                             ),
@@ -59,7 +72,12 @@ class ReviewListScreen extends StatelessWidget {
                                 children: [
                                   Text(
                                     ratingModel.uname.toString(),
-                                    style: TextStyle(color: themeChange.getThem() ? AppThemeData.grey50 : AppThemeData.grey900, fontSize: 18, fontFamily: AppThemeData.semiBold),
+                                    style: TextStyle(
+                                        color: themeChange.getThem()
+                                            ? AppThemeData.grey50
+                                            : AppThemeData.grey900,
+                                        fontSize: 18,
+                                        fontFamily: AppThemeData.semiBold),
                                   ),
                                   const SizedBox(
                                     height: 5,
@@ -71,7 +89,8 @@ class ReviewListScreen extends StatelessWidget {
                                     direction: Axis.horizontal,
                                     itemCount: 5,
                                     itemSize: 18,
-                                    itemPadding: const EdgeInsets.symmetric(horizontal: 2.0),
+                                    itemPadding: const EdgeInsets.symmetric(
+                                        horizontal: 2.0),
                                     itemBuilder: (context, _) => const Icon(
                                       Icons.star,
                                       color: AppThemeData.warning300,
@@ -83,14 +102,25 @@ class ReviewListScreen extends StatelessWidget {
                                   ),
                                   Text(
                                     ratingModel.comment.toString(),
-                                    style: TextStyle(color: themeChange.getThem() ? AppThemeData.grey50 : AppThemeData.grey900, fontSize: 16, fontFamily: AppThemeData.medium),
+                                    style: TextStyle(
+                                        color: themeChange.getThem()
+                                            ? AppThemeData.grey50
+                                            : AppThemeData.grey900,
+                                        fontSize: 16,
+                                        fontFamily: AppThemeData.medium),
                                   ),
                                   const SizedBox(
                                     height: 10,
                                   ),
                                   Text(
-                                    Constant.timestampToDateTime(ratingModel.createdAt!),
-                                    style: TextStyle(color: themeChange.getThem() ? AppThemeData.grey300 : AppThemeData.grey600, fontSize: 14, fontFamily: AppThemeData.medium),
+                                    "",
+                                    // Constant.timestampToDateTime(ratingModel.createdAt!),
+                                    style: TextStyle(
+                                        color: themeChange.getThem()
+                                            ? AppThemeData.grey300
+                                            : AppThemeData.grey600,
+                                        fontSize: 14,
+                                        fontFamily: AppThemeData.medium),
                                   ),
                                 ],
                               ),

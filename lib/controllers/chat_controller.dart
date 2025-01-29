@@ -1,10 +1,8 @@
 import 'dart:async';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:customer/constant/send_notification.dart';
 import 'package:customer/models/conversation_model.dart';
 import 'package:customer/models/inbox_model.dart';
-import 'package:customer/utils/fire_store_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
@@ -64,7 +62,6 @@ class ChatController extends GetxController {
       customerName: customerName.value,
       restaurantId: restaurantId.value,
       restaurantName: restaurantName.value,
-      createdAt: Timestamp.now(),
       orderId: orderId.value,
       customerProfileImage: customerProfileImage.value,
       restaurantProfileImage: restaurantProfileImage.value,
@@ -73,9 +70,9 @@ class ChatController extends GetxController {
     );
 
     if (chatType.value == "Driver") {
-      await FireStoreUtils.addDriverInbox(inboxModel);
+      // await FireStoreUtils.addDriverInbox(inboxModel);
     } else {
-      await FireStoreUtils.addRestaurantInbox(inboxModel);
+      // await FireStoreUtils.addRestaurantInbox(inboxModel);
     }
 
     ConversationModel conversationModel = ConversationModel(
@@ -83,7 +80,7 @@ class ChatController extends GetxController {
         message: message,
         senderId: customerId.value,
         receiverId: restaurantId.value,
-        createdAt: Timestamp.now(),
+        // createdAt: Timestamp.now(),
         url: url,
         orderId: orderId.value,
         messageType: messageType,
@@ -100,9 +97,9 @@ class ChatController extends GetxController {
     }
 
     if (chatType.value == "Driver") {
-      await FireStoreUtils.addDriverChat(conversationModel);
+      // await FireStoreUtils.addDriverChat(conversationModel);
     } else {
-      await FireStoreUtils.addRestaurantChat(conversationModel);
+      // await FireStoreUtils.addRestaurantChat(conversationModel);
     }
 
     await SendNotification.sendChatFcmMessage(customerName.value,

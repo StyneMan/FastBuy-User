@@ -7,8 +7,6 @@ class Preferences {
 
   static const themKey = "themKey";
 
-
-
   static const payFastSettings = "payFastSettings";
   static const mercadoPago = "MercadoPago";
   static const paypalSettings = "paypalSettings";
@@ -22,6 +20,8 @@ class Preferences {
   static const midTransSettings = "midTransSettings";
   static const orangeMoneySettings = "orangeMoneySettings";
   static const xenditSettings = "xenditSettings";
+
+  static const accessTokenKey = "accessToken";
 
   static late SharedPreferences pref;
 

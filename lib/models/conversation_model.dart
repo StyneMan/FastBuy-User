@@ -1,5 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-
 class ConversationModel {
   String? id;
   String? senderId;
@@ -9,7 +7,7 @@ class ConversationModel {
   String? messageType;
   String? videoThumbnail;
   Url? url;
-  Timestamp? createdAt;
+  var createdAt;
 
   ConversationModel({
     this.id,
@@ -37,7 +35,7 @@ class ConversationModel {
               ? Url.fromJson(parsedJson['url'])
               : null
           : Url(),
-      createdAt: parsedJson['createdAt'] ?? Timestamp.now(),
+      createdAt: parsedJson['createdAt'] ?? "",
     );
   }
 
@@ -66,7 +64,10 @@ class Url {
   Url({this.mime = '', this.url = '', this.videoThumbnail});
 
   factory Url.fromJson(Map<dynamic, dynamic> parsedJson) {
-    return Url(mime: parsedJson['mime'] ?? '', url: parsedJson['url'] ?? '', videoThumbnail: parsedJson['videoThumbnail'] ?? '');
+    return Url(
+        mime: parsedJson['mime'] ?? '',
+        url: parsedJson['url'] ?? '',
+        videoThumbnail: parsedJson['videoThumbnail'] ?? '');
   }
 
   Map<String, dynamic> toJson() {

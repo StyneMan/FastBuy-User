@@ -1,7 +1,5 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-
 class CurrencyModel {
-  Timestamp? createdAt;
+  String? createdAt;
   String? symbol;
   String? code;
   bool? enable;
@@ -9,9 +7,18 @@ class CurrencyModel {
   String? name;
   int? decimalDigits;
   String? id;
-  Timestamp? updatedAt;
+  String? updatedAt;
 
-  CurrencyModel({this.createdAt, this.symbol, this.code, this.enable, this.symbolAtRight, this.name, this.decimalDigits, this.id, this.updatedAt});
+  CurrencyModel(
+      {this.createdAt,
+      this.symbol,
+      this.code,
+      this.enable,
+      this.symbolAtRight,
+      this.name,
+      this.decimalDigits,
+      this.id,
+      this.updatedAt});
 
   CurrencyModel.fromJson(Map<String, dynamic> json) {
     createdAt = json['createdAt'];
@@ -20,7 +27,9 @@ class CurrencyModel {
     enable = json['enable'];
     symbolAtRight = json['symbolAtRight'];
     name = json['name'];
-    decimalDigits = json['decimalDigits'] != null ? int.parse(json['decimalDigits'].toString()) : 2;
+    decimalDigits = json['decimalDigits'] != null
+        ? int.parse(json['decimalDigits'].toString())
+        : 2;
     id = json['id'];
     updatedAt = json['updatedAt'];
   }

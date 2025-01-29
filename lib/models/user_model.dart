@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:customer/constant/constant.dart';
 
 class UserModel {
@@ -14,7 +13,7 @@ class UserModel {
   bool? active;
   bool? isActive;
   bool? isDocumentVerify;
-  Timestamp? createdAt;
+  String? createdAt;
   String? role;
   UserLocation? location;
   UserBankDetails? userBankDetails;
@@ -75,8 +74,12 @@ class UserModel {
     isActive = json['isActive'];
     isDocumentVerify = json['isDocumentVerify'] ?? false;
     role = json['role'] ?? 'user';
-    location = json['location'] != null ? UserLocation.fromJson(json['location']) : null;
-    userBankDetails = json['userBankDetails'] != null ? UserBankDetails.fromJson(json['userBankDetails']) : null;
+    location = json['location'] != null
+        ? UserLocation.fromJson(json['location'])
+        : null;
+    userBankDetails = json['userBankDetails'] != null
+        ? UserBankDetails.fromJson(json['userBankDetails'])
+        : null;
     if (json['shippingAddress'] != null) {
       shippingAddress = <ShippingAddress>[];
       json['shippingAddress'].forEach((v) {
@@ -117,7 +120,8 @@ class UserModel {
       data['userBankDetails'] = userBankDetails!.toJson();
     }
     if (shippingAddress != null) {
-      data['shippingAddress'] = shippingAddress!.map((v) => v.toJson()).toList();
+      data['shippingAddress'] =
+          shippingAddress!.map((v) => v.toJson()).toList();
     }
     if (role == Constant.userRoleDriver) {
       data['carName'] = carName;
@@ -162,7 +166,14 @@ class ShippingAddress {
   UserLocation? location;
   bool? isDefault;
 
-  ShippingAddress({this.address, this.landmark, this.locality, this.location, this.isDefault, this.addressAs, this.id});
+  ShippingAddress(
+      {this.address,
+      this.landmark,
+      this.locality,
+      this.location,
+      this.isDefault,
+      this.addressAs,
+      this.id});
 
   ShippingAddress.fromJson(Map<String, dynamic> json) {
     id = json['id'];
@@ -171,7 +182,9 @@ class ShippingAddress {
     locality = json['locality'];
     isDefault = json['isDefault'];
     addressAs = json['addressAs'];
-    location = json['location'] == null ? null : UserLocation.fromJson(json['location']);
+    location = json['location'] == null
+        ? null
+        : UserLocation.fromJson(json['location']);
   }
 
   Map<String, dynamic> toJson() {
@@ -189,7 +202,7 @@ class ShippingAddress {
   }
 
   String getFullAddress() {
-    return '${address == null || address!.isEmpty ? "" : address} $locality ${landmark == null || landmark!.isEmpty ? "" : landmark.toString()}';
+    return '${address == null || address!.isEmpty ? " " : address} ${locality == null || locality!.isEmpty ? " " : locality} ${landmark == null || landmark!.isEmpty ? " " : landmark.toString()}';
   }
 }
 

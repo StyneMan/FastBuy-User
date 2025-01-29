@@ -21,7 +21,11 @@ class SplashScreen extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Image.asset("assets/images/ic_logo.png"),
+                Image.asset(
+                  "assets/images/logo_white.png",
+                  width: 75,
+                  height: 75,
+                ),
                 const SizedBox(
                   height: 10,
                 ),
@@ -35,7 +39,7 @@ class SplashScreen extends StatelessWidget {
                           color: themeChange.getThem()
                               ? AppThemeData.grey50
                               : AppThemeData.grey50,
-                          fontSize: 28,
+                          fontSize: 24,
                           fontFamily: AppThemeData.bold),
                     ),
                     const SizedBox(
@@ -47,14 +51,14 @@ class SplashScreen extends StatelessWidget {
                         color: themeChange.getThem()
                             ? AppThemeData.primary500
                             : AppThemeData.primary500,
-                        fontSize: 28,
+                        fontSize: 24,
                         fontFamily: AppThemeData.bold,
                       ),
                     ),
                   ],
                 ),
                 Text(
-                  "Your Food & Packages Delivered Fast!".tr,
+                  "Your Orders & Packages Delivered Fast!".tr,
                   style: TextStyle(
                       color: themeChange.getThem()
                           ? AppThemeData.grey50

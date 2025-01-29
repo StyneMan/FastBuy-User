@@ -37,10 +37,13 @@ class _MercadoPagoScreenState extends State<MercadoPagoScreen> {
           onWebResourceError: (WebResourceError error) {},
           onNavigationRequest: (NavigationRequest navigation) async {
             debugPrint("--->2 ${navigation.url}");
-            if (navigation.url.contains("${Constant.globalUrl}payment/success")) {
+            if (navigation.url.contains("success")) {
               Get.back(result: true);
             }
-            if (navigation.url.contains("${Constant.globalUrl}payment/failure") || navigation.url.contains("${Constant.globalUrl}payment/pending")) {
+            if (navigation.url
+                    .contains("${Constant.globalUrl}payment/failure") ||
+                navigation.url
+                    .contains("${Constant.globalUrl}payment/pending")) {
               Get.back(result: false);
             }
             return NavigationDecision.navigate;
@@ -60,7 +63,7 @@ class _MercadoPagoScreenState extends State<MercadoPagoScreen> {
       child: Scaffold(
         appBar: AppBar(
             title: Text("Payment".tr),
-            centerTitle: false,
+            centerTitle: true,
             leading: GestureDetector(
               onTap: () {
                 _showMyDialog();

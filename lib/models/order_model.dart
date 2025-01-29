@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:customer/models/cart_product_model.dart';
 import 'package:customer/models/tax_model.dart';
 import 'package:customer/models/user_model.dart';
@@ -13,8 +12,8 @@ class OrderModel {
   num? discount;
   String? authorID;
   String? estimatedTimeToPrepare;
-  Timestamp? createdAt;
-  Timestamp? triggerDelivery;
+  String? createdAt;
+  String? triggerDelivery;
   List<TaxModel>? taxSetting;
   String? paymentMethod;
   List<CartProductModel>? products;
@@ -25,7 +24,7 @@ class OrderModel {
   String? couponCode;
   Map<String, dynamic>? specialDiscount;
   String? deliveryCharge;
-  Timestamp? scheduleTime;
+  String? scheduleTime;
   String? tipAmount;
   String? notes;
   UserModel? author;
@@ -35,34 +34,37 @@ class OrderModel {
 
   OrderModel(
       {this.address,
-        this.status,
-        this.couponId,
-        this.vendorID,
-        this.driverID,
-        this.discount,
-        this.authorID,
-        this.estimatedTimeToPrepare,
-        this.createdAt,
-        this.triggerDelivery,
-        this.taxSetting,
-        this.paymentMethod,
-        this.products,
-        this.adminCommissionType,
-        this.vendor,
-        this.id,
-        this.adminCommission,
-        this.couponCode,
-        this.specialDiscount,
-        this.deliveryCharge,
-        this.scheduleTime,
-        this.tipAmount,
-        this.notes,
-        this.author,
-        this.driver,
-        this.takeAway,this.rejectedByDrivers});
+      this.status,
+      this.couponId,
+      this.vendorID,
+      this.driverID,
+      this.discount,
+      this.authorID,
+      this.estimatedTimeToPrepare,
+      this.createdAt,
+      this.triggerDelivery,
+      this.taxSetting,
+      this.paymentMethod,
+      this.products,
+      this.adminCommissionType,
+      this.vendor,
+      this.id,
+      this.adminCommission,
+      this.couponCode,
+      this.specialDiscount,
+      this.deliveryCharge,
+      this.scheduleTime,
+      this.tipAmount,
+      this.notes,
+      this.author,
+      this.driver,
+      this.takeAway,
+      this.rejectedByDrivers});
 
   OrderModel.fromJson(Map<String, dynamic> json) {
-    address = json['address'] != null ? ShippingAddress.fromJson(json['address']) : null;
+    address = json['address'] != null
+        ? ShippingAddress.fromJson(json['address'])
+        : null;
     status = json['status'];
     couponId = json['couponId'];
     vendorID = json['vendorID'];
@@ -71,7 +73,7 @@ class OrderModel {
     authorID = json['authorID'];
     estimatedTimeToPrepare = json['estimatedTimeToPrepare'];
     createdAt = json['createdAt'];
-    triggerDelivery = json['triggerDelevery'] ?? Timestamp.now();
+    triggerDelivery = json['triggerDelevery'] ?? "";
     if (json['taxSetting'] != null) {
       taxSetting = <TaxModel>[];
       json['taxSetting'].forEach((v) {
@@ -86,14 +88,19 @@ class OrderModel {
       });
     }
     adminCommissionType = json['adminCommissionType'];
-    vendor = json['vendor'] != null ? VendorModel.fromJson(json['vendor']) : null;
+    vendor =
+        json['vendor'] != null ? VendorModel.fromJson(json['vendor']) : null;
     id = json['id'];
     adminCommission = json['adminCommission'];
     couponCode = json['couponCode'];
     specialDiscount = json['specialDiscount'];
-    deliveryCharge = json['deliveryCharge'].toString().isEmpty ? "0.0" : json['deliveryCharge'] ?? '0.0';
+    deliveryCharge = json['deliveryCharge'].toString().isEmpty
+        ? "0.0"
+        : json['deliveryCharge'] ?? '0.0';
     scheduleTime = json['scheduleTime'];
-    tipAmount = json['tip_amount'].toString().isEmpty ? "0.0" : json['tip_amount'] ?? "0.0";
+    tipAmount = json['tip_amount'].toString().isEmpty
+        ? "0.0"
+        : json['tip_amount'] ?? "0.0";
     notes = json['notes'];
     author = json['author'] != null ? UserModel.fromJson(json['author']) : null;
     driver = json['driver'] != null ? UserModel.fromJson(json['driver']) : null;

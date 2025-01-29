@@ -1,10 +1,12 @@
 import 'package:customer/utils/preferences.dart';
 import 'package:get/get.dart';
 
-class MyProfileController extends GetxController{
-
+class MyProfileController extends GetxController {
   RxBool isLoading = true.obs;
-
+  var userData = {}.obs;
+  var policy = "".obs;
+  var terms = "".obs;
+  var paymentGateways = [].obs;
 
   @override
   void onInit() {
@@ -28,4 +30,11 @@ class MyProfileController extends GetxController{
     isLoading.value = false;
   }
 
+  setProfile(var profile) {
+    userData.value = profile;
+  }
+
+  clearProfile() {
+    userData.value = {};
+  }
 }

@@ -15,11 +15,11 @@ class ReferFriendController extends GetxController {
   }
 
   getData() async {
-    await FireStoreUtils.getReferralUserBy().then((value) {
-      if (value != null) {
-        referralModel.value = value;
-      }
-    });
-    isLoading.value = false;
+    // await FireStoreUtils.getReferralUserBy().then((value) {
+    //   if (value != null) {
+    //     referralModel.value = value;
+    //   }
+    // });
+    // isLoading.value = false;
   }
 }

@@ -15,7 +15,18 @@ class RoundedButtonFill extends StatelessWidget {
   final bool? isRight;
   final Function()? onPress;
 
-  const RoundedButtonFill({super.key, required this.title, this.height, required this.onPress, this.width, this.color, this.icon, this.fontSizes, this.textColor, this.isRight, this.radius});
+  const RoundedButtonFill(
+      {super.key,
+      required this.title,
+      this.height,
+      required this.onPress,
+      this.width,
+      this.color,
+      this.icon,
+      this.fontSizes,
+      this.textColor,
+      this.isRight,
+      this.radius});
 
   @override
   Widget build(BuildContext context) {
@@ -37,17 +48,20 @@ class RoundedButtonFill extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            (isRight == false) ? Padding(padding: const EdgeInsets.only(right: 5), child: icon) : const SizedBox(),
+            (isRight == false)
+                ? Padding(padding: const EdgeInsets.only(right: 5), child: icon)
+                : const SizedBox(),
             Text(
               title.tr.toString(),
               textAlign: TextAlign.center,
               style: TextStyle(
-                fontFamily: AppThemeData.semiBold,
                 color: textColor ?? AppThemeData.grey800,
                 fontSize: fontSizes ?? 14,
               ),
             ),
-            (isRight == true) ? Padding(padding: const EdgeInsets.only(left: 5), child: icon) : const SizedBox(),
+            (isRight == true)
+                ? Padding(padding: const EdgeInsets.only(left: 5), child: icon)
+                : const SizedBox(),
           ],
         ),
       ),

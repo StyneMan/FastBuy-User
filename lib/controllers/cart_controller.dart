@@ -3,15 +3,10 @@ import 'dart:developer';
 import 'dart:io';
 import 'dart:math' as maths;
 
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:customer/app/cart_screen/oder_placing_screens.dart';
 import 'package:customer/app/wallet_screen/wallet_screen.dart';
 import 'package:customer/constant/constant.dart';
-import 'package:customer/constant/send_notification.dart';
 import 'package:customer/constant/show_toast_dialog.dart';
-import 'package:customer/models/cart_product_model.dart';
 import 'package:customer/models/coupon_model.dart';
-import 'package:customer/models/order_model.dart';
 import 'package:customer/models/payment_model/cod_setting_model.dart';
 import 'package:customer/models/payment_model/flutter_wave_model.dart';
 import 'package:customer/models/payment_model/mercado_pago_model.dart';
@@ -25,10 +20,8 @@ import 'package:customer/models/payment_model/razorpay_model.dart';
 import 'package:customer/models/payment_model/stripe_model.dart';
 import 'package:customer/models/payment_model/wallet_setting_model.dart';
 import 'package:customer/models/payment_model/xendit.dart';
-import 'package:customer/models/product_model.dart';
 import 'package:customer/models/user_model.dart';
 import 'package:customer/models/vendor_model.dart';
-import 'package:customer/models/wallet_transaction_model.dart';
 import 'package:customer/payment/MercadoPagoScreen.dart';
 import 'package:customer/payment/PayFastScreen.dart';
 import 'package:customer/payment/getPaytmTxtToken.dart';
@@ -37,33 +30,26 @@ import 'package:customer/payment/orangePayScreen.dart';
 import 'package:customer/payment/paystack/pay_stack_screen.dart';
 import 'package:customer/payment/paystack/pay_stack_url_model.dart';
 import 'package:customer/payment/paystack/paystack_url_genrater.dart';
-import 'package:customer/payment/stripe_failed_model.dart';
 import 'package:customer/payment/xenditModel.dart';
 import 'package:customer/payment/xenditScreen.dart';
+import 'package:customer/services/api_service.dart';
 import 'package:customer/services/cart_provider.dart';
-import 'package:customer/services/database_helper.dart';
-import 'package:customer/themes/app_them_data.dart';
-import 'package:customer/utils/fire_store_utils.dart';
 import 'package:customer/utils/preferences.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter_paypal_native/flutter_paypal_native.dart';
-import 'package:flutter_paypal_native/models/custom/currency_code.dart';
-import 'package:flutter_paypal_native/models/custom/environment.dart';
-import 'package:flutter_paypal_native/models/custom/order_callback.dart';
-import 'package:flutter_paypal_native/models/custom/purchase_unit.dart';
-import 'package:flutter_paypal_native/models/custom/user_action.dart';
-import 'package:flutter_paypal_native/str_helper.dart';
-import 'package:flutter_stripe/flutter_stripe.dart';
+
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
-import 'package:intl/intl.dart';
-import 'package:paytm_allinonesdk/paytm_allinonesdk.dart';
-import 'package:razorpay_flutter/razorpay_flutter.dart';
 import 'package:uuid/uuid.dart';
+
+import 'my_profile_controller.dart';
 
 class CartController extends GetxController {
   final CartProvider cartProvider = CartProvider();
+  var cartData = {}.obs;
+  RxList currentCartItems = [].obs;
+  final profileController = Get.put(MyProfileController());
+  RxString vendorNote = "".obs;
+
   Rx<TextEditingController> reMarkController = TextEditingController().obs;
   Rx<TextEditingController> couponCodeController = TextEditingController().obs;
   Rx<TextEditingController> tipsController = TextEditingController().obs;
@@ -96,352 +82,33 @@ class CartController extends GetxController {
 
   @override
   void onInit() {
-    // TODO: implement onInit
     selectedAddress.value = Constant.selectedLocation;
-    // getCartData();
-    // getPaymentSettings();
+    refreshCart();
     super.onInit();
   }
 
-  getCartData() async {
-    cartProvider.cartStream.listen(
-      (event) async {
-        cartItem.clear();
-        cartItem.addAll(event);
+  refreshCart() async {
+    try {
+      final accessToken = Preferences.getString(Preferences.accessTokenKey);
 
-        if (cartItem.isNotEmpty) {
-          await FireStoreUtils.getVendorById(cartItem.first.vendorID.toString())
-              .then(
-            (value) {
-              if (value != null) {
-                vendorModel.value = value;
-              }
-            },
-          );
-        }
-        calculatePrice();
-      },
-    );
-    selectedFoodType.value = Preferences.getString(Preferences.foodDeliveryType,
-        defaultValue: "Delivery".tr);
-
-    await FireStoreUtils.getUserProfile(FireStoreUtils.getCurrentUid()).then(
-      (value) {
-        if (value != null) {
-          userModel.value = value;
-        }
-      },
-    );
-
-    await FireStoreUtils.getDeliveryCharge().then(
-      (value) {
-        if (value != null) {
-          deliveryChargeModel.value = value;
-          calculatePrice();
-        }
-      },
-    );
-
-    await FireStoreUtils.getAllVendorPublicCoupons(
-            vendorModel.value.id.toString())
-        .then(
-      (value) {
-        couponList.value = value;
-      },
-    );
-
-    await FireStoreUtils.getAllVendorCoupons(vendorModel.value.id.toString())
-        .then(
-      (value) {
-        allCouponList.value = value;
-      },
-    );
-  }
-
-  calculatePrice() async {
-    deliveryCharges.value = 0.0;
-    subTotal.value = 0.0;
-    couponAmount.value = 0.0;
-    specialDiscountAmount.value = 0.0;
-    taxAmount.value = 0.0;
-    totalAmount.value = 0.0;
-
-    if (cartItem.isNotEmpty) {
-      if (selectedFoodType.value == "Delivery".tr) {
-        totalDistance.value = double.parse(Constant.getDistance(
-            lat1: selectedAddress.value.location!.latitude.toString(),
-            lng1: selectedAddress.value.location!.longitude.toString(),
-            lat2: vendorModel.value.latitude.toString(),
-            lng2: vendorModel.value.longitude.toString()));
-
-        if (deliveryChargeModel.value.vendorCanModify == false) {
-          if (totalDistance.value >
-              deliveryChargeModel.value.minimumDeliveryChargesWithinKm!) {
-            deliveryCharges.value = totalDistance.value *
-                deliveryChargeModel.value.deliveryChargesPerKm!;
-          } else {
-            deliveryCharges.value =
-                (deliveryChargeModel.value.minimumDeliveryCharges)!.toDouble();
+      if (accessToken.isNotEmpty) {
+        APIService()
+            .getCartStreamed(
+          accessToken: accessToken,
+          customerId: profileController.userData.value['id'],
+          page: 1,
+        )
+            .listen((onData) {
+          // debugPrint("MY SHOPPING CART :: ${onData.body}");
+          if (onData.statusCode >= 200 && onData.statusCode <= 299) {
+            Map<String, dynamic> map = jsonDecode(onData.body);
+            cartData.value = map;
           }
-        } else {
-          if (vendorModel.value.deliveryCharge != null) {
-            if (totalDistance.value >
-                vendorModel
-                    .value.deliveryCharge!.minimumDeliveryChargesWithinKm!) {
-              deliveryCharges.value = (totalDistance.value *
-                      vendorModel.value.deliveryCharge!.deliveryChargesPerKm!)
-                  .toDouble();
-            } else {
-              deliveryCharges.value = vendorModel
-                  .value.deliveryCharge!.minimumDeliveryCharges!
-                  .toDouble();
-            }
-          } else {
-            if (totalDistance.value >
-                deliveryChargeModel.value.minimumDeliveryChargesWithinKm!) {
-              deliveryCharges.value = (totalDistance.value *
-                      deliveryChargeModel.value.deliveryChargesPerKm!)
-                  .toDouble();
-            } else {
-              deliveryCharges.value =
-                  deliveryChargeModel.value.minimumDeliveryCharges!.toDouble();
-            }
-          }
-        }
+        });
       }
+    } catch (e) {
+      debugPrint("$e");
     }
-
-    for (var element in cartItem) {
-      if (double.parse(element.discountPrice.toString()) <= 0) {
-        subTotal.value = subTotal.value +
-            double.parse(element.price.toString()) *
-                double.parse(element.quantity.toString()) +
-            (double.parse(element.extrasPrice.toString()) *
-                double.parse(element.quantity.toString()));
-      } else {
-        subTotal.value = subTotal.value +
-            double.parse(element.discountPrice.toString()) *
-                double.parse(element.quantity.toString()) +
-            (double.parse(element.extrasPrice.toString()) *
-                double.parse(element.quantity.toString()));
-      }
-    }
-
-    if (selectedCouponModel.value.id != null) {
-      couponAmount.value = Constant.calculateDiscount(
-          amount: subTotal.value.toString(),
-          offerModel: selectedCouponModel.value);
-    }
-
-    if (vendorModel.value.specialDiscountEnable == true &&
-        Constant.specialDiscountOffer == true) {
-      final now = DateTime.now();
-      var day = DateFormat('EEEE', 'en_US').format(now);
-      var date = DateFormat('dd-MM-yyyy').format(now);
-      for (var element in vendorModel.value.specialDiscount!) {
-        if (day == element.day.toString()) {
-          if (element.timeslot!.isNotEmpty) {
-            for (var element in element.timeslot!) {
-              if (element.discountType == "delivery") {
-                var start = DateFormat("dd-MM-yyyy HH:mm")
-                    .parse("$date ${element.from}");
-                var end =
-                    DateFormat("dd-MM-yyyy HH:mm").parse("$date ${element.to}");
-                if (isCurrentDateInRange(start, end)) {
-                  specialDiscount.value =
-                      double.parse(element.discount.toString());
-                  specialType.value = element.type.toString();
-                  if (element.type == "percentage") {
-                    specialDiscountAmount.value =
-                        subTotal * specialDiscount.value / 100;
-                  } else {
-                    specialDiscountAmount.value = specialDiscount.value;
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    } else {
-      specialDiscount.value = double.parse("0");
-      specialType.value = "amount";
-    }
-
-    if (Constant.taxList != null) {
-      for (var element in Constant.taxList!) {
-        taxAmount.value = taxAmount.value +
-            Constant.calculateTax(
-                amount: (subTotal.value -
-                        couponAmount.value -
-                        specialDiscountAmount.value)
-                    .toString(),
-                taxModel: element);
-      }
-    }
-
-    totalAmount.value =
-        (subTotal.value - couponAmount.value - specialDiscountAmount.value) +
-            taxAmount.value +
-            deliveryCharges.value +
-            deliveryTips.value;
-  }
-
-  addToCart(
-      {required CartProductModel cartProductModel,
-      required bool isIncrement,
-      required int quantity}) {
-    if (isIncrement) {
-      cartProvider.addToCart(Get.context!, cartProductModel, quantity);
-    } else {
-      cartProvider.removeFromCart(cartProductModel, quantity);
-    }
-    update();
-  }
-
-  List<CartProductModel> tempProduc = [];
-
-  placeOrder() async {
-    if (selectedPaymentMethod.value == PaymentGateway.wallet.name) {
-      if (double.parse(userModel.value.walletAmount.toString()) >=
-          totalAmount.value) {
-        setOrder();
-      } else {
-        ShowToastDialog.showToast(
-            "You don't have sufficient wallet balance to place order");
-      }
-    } else {
-      setOrder();
-    }
-  }
-
-  setOrder() async {
-    ShowToastDialog.showLoader("Please wait".tr);
-    for (CartProductModel cartProduct in cartItem) {
-      CartProductModel tempCart = cartProduct;
-      tempProduc.add(tempCart);
-    }
-
-    Map<String, dynamic> specialDiscountMap = {
-      'special_discount': specialDiscountAmount.value,
-      'special_discount_label': specialDiscount.value,
-      'specialType': specialType.value
-    };
-
-    OrderModel orderModel = OrderModel();
-    orderModel.id = Constant.getUuid();
-    orderModel.address = selectedAddress.value;
-    orderModel.authorID = FireStoreUtils.getCurrentUid();
-    orderModel.author = userModel.value;
-    orderModel.vendorID = vendorModel.value.id;
-    orderModel.vendor = vendorModel.value;
-    orderModel.adminCommission = Constant.adminCommission!.amount;
-    orderModel.adminCommissionType = Constant.adminCommission!.commissionType;
-    orderModel.status = Constant.orderPlaced;
-    orderModel.discount = couponAmount.value;
-    orderModel.couponId = selectedCouponModel.value.id;
-    orderModel.taxSetting = Constant.taxList;
-    orderModel.paymentMethod = selectedPaymentMethod.value;
-    orderModel.products = cartItem;
-    orderModel.specialDiscount = specialDiscountMap;
-    orderModel.couponCode = selectedCouponModel.value.code;
-    orderModel.deliveryCharge = deliveryCharges.value.toString();
-    orderModel.tipAmount = deliveryTips.value.toString();
-    orderModel.notes = reMarkController.value.text;
-    orderModel.takeAway =
-        selectedFoodType.value == "Delivery".tr ? false : true;
-    orderModel.createdAt = Timestamp.now();
-    orderModel.scheduleTime = deliveryType.value == "schedule".tr
-        ? Timestamp.fromDate(scheduleDateTime.value)
-        : null;
-
-    if (selectedPaymentMethod.value == PaymentGateway.wallet.name) {
-      WalletTransactionModel transactionModel = WalletTransactionModel(
-          id: Constant.getUuid(),
-          amount: double.parse(totalAmount.value.toString()),
-          date: Timestamp.now(),
-          paymentMethod: PaymentGateway.wallet.name,
-          transactionUser: "user",
-          userId: FireStoreUtils.getCurrentUid(),
-          isTopup: false,
-          orderId: orderModel.id,
-          note: "Order Amount debited".tr,
-          paymentStatus: "success".tr);
-
-      await FireStoreUtils.setWalletTransaction(transactionModel)
-          .then((value) async {
-        if (value == true) {
-          await FireStoreUtils.updateUserWallet(
-                  amount: "-${totalAmount.value.toString()}",
-                  userId: FireStoreUtils.getCurrentUid())
-              .then((value) {});
-        }
-      });
-    }
-
-    for (int i = 0; i < tempProduc.length; i++) {
-      await FireStoreUtils.getProductById(tempProduc[i].id!.split('~').first)
-          .then((value) async {
-        ProductModel? productModel = value;
-        if (tempProduc[i].variantInfo != null) {
-          if (productModel!.itemAttribute != null) {
-            for (int j = 0;
-                j < productModel.itemAttribute!.variants!.length;
-                j++) {
-              if (productModel.itemAttribute!.variants![j].variantId ==
-                  tempProduc[i].id!.split('~').last) {
-                if (productModel.itemAttribute!.variants![j].variantQuantity !=
-                    "-1") {
-                  productModel.itemAttribute!.variants![j].variantQuantity =
-                      (int.parse(productModel
-                                  .itemAttribute!.variants![j].variantQuantity
-                                  .toString()) -
-                              tempProduc[i].quantity!)
-                          .toString();
-                }
-              }
-            }
-          } else {
-            if (productModel.quantity != -1) {
-              productModel.quantity =
-                  (productModel.quantity! - tempProduc[i].quantity!);
-            }
-          }
-        } else {
-          if (productModel!.quantity != -1) {
-            productModel.quantity =
-                (productModel.quantity! - tempProduc[i].quantity!);
-          }
-        }
-
-        await FireStoreUtils.setProduct(productModel);
-      });
-    }
-
-    await FireStoreUtils.setOrder(orderModel).then(
-      (value) async {
-        ShowToastDialog.closeLoader();
-        DatabaseHelper.instance.deleteAllCartProducts();
-        await FireStoreUtils.getUserProfile(
-                orderModel.vendor!.author.toString())
-            .then(
-          (value) {
-            if (value != null) {
-              if (orderModel.scheduleTime != null) {
-                SendNotification.sendFcmMessage(
-                    Constant.scheduleOrder, value.fcmToken ?? '', {});
-              } else {
-                SendNotification.sendFcmMessage(
-                    Constant.newOrderPlaced, value.fcmToken ?? '', {});
-              }
-            }
-          },
-        );
-        await Constant.sendOrderEmail(orderModel: orderModel);
-        Get.off(const OrderPlacingScreen(),
-            arguments: {"orderModel": orderModel});
-      },
-    );
   }
 
   Rx<WalletSettingModel> walletSettingModel = WalletSettingModel().obs;
@@ -458,172 +125,6 @@ class CartController extends GetxController {
   Rx<MidTrans> midTransModel = MidTrans().obs;
   Rx<OrangeMoney> orangeMoneyModel = OrangeMoney().obs;
   Rx<Xendit> xenditModel = Xendit().obs;
-
-  getPaymentSettings() async {
-    await FireStoreUtils.getPaymentSettingsData().then(
-      (value) {
-        payFastModel.value = PayFastModel.fromJson(
-            jsonDecode(Preferences.getString(Preferences.payFastSettings)));
-        mercadoPagoModel.value = MercadoPagoModel.fromJson(
-            jsonDecode(Preferences.getString(Preferences.mercadoPago)));
-        payPalModel.value = PayPalModel.fromJson(
-            jsonDecode(Preferences.getString(Preferences.paypalSettings)));
-        stripeModel.value = StripeModel.fromJson(
-            jsonDecode(Preferences.getString(Preferences.stripeSettings)));
-        flutterWaveModel.value = FlutterWaveModel.fromJson(
-            jsonDecode(Preferences.getString(Preferences.flutterWave)));
-        payStackModel.value = PayStackModel.fromJson(
-            jsonDecode(Preferences.getString(Preferences.payStack)));
-        paytmModel.value = PaytmModel.fromJson(
-            jsonDecode(Preferences.getString(Preferences.paytmSettings)));
-        razorPayModel.value = RazorPayModel.fromJson(
-            jsonDecode(Preferences.getString(Preferences.razorpaySettings)));
-        walletSettingModel.value = WalletSettingModel.fromJson(
-            jsonDecode(Preferences.getString(Preferences.walletSettings)));
-        cashOnDeliverySettingModel.value = CodSettingModel.fromJson(
-            jsonDecode(Preferences.getString(Preferences.codSettings)));
-
-        midTransModel.value = MidTrans.fromJson(
-            jsonDecode(Preferences.getString(Preferences.midTransSettings)));
-        orangeMoneyModel.value = OrangeMoney.fromJson(
-            jsonDecode(Preferences.getString(Preferences.orangeMoneySettings)));
-        xenditModel.value = Xendit.fromJson(
-            jsonDecode(Preferences.getString(Preferences.xenditSettings)));
-
-        Stripe.publishableKey =
-            stripeModel.value.clientpublishableKey.toString();
-        Stripe.merchantIdentifier = 'Foodie Customer'.tr;
-        Stripe.instance.applySettings();
-        setRef();
-
-        razorPay.on(Razorpay.EVENT_PAYMENT_SUCCESS, handlePaymentSuccess);
-        razorPay.on(Razorpay.EVENT_EXTERNAL_WALLET, handleExternalWaller);
-        razorPay.on(Razorpay.EVENT_PAYMENT_ERROR, handlePaymentError);
-      },
-    );
-  }
-
-  final _flutterPaypalNativePlugin = FlutterPaypalNative.instance;
-
-  void initPayPal() async {
-    //set debugMode for error logging
-    FlutterPaypalNative.isDebugMode =
-        paytmModel.value.isSandboxEnabled == true ? true : false;
-
-    //initiate payPal plugin
-    await _flutterPaypalNativePlugin.init(
-      //your app id !!! No Underscore!!! see readme.md for help
-      returnUrl: "com.parkme://paypalpay",
-      //client id from developer dashboard
-      clientID: payPalModel.value.paypalClient.toString(),
-      //sandbox, staging, live etc
-      payPalEnvironment: payPalModel.value.isLive == false
-          ? FPayPalEnvironment.sandbox
-          : FPayPalEnvironment.live,
-      //what currency do you plan to use? default is US dollars
-      currencyCode: FPayPalCurrencyCode.usd,
-      //action paynow?
-      action: FPayPalUserAction.payNow,
-    );
-
-    //call backs for payment
-    _flutterPaypalNativePlugin.setPayPalOrderCallback(
-      callback: FPayPalOrderCallback(
-        onCancel: () {
-          //user canceled the payment
-          ShowToastDialog.showToast("Payment canceled");
-        },
-        onSuccess: (data) {
-          //successfully paid
-          //remove all items from queue
-          // _flutterPaypalNativePlugin.removeAllPurchaseItems();
-          ShowToastDialog.showToast("Payment Successful!!");
-          placeOrder();
-        },
-        onError: (data) {
-          //an error occured
-          ShowToastDialog.showToast("error: ${data.reason}");
-        },
-        onShippingChange: (data) {
-          //the user updated the shipping address
-          ShowToastDialog.showToast(
-              "shipping change: ${data.shippingChangeAddress?.adminArea1 ?? ""}");
-        },
-      ),
-    );
-  }
-
-  paypalPaymentSheet(String amount) {
-    //add 1 item to cart. Max is 4!
-    if (_flutterPaypalNativePlugin.canAddMorePurchaseUnit) {
-      _flutterPaypalNativePlugin.addPurchaseUnit(
-        FPayPalPurchaseUnit(
-          // random prices
-          amount: double.parse(amount),
-
-          ///please use your own algorithm for referenceId. Maybe ProductID?
-          referenceId: FPayPalStrHelper.getRandomString(16),
-        ),
-      );
-    }
-    // initPayPal();
-    _flutterPaypalNativePlugin.makeOrder(
-      action: FPayPalUserAction.payNow,
-    );
-  }
-
-  // Strip
-  Future<void> stripeMakePayment({required String amount}) async {
-    log(double.parse(amount).toStringAsFixed(0));
-    try {
-      Map<String, dynamic>? paymentIntentData =
-          await createStripeIntent(amount: amount);
-      log("stripe Responce====>$paymentIntentData");
-      if (paymentIntentData!.containsKey("error")) {
-        Get.back();
-        ShowToastDialog.showToast(
-            "Something went wrong, please contact admin.");
-      } else {
-        await Stripe.instance.initPaymentSheet(
-            paymentSheetParameters: SetupPaymentSheetParameters(
-                paymentIntentClientSecret: paymentIntentData['client_secret'],
-                allowsDelayedPaymentMethods: false,
-                googlePay: const PaymentSheetGooglePay(
-                  merchantCountryCode: 'US',
-                  testEnv: true,
-                  currencyCode: "USD",
-                ),
-                customFlow: true,
-                style: ThemeMode.system,
-                appearance: PaymentSheetAppearance(
-                  colors: PaymentSheetAppearanceColors(
-                    primary: AppThemeData.primary300,
-                  ),
-                ),
-                merchantDisplayName: 'GoRide'));
-        displayStripePaymentSheet(amount: amount);
-      }
-    } catch (e, s) {
-      log("$e \n$s");
-      ShowToastDialog.showToast("exception:$e \n$s");
-    }
-  }
-
-  displayStripePaymentSheet({required String amount}) async {
-    try {
-      await Stripe.instance.presentPaymentSheet().then((value) {
-        ShowToastDialog.showToast("Payment successfully");
-        placeOrder();
-      });
-    } on StripeException catch (e) {
-      var lo1 = jsonEncode(e);
-      var lo2 = jsonDecode(lo1);
-      StripePayFailedModel lom = StripePayFailedModel.fromJson(lo2);
-      ShowToastDialog.showToast(lom.error.message);
-    } catch (e) {
-      ShowToastDialog.showToast(e.toString());
-    }
-  }
 
   createStripeIntent({required String amount}) async {
     try {
@@ -693,7 +194,7 @@ class CartController extends GetxController {
       Get.to(MercadoPagoScreen(initialURl: data['init_point']))!.then((value) {
         if (value) {
           ShowToastDialog.showToast("Payment Successful!!");
-          placeOrder();
+          // placeOrder();
         } else {
           ShowToastDialog.showToast("Payment UnSuccessful!!");
         }
@@ -724,7 +225,7 @@ class CartController extends GetxController {
             .then((value) {
           if (value) {
             ShowToastDialog.showToast("Payment Successful!!");
-            placeOrder();
+            // placeOrder();
           } else {
             ShowToastDialog.showToast("Payment UnSuccessful!!");
           }
@@ -770,7 +271,7 @@ class CartController extends GetxController {
           .then((value) {
         if (value) {
           ShowToastDialog.showToast("Payment Successful!!");
-          placeOrder();
+          // placeOrder();
         } else {
           ShowToastDialog.showToast("Payment UnSuccessful!!");
         }
@@ -806,94 +307,12 @@ class CartController extends GetxController {
       if (isDone) {
         Get.back();
         ShowToastDialog.showToast("Payment successfully");
-        placeOrder();
+        // placeOrder();
       } else {
         Get.back();
         ShowToastDialog.showToast("Payment Failed");
       }
     });
-  }
-
-  ///Paytm payment function
-  getPaytmCheckSum(context, {required double amount}) async {
-    final String orderId = DateTime.now().millisecondsSinceEpoch.toString();
-    String getChecksum = "${Constant.globalUrl}payments/getpaytmchecksum";
-
-    final response = await http.post(
-        Uri.parse(
-          getChecksum,
-        ),
-        headers: {},
-        body: {
-          "mid": paytmModel.value.paytmMID.toString(),
-          "order_id": orderId,
-          "key_secret": paytmModel.value.pAYTMMERCHANTKEY.toString(),
-        });
-
-    final data = jsonDecode(response.body);
-    await verifyCheckSum(
-            checkSum: data["code"], amount: amount, orderId: orderId)
-        .then((value) {
-      initiatePayment(amount: amount, orderId: orderId).then((value) {
-        String callback = "";
-        if (paytmModel.value.isSandboxEnabled == true) {
-          callback =
-              "${callback}https://securegw-stage.paytm.in/theia/paytmCallback?ORDER_ID=$orderId";
-        } else {
-          callback =
-              "${callback}https://securegw.paytm.in/theia/paytmCallback?ORDER_ID=$orderId";
-        }
-
-        GetPaymentTxtTokenModel result = value;
-        startTransaction(context,
-            txnTokenBy: result.body.txnToken,
-            orderId: orderId,
-            amount: amount,
-            callBackURL: callback,
-            isStaging: paytmModel.value.isSandboxEnabled);
-      });
-    });
-  }
-
-  Future<void> startTransaction(context,
-      {required String txnTokenBy,
-      required orderId,
-      required double amount,
-      required callBackURL,
-      required isStaging}) async {
-    try {
-      var response = AllInOneSdk.startTransaction(
-        paytmModel.value.paytmMID.toString(),
-        orderId,
-        amount.toString(),
-        txnTokenBy,
-        callBackURL,
-        isStaging,
-        true,
-        true,
-      );
-
-      response.then((value) {
-        if (value!["RESPMSG"] == "Txn Success") {
-          print("txt done!!");
-          ShowToastDialog.showToast("Payment Successful!!");
-          placeOrder();
-        }
-      }).catchError((onError) {
-        if (onError is PlatformException) {
-          Get.back();
-
-          ShowToastDialog.showToast(onError.message.toString());
-        } else {
-          log("======>>2");
-          Get.back();
-          ShowToastDialog.showToast(onError.message.toString());
-        }
-      });
-    } catch (err) {
-      Get.back();
-      ShowToastDialog.showToast(err.toString());
-    }
   }
 
   Future verifyCheckSum(
@@ -916,83 +335,6 @@ class CartController extends GetxController {
     return data['status'];
   }
 
-  Future<GetPaymentTxtTokenModel> initiatePayment(
-      {required double amount, required orderId}) async {
-    String initiateURL = "${Constant.globalUrl}payments/initiatepaytmpayment";
-    String callback = "";
-    if (paytmModel.value.isSandboxEnabled == true) {
-      callback =
-          "${callback}https://securegw-stage.paytm.in/theia/paytmCallback?ORDER_ID=$orderId";
-    } else {
-      callback =
-          "${callback}https://securegw.paytm.in/theia/paytmCallback?ORDER_ID=$orderId";
-    }
-    final response =
-        await http.post(Uri.parse(initiateURL), headers: {}, body: {
-      "mid": paytmModel.value.paytmMID,
-      "order_id": orderId,
-      "key_secret": paytmModel.value.pAYTMMERCHANTKEY,
-      "amount": amount.toString(),
-      "currency": "INR",
-      "callback_url": callback,
-      "custId": FireStoreUtils.getCurrentUid(),
-      "issandbox": paytmModel.value.isSandboxEnabled == true ? "1" : "2",
-    });
-    log(response.body);
-    final data = jsonDecode(response.body);
-    if (data["body"]["txnToken"] == null ||
-        data["body"]["txnToken"].toString().isEmpty) {
-      Get.back();
-      ShowToastDialog.showToast("something went wrong, please contact admin.");
-    }
-    return GetPaymentTxtTokenModel.fromJson(data);
-  }
-
-  ///RazorPay payment function
-  final Razorpay razorPay = Razorpay();
-
-  void openCheckout({required amount, required orderId}) async {
-    var options = {
-      'key': razorPayModel.value.razorpayKey,
-      'amount': amount * 100,
-      'name': 'GoRide',
-      'order_id': orderId,
-      "currency": "INR",
-      'description': 'wallet Topup',
-      'retry': {'enabled': true, 'max_count': 1},
-      'send_sms_hash': true,
-      'prefill': {
-        'contact': userModel.value.phoneNumber,
-        'email': userModel.value.email,
-      },
-      'external': {
-        'wallets': ['paytm']
-      }
-    };
-
-    try {
-      razorPay.open(options);
-    } catch (e) {
-      debugPrint('Error: $e');
-    }
-  }
-
-  void handlePaymentSuccess(PaymentSuccessResponse response) {
-    Get.back();
-    ShowToastDialog.showToast("Payment Successful!!");
-    placeOrder();
-  }
-
-  void handleExternalWaller(ExternalWalletResponse response) {
-    Get.back();
-    ShowToastDialog.showToast("Payment Processing!! via");
-  }
-
-  void handlePaymentError(PaymentFailureResponse response) {
-    Get.back();
-    ShowToastDialog.showToast("Payment Failed!!");
-  }
-
   bool isCurrentDateInRange(DateTime startDate, DateTime endDate) {
     final currentDate = DateTime.now();
     return currentDate.isAfter(startDate) && currentDate.isBefore(endDate);
@@ -1010,7 +352,7 @@ class CartController extends GetxController {
             .then((value) {
           if (value == true) {
             ShowToastDialog.showToast("Payment Successful!!");
-            placeOrder();
+            // placeOrder();
           } else {
             ShowToastDialog.showToast("Payment Unsuccessful!!");
           }
@@ -1085,7 +427,7 @@ class CartController extends GetxController {
           .then((value) {
         if (value == true) {
           ShowToastDialog.showToast("Payment Successful!!");
-          placeOrder();
+          // placeOrder();
           ();
         }
       });
@@ -1197,7 +539,7 @@ class CartController extends GetxController {
             .then((value) {
           if (value == true) {
             ShowToastDialog.showToast("Payment Successful!!");
-            placeOrder();
+            // placeOrder();
             ();
           } else {
             ShowToastDialog.showToast("Payment Unsuccessful!!");

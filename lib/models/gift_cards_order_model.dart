@@ -1,9 +1,7 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-
 class GiftCardsOrderModel {
   String? price;
-  Timestamp? expireDate;
-  Timestamp? createdDate;
+  String? expireDate;
+  String? createdDate;
   String? message;
   String? id;
   String? giftId;
@@ -16,7 +14,18 @@ class GiftCardsOrderModel {
   bool? isPasswordShow;
 
   GiftCardsOrderModel(
-      {this.price, this.id, this.expireDate, this.createdDate, this.giftTitle, this.message, this.giftId, this.giftCode, this.giftPin, this.redeem, this.paymentType, this.userid});
+      {this.price,
+      this.id,
+      this.expireDate,
+      this.createdDate,
+      this.giftTitle,
+      this.message,
+      this.giftId,
+      this.giftCode,
+      this.giftPin,
+      this.redeem,
+      this.paymentType,
+      this.userid});
 
   GiftCardsOrderModel.fromJson(Map<String, dynamic> json) {
     id = json['id'];

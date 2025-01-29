@@ -2,10 +2,8 @@ import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:customer/constant/constant.dart';
 import 'package:customer/constant/show_toast_dialog.dart';
-import 'package:customer/data/dummy-wallet_transactions.dart';
 import 'package:customer/data/dummy_payment_gateways.dart';
 import 'package:customer/models/payment_model/mid_trans.dart';
 import 'package:customer/models/payment_model/orange_money.dart';
@@ -18,21 +16,10 @@ import 'package:customer/payment/orangePayScreen.dart';
 import 'package:customer/payment/paystack/pay_stack_screen.dart';
 import 'package:customer/payment/paystack/pay_stack_url_model.dart';
 import 'package:customer/payment/paystack/paystack_url_genrater.dart';
-import 'package:customer/payment/stripe_failed_model.dart';
 import 'package:customer/payment/xenditModel.dart';
 import 'package:customer/payment/xenditScreen.dart';
-import 'package:customer/themes/app_them_data.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter_paypal_native/flutter_paypal_native.dart';
-import 'package:flutter_paypal_native/models/custom/currency_code.dart';
-import 'package:flutter_paypal_native/models/custom/environment.dart';
-import 'package:flutter_paypal_native/models/custom/order_callback.dart';
-import 'package:flutter_paypal_native/models/custom/purchase_unit.dart';
-import 'package:flutter_paypal_native/models/custom/user_action.dart';
-import 'package:flutter_paypal_native/str_helper.dart';
-import 'package:flutter_stripe/flutter_stripe.dart';
-import 'package:paytm_allinonesdk/paytm_allinonesdk.dart';
-import 'package:razorpay_flutter/razorpay_flutter.dart';
+import 'package:customer/services/api_service.dart';
+import 'package:customer/utils/preferences.dart';
 
 import 'package:customer/models/payment_model/flutter_wave_model.dart';
 import 'package:customer/models/payment_model/mercado_pago_model.dart';
@@ -44,17 +31,19 @@ import 'package:customer/models/payment_model/razorpay_model.dart';
 import 'package:customer/models/payment_model/stripe_model.dart';
 import 'package:customer/models/user_model.dart';
 import 'package:customer/models/wallet_transaction_model.dart';
-import 'package:customer/utils/fire_store_utils.dart';
-import 'package:customer/utils/preferences.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'dart:math' as maths;
 import 'package:http/http.dart' as http;
 import 'package:uuid/uuid.dart';
 
-class WalletController extends GetxController {
-  RxBool isLoading = true.obs;
+import 'my_profile_controller.dart';
 
+class WalletController extends GetxController {
+  final profileController = Get.find<MyProfileController>();
+  RxBool isLoading = true.obs;
+  var userWallet = {}.obs;
+  var walletTransactions = {}.obs;
   Rx<TextEditingController> topUpAmountController = TextEditingController().obs;
 
   RxList<WalletTransactionModel> walletTransactionList =
@@ -82,6 +71,51 @@ class WalletController extends GetxController {
   Rx<MidTrans> midTransModel = MidTrans().obs;
   Rx<OrangeMoney> orangeMoneyModel = OrangeMoney().obs;
   Rx<Xendit> xenditModel = Xendit().obs;
+
+  getWalletTransaction() async {
+    if (profileController.userData.value.isNotEmpty) {
+      try {
+        final accessToken = Preferences.getString(Preferences.accessTokenKey);
+        if (accessToken.isNotEmpty) {
+          APIService()
+              .getTransactionsStreamed(
+            accessToken: accessToken,
+            customerId: profileController.userData.value['id'],
+            page: 1,
+          )
+              .listen((onData) {
+            debugPrint("MY WALLET TRANSACTIONS :: ${onData.body}");
+            if (onData.statusCode >= 200 && onData.statusCode <= 299) {
+              Map<String, dynamic> map = jsonDecode(onData.body);
+
+              walletTransactions.value = map;
+            }
+          });
+        }
+      } catch (e) {}
+    }
+    isLoading.value = false;
+  }
+
+  refreshWallet() async {
+    try {
+      final accessToken = Preferences.getString(Preferences.accessTokenKey);
+      APIService()
+          .getWalletStreamed(
+        accessToken: accessToken,
+        customerId: profileController.userData.value['id'],
+      )
+          .listen((onData) {
+        // debugPrint("MY WALLET  :: ${onData.body}");
+        if (onData.statusCode >= 200 && onData.statusCode <= 299) {
+          Map<String, dynamic> map = jsonDecode(onData.body);
+          userWallet.value = map;
+        }
+      });
+    } catch (e) {
+      debugPrint("$e");
+    }
+  }
 
   getPaymentSettings() async {
     // await FireStoreUtils.getPaymentSettingsData().then(
@@ -121,216 +155,44 @@ class WalletController extends GetxController {
     // Xendit.fromJson(
     //     jsonDecode(Preferences.getString(Preferences.xenditSettings)));
 
-    Stripe.publishableKey = stripeModel.value.clientpublishableKey.toString();
-    Stripe.merchantIdentifier = 'GoRide';
-    Stripe.instance.applySettings();
-    setRef();
+    // Stripe.publishableKey = stripeModel.value.clientpublishableKey.toString();
+    // Stripe.merchantIdentifier = 'GoRide';
+    // Stripe.instance.applySettings();
+    // setRef();
 
-    razorPay.on(Razorpay.EVENT_PAYMENT_SUCCESS, handlePaymentSuccess);
-    razorPay.on(Razorpay.EVENT_EXTERNAL_WALLET, handleExternalWaller);
-    razorPay.on(Razorpay.EVENT_PAYMENT_ERROR, handlePaymentError);
+    // razorPay.on(Razorpay.EVENT_PAYMENT_SUCCESS, handlePaymentSuccess);
+    // razorPay.on(Razorpay.EVENT_EXTERNAL_WALLET, handleExternalWaller);
+    // razorPay.on(Razorpay.EVENT_PAYMENT_ERROR, handlePaymentError);
     // },
     // );
-  }
-
-  getWalletTransaction() async {
-    if (Constant.userModel != null) {
-      walletTransactionList.value = dummyWalletTransactions;
-      // await FireStoreUtils.getWalletTransaction().then(
-      //   (value) {
-      //     if (value != null) {
-      //       walletTransactionList.value = value;
-      //     }
-      //   },
-      // );
-      // await FireStoreUtils.getUserProfile(FireStoreUtils.getCurrentUid()).then(
-      //   (value) {
-      //     if (value != null) {
-      //       userModel.value = value;
-      //     }
-      //   },
-      // );
-    }
-    isLoading.value = false;
   }
 
   walletTopUp() async {
     WalletTransactionModel transactionModel = WalletTransactionModel(
         id: Constant.getUuid(),
         amount: double.parse(topUpAmountController.value.text),
-        date: Timestamp.now(),
+        // date: Timestamp.now(),
         paymentMethod: selectedPaymentMethod.value,
         transactionUser: "user",
-        userId: FireStoreUtils.getCurrentUid(),
+        // userId: FireStoreUtils.getCurrentUid(),
         isTopup: true,
         note: "Wallet Top-up",
         paymentStatus: "success");
 
-    await FireStoreUtils.setWalletTransaction(transactionModel)
-        .then((value) async {
-      if (value == true) {
-        await FireStoreUtils.updateUserWallet(
-                amount: topUpAmountController.value.text,
-                userId: FireStoreUtils.getCurrentUid())
-            .then((value) {
-          getWalletTransaction();
-          Get.back();
-        });
-      }
-    });
+    // await FireStoreUtils.setWalletTransaction(transactionModel)
+    //     .then((value) async {
+    //   if (value == true) {
+    //     await FireStoreUtils.updateUserWallet(
+    //             amount: topUpAmountController.value.text,
+    //             userId: FireStoreUtils.getCurrentUid())
+    //         .then((value) {
+    //       getWalletTransaction();
+    //       Get.back();
+    //     });
+    //   }
+    // });
 
     ShowToastDialog.showToast("Amount Top-up successfully");
-  }
-
-  final _flutterPaypalNativePlugin = FlutterPaypalNative.instance;
-
-  void initPayPal() async {
-    //set debugMode for error logging
-    FlutterPaypalNative.isDebugMode =
-        paytmModel.value.isSandboxEnabled == true ? true : false;
-
-    //initiate payPal plugin
-    await _flutterPaypalNativePlugin.init(
-      //your app id !!! No Underscore!!! see readme.md for help
-      returnUrl: "com.parkme://paypalpay",
-      //client id from developer dashboard
-      clientID: payPalModel.value.paypalClient.toString(),
-      //sandbox, staging, live etc
-      payPalEnvironment: payPalModel.value.isLive == false
-          ? FPayPalEnvironment.sandbox
-          : FPayPalEnvironment.live,
-      //what currency do you plan to use? default is US dollars
-      currencyCode: FPayPalCurrencyCode.usd,
-      //action paynow?
-      action: FPayPalUserAction.payNow,
-    );
-
-    //call backs for payment
-    _flutterPaypalNativePlugin.setPayPalOrderCallback(
-      callback: FPayPalOrderCallback(
-        onCancel: () {
-          //user canceled the payment
-          ShowToastDialog.showToast("Payment canceled");
-        },
-        onSuccess: (data) {
-          //successfully paid
-          //remove all items from queue
-          // _flutterPaypalNativePlugin.removeAllPurchaseItems();
-          ShowToastDialog.showToast("Payment Successful!!");
-          walletTopUp();
-        },
-        onError: (data) {
-          //an error occured
-          ShowToastDialog.showToast("error: ${data.reason}");
-        },
-        onShippingChange: (data) {
-          //the user updated the shipping address
-          ShowToastDialog.showToast(
-              "shipping change: ${data.shippingChangeAddress?.adminArea1 ?? ""}");
-        },
-      ),
-    );
-  }
-
-  paypalPaymentSheet(String amount) {
-    //add 1 item to cart. Max is 4!
-    if (_flutterPaypalNativePlugin.canAddMorePurchaseUnit) {
-      _flutterPaypalNativePlugin.addPurchaseUnit(
-        FPayPalPurchaseUnit(
-          // random prices
-          amount: double.parse(amount),
-
-          ///please use your own algorithm for referenceId. Maybe ProductID?
-          referenceId: FPayPalStrHelper.getRandomString(16),
-        ),
-      );
-    }
-    // initPayPal();
-    _flutterPaypalNativePlugin.makeOrder(
-      action: FPayPalUserAction.payNow,
-    );
-  }
-
-  // Strip
-  Future<void> stripeMakePayment({required String amount}) async {
-    log(double.parse(amount).toStringAsFixed(0));
-    try {
-      Map<String, dynamic>? paymentIntentData =
-          await createStripeIntent(amount: amount);
-      log("stripe Responce====>$paymentIntentData");
-      if (paymentIntentData!.containsKey("error")) {
-        Get.back();
-        ShowToastDialog.showToast(
-            "Something went wrong, please contact admin.");
-      } else {
-        await Stripe.instance.initPaymentSheet(
-            paymentSheetParameters: SetupPaymentSheetParameters(
-                paymentIntentClientSecret: paymentIntentData['client_secret'],
-                allowsDelayedPaymentMethods: false,
-                googlePay: const PaymentSheetGooglePay(
-                  merchantCountryCode: 'US',
-                  testEnv: true,
-                  currencyCode: "USD",
-                ),
-                customFlow: true,
-                style: ThemeMode.system,
-                appearance: PaymentSheetAppearance(
-                  colors: PaymentSheetAppearanceColors(
-                    primary: AppThemeData.primary300,
-                  ),
-                ),
-                merchantDisplayName: 'GoRide'));
-        displayStripePaymentSheet(amount: amount);
-      }
-    } catch (e, s) {
-      log("$e \n$s");
-      ShowToastDialog.showToast("exception:$e \n$s");
-    }
-  }
-
-  displayStripePaymentSheet({required String amount}) async {
-    try {
-      await Stripe.instance.presentPaymentSheet().then((value) {
-        ShowToastDialog.showToast("Payment successfully");
-        walletTopUp();
-      });
-    } on StripeException catch (e) {
-      var lo1 = jsonEncode(e);
-      var lo2 = jsonDecode(lo1);
-      StripePayFailedModel lom = StripePayFailedModel.fromJson(lo2);
-      ShowToastDialog.showToast(lom.error.message);
-    } catch (e) {
-      ShowToastDialog.showToast(e.toString());
-    }
-  }
-
-  createStripeIntent({required String amount}) async {
-    try {
-      Map<String, dynamic> body = {
-        'amount': ((double.parse(amount) * 100).round()).toString(),
-        'currency': "USD",
-        'payment_method_types[]': 'card',
-        "description": "Strip Payment",
-        "shipping[name]": userModel.value.fullName(),
-        "shipping[address][line1]": "510 Townsend St",
-        "shipping[address][postal_code]": "98140",
-        "shipping[address][city]": "San Francisco",
-        "shipping[address][state]": "CA",
-        "shipping[address][country]": "US",
-      };
-      var stripeSecret = stripeModel.value.stripeSecret;
-      var response = await http.post(
-          Uri.parse('https://api.stripe.com/v1/payment_intents'),
-          body: body,
-          headers: {
-            'Authorization': 'Bearer $stripeSecret',
-            'Content-Type': 'application/x-www-form-urlencoded'
-          });
-
-      return jsonDecode(response.body);
-    } catch (e) {
-      log(e.toString());
-    }
   }
 
   //mercadoo
@@ -387,7 +249,7 @@ class WalletController extends GetxController {
   payStackPayment(String totalAmount) async {
     await PayStackURLGen.payStackURLGen(
             amount: (double.parse(totalAmount) * 100).toString(),
-            currency: "ZAR",
+            currency: "NGN",
             secretKey: payStackModel.value.secretKey.toString(),
             userModel: userModel.value)
         .then((value) async {
@@ -416,40 +278,34 @@ class WalletController extends GetxController {
   }
 
   //flutter wave Payment Method
-  flutterWaveInitiatePayment(
-      {required BuildContext context, required String amount}) async {
-    final url = Uri.parse('https://api.flutterwave.com/v3/payments');
-    final headers = {
-      'Authorization': 'Bearer ${flutterWaveModel.value.secretKey}',
-      'Content-Type': 'application/json',
+  flutterWaveInitiatePayment({
+    required BuildContext context,
+    required String amount,
+  }) async {
+    final accessToken = Preferences.getString(Preferences.accessTokenKey);
+    Map payload = {
+      "amount": int.parse(amount),
+      "email_address": profileController.userData.value['email_address'],
+      "full_name":
+          "${profileController.userData.value['first_name']} ${profileController.userData.value['last_name']}",
+      "customer_id": profileController.userData.value['id'],
+      "phone_number": profileController.userData.value['intl_phone_format'],
+      "title": "Fund Wallet"
     };
 
-    final body = jsonEncode({
-      "tx_ref": _ref,
-      "amount": amount,
-      "currency": "NGN",
-      "redirect_url": "${Constant.globalUrl}payment/success",
-      "payment_options": "ussd, card, barter, payattitude",
-      "customer": {
-        "email": userModel.value.email.toString(),
-        "phonenumber": userModel.value.phoneNumber, // Add a real phone number
-        "name": userModel.value.fullName(), // Add a real customer name
-      },
-      "customizations": {
-        "title": "Payment for Services",
-        "description": "Payment for XYZ services",
-      }
-    });
-
-    final response = await http.post(url, headers: headers, body: body);
-
-    if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
+    final response = await APIService().initFlutterwave(
+      accessToken: accessToken,
+      payload: payload,
+    );
+    debugPrint("INIT FLUTTERWAVE RESPONSE ::: ${response.body}");
+    if (response.statusCode >= 200 && response.statusCode <= 299) {
+      Map<String, dynamic> data = jsonDecode(response.body);
       Get.to(MercadoPagoScreen(initialURl: data['data']['link']))!
           .then((value) {
         if (value) {
           ShowToastDialog.showToast("Payment Successful!!");
-          walletTopUp();
+          // Refresh wallet here
+          refreshWallet();
         } else {
           ShowToastDialog.showToast("Payment UnSuccessful!!");
         }
@@ -524,55 +380,14 @@ class WalletController extends GetxController {
         }
 
         GetPaymentTxtTokenModel result = value;
-        startTransaction(context,
-            txnTokenBy: result.body.txnToken,
-            orderId: orderId,
-            amount: amount,
-            callBackURL: callback,
-            isStaging: paytmModel.value.isSandboxEnabled);
+        // startTransaction(context,
+        //     txnTokenBy: result.body.txnToken,
+        //     orderId: orderId,
+        //     amount: amount,
+        //     callBackURL: callback,
+        //     isStaging: paytmModel.value.isSandboxEnabled);
       });
     });
-  }
-
-  Future<void> startTransaction(context,
-      {required String txnTokenBy,
-      required orderId,
-      required double amount,
-      required callBackURL,
-      required isStaging}) async {
-    try {
-      var response = AllInOneSdk.startTransaction(
-        paytmModel.value.paytmMID.toString(),
-        orderId,
-        amount.toString(),
-        txnTokenBy,
-        callBackURL,
-        isStaging,
-        true,
-        true,
-      );
-
-      response.then((value) {
-        if (value!["RESPMSG"] == "Txn Success") {
-          print("txt done!!");
-          ShowToastDialog.showToast("Payment Successful!!");
-          walletTopUp();
-        }
-      }).catchError((onError) {
-        if (onError is PlatformException) {
-          Get.back();
-
-          ShowToastDialog.showToast(onError.message.toString());
-        } else {
-          log("======>>2");
-          Get.back();
-          ShowToastDialog.showToast(onError.message.toString());
-        }
-      });
-    } catch (err) {
-      Get.back();
-      ShowToastDialog.showToast(err.toString());
-    }
   }
 
   Future verifyCheckSum(
@@ -614,7 +429,7 @@ class WalletController extends GetxController {
       "amount": amount.toString(),
       "currency": "INR",
       "callback_url": callback,
-      "custId": FireStoreUtils.getCurrentUid(),
+      // "custId": FireStoreUtils.getCurrentUid(),
       "issandbox": paytmModel.value.isSandboxEnabled == true ? "1" : "2",
     });
     log(response.body);
@@ -628,7 +443,7 @@ class WalletController extends GetxController {
   }
 
   ///RazorPay payment function
-  final Razorpay razorPay = Razorpay();
+  // final Razorpay razorPay = Razorpay();
 
   void openCheckout({required amount, required orderId}) async {
     var options = {
@@ -650,26 +465,10 @@ class WalletController extends GetxController {
     };
 
     try {
-      razorPay.open(options);
+      // razorPay.open(options);
     } catch (e) {
       debugPrint('Error: $e');
     }
-  }
-
-  void handlePaymentSuccess(PaymentSuccessResponse response) {
-    Get.back();
-    ShowToastDialog.showToast("Payment Successful!!");
-    walletTopUp();
-  }
-
-  void handleExternalWaller(ExternalWalletResponse response) {
-    Get.back();
-    ShowToastDialog.showToast("Payment Processing!! via");
-  }
-
-  void handlePaymentError(PaymentFailureResponse response) {
-    Get.back();
-    ShowToastDialog.showToast("Payment Failed!!");
   }
 
   //Midtrans payment
