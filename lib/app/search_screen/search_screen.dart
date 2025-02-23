@@ -1,16 +1,10 @@
 import 'package:customer/app/product_screens/product_card.dart';
-import 'package:customer/app/restaurant_details_screen/restaurant_details_screen.dart';
 import 'package:customer/app/vendor_screens/vendor_card.dart';
 import 'package:customer/constant/constant.dart';
 import 'package:customer/controllers/search_controller.dart';
-import 'package:customer/models/product_model.dart';
-import 'package:customer/models/vendor_model.dart';
 import 'package:customer/themes/app_them_data.dart';
-import 'package:customer/themes/responsive.dart';
 import 'package:customer/themes/text_field_widget.dart';
 import 'package:customer/utils/dark_theme_provider.dart';
-import 'package:customer/utils/network_image_widget.dart';
-import 'package:customer/widget/restaurant_image_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
@@ -22,6 +16,21 @@ class SearchScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final themeChange = Provider.of<DarkThemeProvider>(context);
+    double screenWidth = MediaQuery.of(context).size.width;
+
+    // Determine number of columns dynamically based on screen size
+    int crossAxisCount = screenWidth > 800
+        ? 3 // Desktop
+        : screenWidth > 800
+            ? 2
+            : 2; // Otther Phones
+
+    // Calculate item width based on screen size
+    double itemWidth = screenWidth / crossAxisCount;
+
+    // Set item height dynamically (e.g., making height 1.2 times the width)
+    double itemHeight = itemWidth * 1.4; // Adjust this factor as needed
+
     return GetX(
         init: SearchScreenController(),
         builder: (controller) {
@@ -136,8 +145,16 @@ class SearchScreen extends StatelessWidget {
                                     ),
                                   ],
                                 ),
-                          ListView.builder(
+                          GridView.builder(
                             shrinkWrap: true,
+                            gridDelegate:
+                                SliverGridDelegateWithFixedCrossAxisCount(
+                              crossAxisCount: crossAxisCount,
+                              crossAxisSpacing: 10,
+                              mainAxisSpacing: 10,
+                              childAspectRatio:
+                                  itemWidth / itemHeight, // Dynamic height
+                            ),
                             physics: const NeverScrollableScrollPhysics(),
                             itemCount: controller.productSearchList.length,
                             itemBuilder: (context, index) {
@@ -150,7 +167,22 @@ class SearchScreen extends StatelessWidget {
                                 product: productModel,
                               );
                             },
-                          )
+                          ),
+                          // ListView.builder(
+                          //   shrinkWrap: true,
+                          //   physics: const NeverScrollableScrollPhysics(),
+                          //   itemCount: controller.productSearchList.length,
+                          //   itemBuilder: (context, index) {
+                          //     final productModel =
+                          //         controller.productSearchList[index];
+
+                          //     debugPrint("proDCt iTEM ::: $productModel");
+
+                          //     return ProductCard(
+                          //       product: productModel,
+                          //     );
+                          //   },
+                          // )
                         ],
                       ),
                     ),

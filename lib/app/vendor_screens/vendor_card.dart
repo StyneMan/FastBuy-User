@@ -1,7 +1,8 @@
 import 'dart:convert';
 
 import 'package:customer/app/vendor_screens/vendor_detail.dart';
-import 'package:customer/constant/show_toast_dialog.dart';
+import 'package:customer/constant/constant.dart';
+import 'package:customer/controllers/address_list_controller.dart';
 import 'package:customer/controllers/favourite_controller.dart';
 import 'package:customer/services/api_service.dart';
 import 'package:customer/themes/app_them_data.dart';
@@ -27,6 +28,7 @@ class VendorCard extends StatefulWidget {
 
 class _VendorCardState extends State<VendorCard> {
   bool _isTempLiked = false;
+  final addressController = Get.put(AddressListController());
 
   @override
   Widget build(BuildContext context) {
@@ -62,7 +64,7 @@ class _VendorCardState extends State<VendorCard> {
                         child: Stack(
                           children: [
                             RestaurantImageView(
-                              images: widget.item['cover'],
+                              images: widget.item['vendor']['cover'],
                             ),
                             Container(
                               height: Responsive.height(20, context),
@@ -81,62 +83,64 @@ class _VendorCardState extends State<VendorCard> {
                             Positioned(
                               right: 10,
                               top: 10,
-                              child: InkWell(
-                                onTap: () async {
-                                  try {
-                                    // Persist UI first
-                                    if (_isTempLiked) {
-                                      setState(() {
-                                        _isTempLiked = false;
-                                      });
-                                    } else {
-                                      setState(() {
-                                        _isTempLiked = true;
-                                      });
+                              child: Obx(
+                                () => InkWell(
+                                  onTap: () async {
+                                    try {
+                                      // Persist UI first
+                                      if (_isTempLiked) {
+                                        setState(() {
+                                          _isTempLiked = false;
+                                        });
+                                      } else {
+                                        setState(() {
+                                          _isTempLiked = true;
+                                        });
+                                      }
+                                      // ShowToastDialog.showLoader(
+                                      //     "Please wait".tr);
+                                      final String accessToken =
+                                          Preferences.getString(
+                                              Preferences.accessTokenKey);
+                                      final resp =
+                                          await APIService().addFavourite(
+                                        accessToken: accessToken,
+                                        branchId: widget.item['id'],
+                                      );
+                                      // ShowToastDialog.closeLoader();
+                                      debugPrint(
+                                          "FAVOURITE RESPONSE ::: ${resp.body}");
+                                      if (resp.statusCode >= 200 &&
+                                          resp.statusCode <= 299) {
+                                        Map<String, dynamic> map =
+                                            jsonDecode(resp.body);
+                                        setState(() {
+                                          _isTempLiked = _isTempLiked;
+                                        });
+                                        controller.refreshData();
+                                      }
+                                    } catch (e) {
+                                      debugPrint("$e");
+                                      // ShowToastDialog.closeLoader();
                                     }
-                                    // ShowToastDialog.showLoader(
-                                    //     "Please wait".tr);
-                                    final String accessToken =
-                                        Preferences.getString(
-                                            Preferences.accessTokenKey);
-                                    final resp =
-                                        await APIService().addFavourite(
-                                      accessToken: accessToken,
-                                      vendorId: widget.item['id'],
-                                    );
-                                    ShowToastDialog.closeLoader();
-                                    debugPrint(
-                                        "FAVOURITE RESPONSE ::: ${resp.body}");
-                                    if (resp.statusCode >= 200 &&
-                                        resp.statusCode <= 299) {
-                                      Map<String, dynamic> map =
-                                          jsonDecode(resp.body);
-                                      setState(() {
-                                        _isTempLiked = _isTempLiked;
-                                      });
-                                      controller.refreshData();
-                                    }
-                                  } catch (e) {
-                                    debugPrint("$e");
-                                    ShowToastDialog.closeLoader();
-                                  }
-                                },
-                                child:
-                                    (controller.favouriteList.value.isNotEmpty
-                                                    ? controller.favouriteList
-                                                        .value['data']
-                                                    : [])
-                                                ?.where((p0) =>
-                                                    p0['vendorId'] ==
-                                                    widget.item['id'])
-                                                .isNotEmpty ||
-                                            _isTempLiked
-                                        ? SvgPicture.asset(
-                                            "assets/icons/ic_like_fill.svg",
-                                          )
-                                        : SvgPicture.asset(
-                                            "assets/icons/ic_like.svg",
-                                          ),
+                                  },
+                                  child:
+                                      (controller.favouriteList.value.isNotEmpty
+                                                      ? controller.favouriteList
+                                                          .value['data']
+                                                      : [])
+                                                  ?.where((p0) =>
+                                                      p0['branchId'] ==
+                                                      widget.item['id'])
+                                                  .isNotEmpty ||
+                                              _isTempLiked
+                                          ? SvgPicture.asset(
+                                              "assets/icons/ic_like_fill.svg",
+                                            )
+                                          : SvgPicture.asset(
+                                              "assets/icons/ic_like.svg",
+                                            ),
+                                ),
                               ),
                             ),
                           ],
@@ -172,16 +176,16 @@ class _VendorCardState extends State<VendorCard> {
                                     const SizedBox(
                                       width: 5,
                                     ),
-                                    // Text(
-                                    //   "${Constant.calculateReview(reviewCount: vendorModel.reviewsCount!.toStringAsFixed(0), reviewSum: vendorModel.reviewsSum.toString())} (${vendorModel.reviewsCount!.toStringAsFixed(0)})",
-                                    //   style: TextStyle(
-                                    //     color: themeChange.getThem()
-                                    //         ? AppThemeData.primary300
-                                    //         : AppThemeData.primary300,
-                                    //     fontFamily: AppThemeData.semiBold,
-                                    //     fontWeight: FontWeight.w600,
-                                    //   ),
-                                    // ),
+                                    Text(
+                                      "${widget.item['rating']}",
+                                      style: TextStyle(
+                                        color: themeChange.getThem()
+                                            ? AppThemeData.primary300
+                                            : AppThemeData.primary300,
+                                        fontFamily: AppThemeData.semiBold,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
                                   ],
                                 ),
                               ),
@@ -191,43 +195,39 @@ class _VendorCardState extends State<VendorCard> {
                             ),
                             Container(
                               decoration: ShapeDecoration(
-                                color: themeChange.getThem()
-                                    ? AppThemeData.secondary600
-                                    : AppThemeData.secondary50,
+                                color: AppThemeData.primary300,
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(120),
                                 ),
                               ),
                               child: Padding(
                                 padding: const EdgeInsets.symmetric(
-                                    horizontal: 12, vertical: 8),
+                                  horizontal: 12,
+                                  vertical: 8,
+                                ),
                                 child: Row(
                                   children: [
                                     SvgPicture.asset(
                                       "assets/icons/ic_map_distance.svg",
                                       colorFilter: const ColorFilter.mode(
-                                          AppThemeData.secondary300,
-                                          BlendMode.srcIn),
+                                        AppThemeData.secondary400,
+                                        BlendMode.srcIn,
+                                      ),
                                     ),
                                     const SizedBox(
                                       width: 5,
                                     ),
                                     Text(
-                                      "4.8km",
-                                      // "${Constant.getDistance(
-                                      //   lat1: vendorModel.latitude.toString(),
-                                      //   lng1: vendorModel.longitude.toString(),
-                                      //   lat2: Constant
-                                      //       .selectedLocation.location!.latitude
-                                      //       .toString(),
-                                      //   lng2: Constant
-                                      //       .selectedLocation.location!.longitude
-                                      //       .toString(),
-                                      // )} ${Constant.distanceType}",
-                                      style: TextStyle(
-                                        color: themeChange.getThem()
-                                            ? AppThemeData.secondary300
-                                            : AppThemeData.secondary300,
+                                      "${Constant.getDistance(
+                                        lat1: "${widget.item['lat']}",
+                                        lng1: "${widget.item['lng']}",
+                                        lat2:
+                                            "${addressController.location.value.latitude ?? 6.18333300}",
+                                        lng2:
+                                            "${addressController.location.value.longitude ?? 6.2123}",
+                                      )} ${Constant.distanceType}",
+                                      style: const TextStyle(
+                                        color: AppThemeData.secondary400,
                                         fontFamily: AppThemeData.semiBold,
                                         fontWeight: FontWeight.w600,
                                       ),
@@ -250,7 +250,7 @@ class _VendorCardState extends State<VendorCard> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          widget.item['name'].toString(),
+                          "${widget.item['vendor']['name']} ${widget.item['branch_name']}",
                           textAlign: TextAlign.start,
                           maxLines: 1,
                           style: TextStyle(

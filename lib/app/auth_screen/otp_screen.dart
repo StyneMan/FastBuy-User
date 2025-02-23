@@ -40,7 +40,7 @@ class _OtpScreenState extends State<OtpScreen> {
   var isCompleted = false;
   final _controller = Get.find<OtpController>();
   final _profileController = Get.find<MyProfileController>();
-  final _dashboardController = Get.find<DashBoardController>();
+  final _dashboardController = Get.put(DashBoardController());
 
   _sendOTP() async {
     if (widget.type == "phone" || widget.phone.isNotEmpty) {
@@ -279,11 +279,12 @@ class _OtpScreenState extends State<OtpScreen> {
                                   ? "Verify OTP code"
                                   : "Verify Email Address",
                       style: TextStyle(
-                          color: themeChange.getThem()
-                              ? AppThemeData.grey50
-                              : AppThemeData.grey900,
-                          fontSize: 22,
-                          fontFamily: AppThemeData.semiBold),
+                        color: themeChange.getThem()
+                            ? AppThemeData.grey50
+                            : AppThemeData.grey900,
+                        fontSize: 22,
+                        fontFamily: AppThemeData.semiBold,
+                      ),
                     ),
                     Text(
                       widget.type == "phone"

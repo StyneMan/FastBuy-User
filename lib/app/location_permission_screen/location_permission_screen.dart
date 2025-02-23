@@ -1,19 +1,27 @@
+import 'dart:convert';
+
 import 'package:customer/app/address_screens/address_list_screen.dart';
 import 'package:customer/app/dash_board_screens/dash_board_screen.dart';
 import 'package:customer/constant/constant.dart';
 import 'package:customer/constant/show_toast_dialog.dart';
+import 'package:customer/controllers/address_list_controller.dart';
+import 'package:customer/controllers/dash_board_controller.dart';
 import 'package:customer/controllers/location_permission_controller.dart';
+import 'package:customer/controllers/vendors_controller.dart';
 import 'package:customer/models/user_model.dart';
+import 'package:customer/services/api_service.dart';
 import 'package:customer/themes/app_them_data.dart';
 import 'package:customer/themes/responsive.dart';
 import 'package:customer/themes/round_button_fill.dart';
 import 'package:customer/utils/dark_theme_provider.dart';
+import 'package:customer/utils/preferences.dart';
 import 'package:customer/widget/place_picker_osm.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:get/get.dart';
 import 'package:map_location_picker/map_location_picker.dart';
+import 'package:place_picker_google/place_picker_google.dart';
 import 'package:provider/provider.dart';
 
 class LocationPermissionScreen extends StatelessWidget {
@@ -30,9 +38,11 @@ class LocationPermissionScreen extends StatelessWidget {
             height: Responsive.height(100, context),
             width: Responsive.width(100, context),
             decoration: const BoxDecoration(
-                image: DecorationImage(
-                    image: AssetImage("assets/images/location_bg.png"),
-                    fit: BoxFit.cover)),
+              image: DecorationImage(
+                image: AssetImage("assets/images/location_bg.png"),
+                fit: BoxFit.cover,
+              ),
+            ),
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 35),
               child: Column(
@@ -66,6 +76,11 @@ class LocationPermissionScreen extends StatelessWidget {
                     color: AppThemeData.primary300,
                     textColor: AppThemeData.grey50,
                     onPress: () async {
+                      final addressCoontroller =
+                          Get.put(AddressListController());
+
+                      final dashboardController =
+                          Get.put(DashBoardController());
                       Constant.checkPermission(
                         context: context,
                         onTap: () async {
@@ -105,12 +120,58 @@ class LocationPermissionScreen extends StatelessWidget {
                               addressModel.locality = currentLocation;
 
                               debugPrint("CURRANT LOCATE >> $currentLocation");
+
+                              addressModel.address =
+                                  "${placeMark.name}, ${placeMark.subLocality}, ";
+                              addressModel.addressAs = "Home";
+                              addressModel.isDefault = true;
+                              addressModel.locality = "${placeMark.locality}";
+                              addressModel.landmark =
+                                  "${placeMark.subAdministrativeArea}";
+                              addressModel.location = UserLocation(
+                                latitude: newLocalData.latitude,
+                                longitude: newLocalData.longitude,
+                              );
+
+                              Map mp = {
+                                "address":
+                                    "${placeMark.name} ${placeMark.subLocality}",
+                                "landmark":
+                                    "${placeMark.subAdministrativeArea}",
+                                "locality": "${placeMark.locality}",
+                                "addressAs": "Home",
+                                "isDefault": false,
+                                "id": "1",
+                              };
+
+                              Preferences.setString(
+                                Preferences.shippingAddress,
+                                jsonEncode(mp),
+                              );
+
+                              Preferences.setString(
+                                  Preferences.currAddress, "${placeMark.name}");
                             });
+                            addressCoontroller.location.value = UserLocation(
+                              latitude: newLocalData.latitude,
+                              longitude: newLocalData.longitude,
+                            );
 
-                            // Constant.selectedLocation = addressModel;
+                            Preferences.setString(Preferences.currLatitude,
+                                "${newLocalData.latitude}");
+                            Preferences.setString(Preferences.currLongitude,
+                                "${newLocalData.longitude}");
+
+                            // Now fetch nearest vendors here
+                            getNearestVendors(
+                              addressController: addressCoontroller,
+                              vendorController:
+                                  dashboardController.vendorController,
+                            );
+
                             ShowToastDialog.closeLoader();
-
-                            Get.offAll(const DashBoardScreen());
+                            dashboardController.selectedIndex.value = 0;
+                            Get.to(const DashBoardScreen());
                           } catch (e) {
                             // await placemarkFromCoordinates(19.228825, 72.854118)
                             //     .then((valuePlaceMaker) {
@@ -149,6 +210,11 @@ class LocationPermissionScreen extends StatelessWidget {
                     ),
                     isRight: false,
                     onPress: () async {
+                      final addressCoontroller =
+                          Get.put(AddressListController());
+
+                      final dashboardController =
+                          Get.put(DashBoardController());
                       Constant.checkPermission(
                         context: context,
                         onTap: () async {
@@ -179,54 +245,98 @@ class LocationPermissionScreen extends StatelessWidget {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => MapLocationPicker(
+                                  builder: (context) => PlacePicker(
                                     apiKey: Constant.mapAPIKey,
-                                    onSuggestionSelected: (data) async {
-                                      // addressModel.addressAs = "Home";
-                                      // addressModel.locality = data
-                                      //     ?.result.formattedAddress!
-                                      //     .toString();
-                                      // addressModel.location = UserLocation(
-                                      //     latitude: data
-                                      //         ?.result.geometry!.location.lat,
-                                      //     longitude: data
-                                      //         ?.result.geometry!.location.lng);
-                                      // Constant.selectedLocation = addressModel;
+                                    onPlacePicked: (result) {
+                                      debugPrint(
+                                          "Place picked: ${result.formattedAddress}");
 
-                                      Get.offAll(const DashBoardScreen());
+                                      addressCoontroller.location.value =
+                                          UserLocation(
+                                        latitude: result.latLng?.latitude,
+                                        longitude: result.latLng?.longitude,
+                                      );
+                                      addressCoontroller.shippingModel.value =
+                                          ShippingAddress(
+                                        address: "${result.formattedAddress}",
+                                        addressAs: "Home",
+                                        isDefault: true,
+                                        landmark: "${result.name}",
+                                        locality:
+                                            "${result.locality?.longName}",
+                                        location: UserLocation(
+                                          latitude: result.latLng?.latitude,
+                                          longitude: result.latLng?.longitude,
+                                        ),
+                                      );
+
+                                      Map mp = {
+                                        "address": "${result.formattedAddress}",
+                                        "landmark": "${result.name}",
+                                        "locality":
+                                            "${result.locality?.longName}",
+                                        "addressAs": "Home",
+                                        "isDefault": true,
+                                        "id": "1",
+                                      };
+
+                                      Preferences.setString(
+                                        Preferences.shippingAddress,
+                                        jsonEncode(mp),
+                                      );
+
+                                      addressModel.addressAs = "Home";
+                                      addressModel.locality =
+                                          result.formattedAddress!.toString();
+                                      addressModel.location = UserLocation(
+                                        latitude: result.latLng?.latitude,
+                                        longitude: result.latLng?.longitude,
+                                      );
+                                      Preferences.setString(
+                                          Preferences.currLatitude,
+                                          "${result.latLng?.latitude}");
+                                      Preferences.setString(
+                                          Preferences.currLongitude,
+                                          "${result.latLng?.longitude}");
+
+                                      // Now fetch nearest vendors here
+                                      getNearestVendors(
+                                        addressController: addressCoontroller,
+                                        vendorController: dashboardController
+                                            .vendorController,
+                                      );
+                                      ShowToastDialog.closeLoader();
+
+                                      dashboardController.selectedIndex.value =
+                                          0;
+                                      Get.to(const DashBoardScreen());
                                     },
-                                    // location: Location(latitude: -33.8567844, longitude: 151.213108),
-                                    // initialPosition: const LatLng(-33.8567844, 151.213108),
-                                    hideMoreOptions: true,
-                                    hideBackButton: false,
-                                    mapType: MapType.satellite,
-
-                                    // usePinPointingSearch: true,
+                                    initialLocation: const LatLng(
+                                      6.465422,
+                                      3.406448,
+                                    ),
+                                    searchInputConfig: const SearchInputConfig(
+                                      padding: EdgeInsets.symmetric(
+                                        horizontal: 16.0,
+                                        vertical: 8.0,
+                                      ),
+                                      autofocus: false,
+                                      textDirection: TextDirection.ltr,
+                                    ),
+                                    searchInputDecorationConfig:
+                                        const SearchInputDecorationConfig(
+                                      hintText:
+                                          "Search for a building, street or ...",
+                                    ),
+                                    // useCurrentLocation: true,
+                                    // selectInitialPosition: true,
+                                    usePinPointingSearch: true,
                                     // usePlaceDetailSearch: true,
                                     // zoomGesturesEnabled: true,
                                     // zoomControlsEnabled: true,
                                     // resizeToAvoidBottomInset:
                                     // false, // only works in page mode, less flickery, remove if wrong offsets
                                   ),
-                                  // PlacePicker(
-                                  //   apiKey: Constant.mapAPIKey,
-                                  //   onPlacePicked: (result) {
-                                  //     addressModel.addressAs = "Home";
-                                  //     addressModel.locality = result.formattedAddress!.toString();
-                                  //     addressModel.location = UserLocation(latitude: result.geometry!.location.lat, longitude: result.geometry!.location.lng);
-                                  //     Constant.selectedLocation = addressModel;
-
-                                  //     Get.offAll(const DashBoardScreen());
-                                  //   },
-                                  //   initialPosition: const LatLng(-33.8567844, 151.213108),
-                                  //   useCurrentLocation: true,
-                                  //   selectInitialPosition: true,
-                                  //   usePinPointingSearch: true,
-                                  //   usePlaceDetailSearch: true,
-                                  //   zoomGesturesEnabled: true,
-                                  //   zoomControlsEnabled: true,
-                                  //   resizeToAvoidBottomInset: false, // only works in page mode, less flickery, remove if wrong offsets
-                                  // ),
                                 ),
                               );
                             }
@@ -280,5 +390,27 @@ class LocationPermissionScreen extends StatelessWidget {
         );
       },
     );
+  }
+
+  getNearestVendors(
+      {required AddressListController addressController,
+      required VendorsController vendorController}) async {
+    if (addressController.location.value.latitude != null &&
+        addressController.location.value.longitude != null) {
+      Map payload = {
+        "lat": addressController.location.value.latitude,
+        "lng": addressController.location.value.longitude,
+      };
+
+      final nearbys = await APIService().getNearbyVendors(
+        page: 1,
+        payload: payload,
+      );
+      debugPrint("NEARBY VENDORS :::: ${nearbys.body}");
+      if (nearbys.statusCode >= 200 && nearbys.statusCode <= 299) {
+        Map<String, dynamic> map = jsonDecode(nearbys.body);
+        vendorController.nearbyVendors.value = map;
+      }
+    }
   }
 }

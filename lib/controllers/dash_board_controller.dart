@@ -30,6 +30,7 @@ class DashBoardController extends GetxController {
   final walletController = Get.put(WalletController());
   final shippingAddressController = Get.put(AddressListController());
   final orderController = Get.put(OrderController());
+
   RxInt selectedIndex = 0.obs;
 
   RxList pageList = [].obs;
@@ -93,379 +94,422 @@ class DashBoardController extends GetxController {
   }
 
   getData() async {
-    try {
-      final accessToken = Preferences.getString(Preferences.accessTokenKey);
-      final socket = SocketManager().socket;
-      Map payload = {
-        "userId": profileController.userData.value['id'],
-        "userType": "customer",
-      };
+    final accessToken = Preferences.getString(Preferences.accessTokenKey);
+    if (accessToken.isNotEmpty) {
+      try {
+        final socket = SocketManager().socket;
+        Map payload = {
+          "userId": profileController.userData.value['id'],
+          "userType": "customer",
+        };
 
-      socket.onConnect((data) {
-        debugPrint('Connected ID RELOAD: $data');
-      });
-      socket.on("handshake", (data) => debugPrint("FROM NESTJS :: $data"));
-      socket.emit("register", payload);
+        socket.onConnect((data) {
+          debugPrint('Connected ID RELOAD: $data');
+        });
+        socket.on("handshake", (data) {
+          debugPrint("FROM NESTJS :: $data");
+          // now reconnect to servr her
+          try {
+            socket.emit("register", payload);
+          } catch (e) {
+            debugPrint("REconnection Error:: $e");
+          }
+        });
+        socket.emit("register", payload);
 
-      // Listen for notification events
-      socket.on('notification', (data) {
-        print('Notification received: $data');
-        AppNotificationService.showNotification(
-          title: data['title'] ?? 'New Notification',
-          body: data['message'] ?? 'You have a new message!',
+        // Listen for notification events
+        socket.on('notification', (data) {
+          print('Notification received: $data');
+          AppNotificationService.showNotification(
+            title: data['title'] ?? 'New Notification',
+            body: data['message'] ?? 'You have a new message!',
+          );
+        });
+
+        socket.on(
+          "refresh-cart",
+          (data) {
+            // debugPrint("REFRESH  CART HERE >> $data");
+            // Constant.toast("REFRESH CART HERE :: ");
+            APIService()
+                .getCartStreamed(
+              accessToken: accessToken,
+              customerId: profileController.userData.value['id'],
+              page: 1,
+            )
+                .listen((onData) {
+              // debugPrint("MY SHOPPING CART :: ${onData.body}");
+              if (onData.statusCode >= 200 && onData.statusCode <= 299) {
+                Map<String, dynamic> map = jsonDecode(onData.body);
+                cartController.cartData.value = map;
+              }
+            });
+          },
         );
-      });
 
-      socket.on(
-        "refresh-cart",
-        (data) {
-          // debugPrint("REFRESH  CART HERE >> $data");
-          // Constant.toast("REFRESH CART HERE :: ");
-          APIService()
-              .getCartStreamed(
-            accessToken: accessToken,
-            customerId: profileController.userData.value['id'],
+        socket.on(
+          "refresh-shipping-address",
+          (data) {
+            // debugPrint("REFRESH  CART HERE >> $data");
+            // Constant.toast("REFRESH CART HERE :: ");
+            APIService()
+                .getShippingAdressesStreamed(
+              accessToken: accessToken,
+              customerId: profileController.userData.value['id'],
+              page: 1,
+            )
+                .listen((onData) {
+              // debugPrint("MY SHOPPING CART :: ${onData.body}");
+              if (onData.statusCode >= 200 && onData.statusCode <= 299) {
+                Map<String, dynamic> map = jsonDecode(onData.body);
+                shippingAddressController.shippingAddresses.value = map;
+              }
+            });
+          },
+        );
+
+        socket.on(
+          "refresh-favourites",
+          (data) {
+            // debugPrint("REFRESH  FAVS HERE >> $data");
+            // Constant.toast("REFRESH CART HERE :: ");
+            APIService()
+                .getFavouritesStreamed(
+              accessToken: accessToken,
+              customerId: profileController.userData.value['id'],
+              vendorType: "restaurant",
+              page: 1,
+            )
+                .listen((onData) {
+              // debugPrint("RESTAURANT FAVOURITES :: ${onData.body}");
+              favouriteController.isLoading.value = false;
+              if (onData.statusCode >= 200 && onData.statusCode <= 299) {
+                Map<String, dynamic> map = jsonDecode(onData.body);
+                favouriteController.favouriteRestaurants.value = map;
+              }
+            });
+
+            APIService()
+                .getFavouritesStreamed(
+              accessToken: accessToken,
+              customerId: profileController.userData.value['id'],
+              vendorType: "grocery_store",
+              page: 1,
+            )
+                .listen((onData) {
+              // debugPrint("STORE  FAVOURITES :: ${onData.body}");
+              favouriteController.isLoading.value = false;
+              if (onData.statusCode >= 200 && onData.statusCode <= 299) {
+                Map<String, dynamic> map = jsonDecode(onData.body);
+                favouriteController.favouriteStores.value = map;
+              }
+            });
+          },
+        );
+
+        socket.on(
+          "refresh-wallet",
+          (data) {
+            debugPrint("REFRESH WALLET HERE >> $data");
+            // Constant.toast("REFRESH CART HERE :: ");
+            APIService()
+                .getWalletStreamed(
+              accessToken: accessToken,
+              customerId: profileController.userData.value['id'],
+            )
+                .listen((onData) {
+              // debugPrint("MY WALLET  :: ${onData.body}");
+              if (onData.statusCode >= 200 && onData.statusCode <= 299) {
+                Map<String, dynamic> map = jsonDecode(onData.body);
+                walletController.userWallet.value = map;
+              }
+            });
+
+            APIService()
+                .getTransactionsStreamed(
+              accessToken: accessToken,
+              customerId: profileController.userData.value['id'],
+              page: 1,
+            )
+                .listen((onData) {
+              debugPrint("MY WALLET TRANSACTIONS :: ${onData.body}");
+              if (onData.statusCode >= 200 && onData.statusCode <= 299) {
+                Map<String, dynamic> map = jsonDecode(onData.body);
+
+                walletController.walletTransactions.value = map;
+              }
+            });
+          },
+        );
+
+        socket.on(
+          "refresh-orders",
+          (data) {
+            debugPrint("REFRESH ORDERS HERE >> $data");
+            // Constant.toast("REFRESH CART HERE :: ");
+            APIService()
+                .getOrdersStreamed(
+              accessToken: accessToken,
+              customerId: profileController.userData.value['id'],
+              page: 1,
+            )
+                .listen((onData) {
+              debugPrint("MY ORDERS REFRESHED  :: ${onData.body}");
+              if (onData.statusCode >= 200 && onData.statusCode <= 299) {
+                Map<String, dynamic> map = jsonDecode(onData.body);
+                orderController.myOrders.value = map;
+              }
+            });
+
+            APIService()
+                .getOrdersInprogressStreamed(
+              accessToken: accessToken,
+              customerId: profileController.userData.value['id'],
+              page: 1,
+            )
+                .listen((onData) {
+              // debugPrint("MY ORDERS REFRESHED  :: ${onData.body}");
+              if (onData.statusCode >= 200 && onData.statusCode <= 299) {
+                Map<String, dynamic> map = jsonDecode(onData.body);
+                orderController.myInprogressOrders.value = map;
+              }
+            });
+
+            APIService()
+                .getOrdersDeliveredStreamed(
+              accessToken: accessToken,
+              customerId: profileController.userData.value['id'],
+              page: 1,
+            )
+                .listen((onData) {
+              // debugPrint("MY ORDERS REFRESHED  :: ${onData.body}");
+              if (onData.statusCode >= 200 && onData.statusCode <= 299) {
+                Map<String, dynamic> map = jsonDecode(onData.body);
+                orderController.myDeliveredOrders.value = map;
+              }
+            });
+
+            APIService()
+                .getOrdersCancelledStreamed(
+              accessToken: accessToken,
+              customerId: profileController.userData.value['id'],
+              page: 1,
+            )
+                .listen((onData) {
+              // debugPrint("MY ORDERS REFRESHED  :: ${onData.body}");
+              if (onData.statusCode >= 200 && onData.statusCode <= 299) {
+                Map<String, dynamic> map = jsonDecode(onData.body);
+                orderController.myCancelledOrders.value = map;
+              }
+            });
+
+            APIService()
+                .getParcelOrdersStreamed(
+              accessToken: accessToken,
+              customerId: profileController.userData.value['id'],
+              page: 1,
+            )
+                .listen((onData) {
+              // debugPrint("MY ORDERS REFRESHED  :: ${onData.body}");
+              if (onData.statusCode >= 200 && onData.statusCode <= 299) {
+                Map<String, dynamic> map = jsonDecode(onData.body);
+                orderController.myParcelOrders.value = map;
+              }
+            });
+          },
+        );
+
+        APIService()
+            .getFavouriteListStreamed(
+          accessToken: accessToken,
+          customerId: profileController.userData.value['id'],
+        )
+            .listen((onData) {
+          // debugPrint("ALL FAVOURITES :: ${onData.body}");
+          if (onData.statusCode >= 200 && onData.statusCode <= 299) {
+            Map<String, dynamic> map = jsonDecode(onData.body);
+            favouriteController.favouriteList.value = map;
+          }
+        });
+
+        APIService()
+            .getFavouritesStreamed(
+          accessToken: accessToken,
+          customerId: profileController.userData.value['id'],
+          vendorType: "restaurant",
+          page: 1,
+        )
+            .listen((onData) {
+          // debugPrint("RESTAURANT FAVOURITES :: ${onData.body}");
+          favouriteController.isLoading.value = false;
+          if (onData.statusCode >= 200 && onData.statusCode <= 299) {
+            Map<String, dynamic> map = jsonDecode(onData.body);
+            favouriteController.favouriteRestaurants.value = map;
+          }
+        });
+
+        APIService()
+            .getFavouritesStreamed(
+          accessToken: accessToken,
+          customerId: profileController.userData.value['id'],
+          vendorType: "grocery_store",
+          page: 1,
+        )
+            .listen((onData) {
+          // debugPrint("STORE  FAVOURITES :: ${onData.body}");
+          favouriteController.isLoading.value = false;
+          if (onData.statusCode >= 200 && onData.statusCode <= 299) {
+            Map<String, dynamic> map = jsonDecode(onData.body);
+            favouriteController.favouriteStores.value = map;
+          }
+        });
+
+        APIService()
+            .getCartStreamed(
+          accessToken: accessToken,
+          customerId: profileController.userData.value['id'],
+          page: 1,
+        )
+            .listen((onData) {
+          // debugPrint("MY SHOPPING CART :: ${onData.body}");
+          if (onData.statusCode >= 200 && onData.statusCode <= 299) {
+            Map<String, dynamic> map = jsonDecode(onData.body);
+            cartController.cartData.value = map;
+          }
+        });
+
+        APIService()
+            .getShippingAdressesStreamed(
+          accessToken: accessToken,
+          customerId: profileController.userData.value['id'],
+          page: 1,
+        )
+            .listen((onData) {
+          // debugPrint("MY SHIPPING ADDRESSES :: ${onData.body}");
+          if (onData.statusCode >= 200 && onData.statusCode <= 299) {
+            Map<String, dynamic> map = jsonDecode(onData.body);
+
+            shippingAddressController.shippingAddresses.value = map;
+          }
+        });
+
+        APIService()
+            .getWalletStreamed(
+          accessToken: accessToken,
+          customerId: profileController.userData.value['id'],
+        )
+            .listen((onData) {
+          // debugPrint("MY WALLET  :: ${onData.body}");
+          if (onData.statusCode >= 200 && onData.statusCode <= 299) {
+            Map<String, dynamic> map = jsonDecode(onData.body);
+            walletController.userWallet.value = map;
+          }
+        });
+
+        APIService()
+            .getTransactionsStreamed(
+          accessToken: accessToken,
+          customerId: profileController.userData.value['id'],
+          page: 1,
+        )
+            .listen((onData) {
+          debugPrint("MY WALLET TRANSACTIONS :: ${onData.body}");
+          if (onData.statusCode >= 200 && onData.statusCode <= 299) {
+            Map<String, dynamic> map = jsonDecode(onData.body);
+            walletController.walletTransactions.value = map;
+          }
+        });
+
+        APIService()
+            .getOrdersStreamed(
+          accessToken: accessToken,
+          customerId: profileController.userData.value['id'],
+          page: 1,
+        )
+            .listen((onData) {
+          debugPrint("MY ORDERS  :: ${onData.body}");
+          if (onData.statusCode >= 200 && onData.statusCode <= 299) {
+            Map<String, dynamic> map = jsonDecode(onData.body);
+            orderController.myOrders.value = map;
+          }
+        });
+
+        APIService()
+            .getOrdersInprogressStreamed(
+          accessToken: accessToken,
+          customerId: profileController.userData.value['id'],
+          page: 1,
+        )
+            .listen((onData) {
+          // debugPrint("MY ORDERS REFRESHED  :: ${onData.body}");
+          if (onData.statusCode >= 200 && onData.statusCode <= 299) {
+            Map<String, dynamic> map = jsonDecode(onData.body);
+            orderController.myInprogressOrders.value = map;
+          }
+        });
+
+        APIService()
+            .getOrdersDeliveredStreamed(
+          accessToken: accessToken,
+          customerId: profileController.userData.value['id'],
+          page: 1,
+        )
+            .listen((onData) {
+          // debugPrint("MY ORDERS REFRESHED  :: ${onData.body}");
+          if (onData.statusCode >= 200 && onData.statusCode <= 299) {
+            Map<String, dynamic> map = jsonDecode(onData.body);
+            orderController.myDeliveredOrders.value = map;
+          }
+        });
+
+        APIService()
+            .getOrdersCancelledStreamed(
+          accessToken: accessToken,
+          customerId: profileController.userData.value['id'],
+          page: 1,
+        )
+            .listen((onData) {
+          // debugPrint("MY ORDERS REFRESHED  :: ${onData.body}");
+          if (onData.statusCode >= 200 && onData.statusCode <= 299) {
+            Map<String, dynamic> map = jsonDecode(onData.body);
+            orderController.myCancelledOrders.value = map;
+          }
+        });
+
+        APIService()
+            .getParcelOrdersStreamed(
+          accessToken: accessToken,
+          customerId: profileController.userData.value['id'],
+          page: 1,
+        )
+            .listen((onData) {
+          // debugPrint("MY ORDERS REFRESHED  :: ${onData.body}");
+          if (onData.statusCode >= 200 && onData.statusCode <= 299) {
+            Map<String, dynamic> map = jsonDecode(onData.body);
+            orderController.myParcelOrders.value = map;
+          }
+        });
+
+        if (shippingAddressController.location.value.latitude != null &&
+            shippingAddressController.location.value.longitude != null) {
+          Map payload = {
+            "lat": shippingAddressController.location.value.latitude,
+            "lng": shippingAddressController.location.value.longitude,
+          };
+
+          final nearbys = await APIService().getNearbyVendors(
             page: 1,
-          )
-              .listen((onData) {
-            // debugPrint("MY SHOPPING CART :: ${onData.body}");
-            if (onData.statusCode >= 200 && onData.statusCode <= 299) {
-              Map<String, dynamic> map = jsonDecode(onData.body);
-              cartController.cartData.value = map;
-            }
-          });
-        },
-      );
-
-      socket.on(
-        "refresh-shipping-address",
-        (data) {
-          // debugPrint("REFRESH  CART HERE >> $data");
-          // Constant.toast("REFRESH CART HERE :: ");
-          APIService()
-              .getShippingAdressesStreamed(
-            accessToken: accessToken,
-            customerId: profileController.userData.value['id'],
-            page: 1,
-          )
-              .listen((onData) {
-            // debugPrint("MY SHOPPING CART :: ${onData.body}");
-            if (onData.statusCode >= 200 && onData.statusCode <= 299) {
-              Map<String, dynamic> map = jsonDecode(onData.body);
-              shippingAddressController.shippingAddresses.value = map;
-            }
-          });
-        },
-      );
-
-      socket.on(
-        "refresh-favourites",
-        (data) {
-          // debugPrint("REFRESH  FAVS HERE >> $data");
-          // Constant.toast("REFRESH CART HERE :: ");
-          APIService()
-              .getFavouritesStreamed(
-            accessToken: accessToken,
-            customerId: profileController.userData.value['id'],
-            vendorType: "restaurant",
-            page: 1,
-          )
-              .listen((onData) {
-            // debugPrint("RESTAURANT FAVOURITES :: ${onData.body}");
-            favouriteController.isLoading.value = false;
-            if (onData.statusCode >= 200 && onData.statusCode <= 299) {
-              Map<String, dynamic> map = jsonDecode(onData.body);
-              favouriteController.favouriteRestaurants.value = map;
-            }
-          });
-
-          APIService()
-              .getFavouritesStreamed(
-            accessToken: accessToken,
-            customerId: profileController.userData.value['id'],
-            vendorType: "grocery_store",
-            page: 1,
-          )
-              .listen((onData) {
-            // debugPrint("STORE  FAVOURITES :: ${onData.body}");
-            favouriteController.isLoading.value = false;
-            if (onData.statusCode >= 200 && onData.statusCode <= 299) {
-              Map<String, dynamic> map = jsonDecode(onData.body);
-              favouriteController.favouriteStores.value = map;
-            }
-          });
-        },
-      );
-
-      socket.on(
-        "refresh-wallet",
-        (data) {
-          debugPrint("REFRESH WALLET HERE >> $data");
-          // Constant.toast("REFRESH CART HERE :: ");
-          APIService()
-              .getWalletStreamed(
-            accessToken: accessToken,
-            customerId: profileController.userData.value['id'],
-          )
-              .listen((onData) {
-            // debugPrint("MY WALLET  :: ${onData.body}");
-            if (onData.statusCode >= 200 && onData.statusCode <= 299) {
-              Map<String, dynamic> map = jsonDecode(onData.body);
-              walletController.userWallet.value = map;
-            }
-          });
-        },
-      );
-
-      socket.on(
-        "refresh-orders",
-        (data) {
-          debugPrint("REFRESH ORDERS HERE >> $data");
-          // Constant.toast("REFRESH CART HERE :: ");
-          APIService()
-              .getOrdersStreamed(
-            accessToken: accessToken,
-            customerId: profileController.userData.value['id'],
-            page: 1,
-          )
-              .listen((onData) {
-            debugPrint("MY ORDERS REFRESHED  :: ${onData.body}");
-            if (onData.statusCode >= 200 && onData.statusCode <= 299) {
-              Map<String, dynamic> map = jsonDecode(onData.body);
-              orderController.myOrders.value = map;
-            }
-          });
-
-          APIService()
-              .getOrdersInprogressStreamed(
-            accessToken: accessToken,
-            customerId: profileController.userData.value['id'],
-            page: 1,
-          )
-              .listen((onData) {
-            // debugPrint("MY ORDERS REFRESHED  :: ${onData.body}");
-            if (onData.statusCode >= 200 && onData.statusCode <= 299) {
-              Map<String, dynamic> map = jsonDecode(onData.body);
-              orderController.myInprogressOrders.value = map;
-            }
-          });
-
-          APIService()
-              .getOrdersDeliveredStreamed(
-            accessToken: accessToken,
-            customerId: profileController.userData.value['id'],
-            page: 1,
-          )
-              .listen((onData) {
-            // debugPrint("MY ORDERS REFRESHED  :: ${onData.body}");
-            if (onData.statusCode >= 200 && onData.statusCode <= 299) {
-              Map<String, dynamic> map = jsonDecode(onData.body);
-              orderController.myDeliveredOrders.value = map;
-            }
-          });
-
-          APIService()
-              .getOrdersCancelledStreamed(
-            accessToken: accessToken,
-            customerId: profileController.userData.value['id'],
-            page: 1,
-          )
-              .listen((onData) {
-            // debugPrint("MY ORDERS REFRESHED  :: ${onData.body}");
-            if (onData.statusCode >= 200 && onData.statusCode <= 299) {
-              Map<String, dynamic> map = jsonDecode(onData.body);
-              orderController.myCancelledOrders.value = map;
-            }
-          });
-
-          APIService()
-              .getParcelOrdersStreamed(
-            accessToken: accessToken,
-            customerId: profileController.userData.value['id'],
-            page: 1,
-          )
-              .listen((onData) {
-            // debugPrint("MY ORDERS REFRESHED  :: ${onData.body}");
-            if (onData.statusCode >= 200 && onData.statusCode <= 299) {
-              Map<String, dynamic> map = jsonDecode(onData.body);
-              orderController.myParcelOrders.value = map;
-            }
-          });
-        },
-      );
-
-      APIService()
-          .getFavouriteListStreamed(
-        accessToken: accessToken,
-        customerId: profileController.userData.value['id'],
-      )
-          .listen((onData) {
-        // debugPrint("ALL FAVOURITES :: ${onData.body}");
-        if (onData.statusCode >= 200 && onData.statusCode <= 299) {
-          Map<String, dynamic> map = jsonDecode(onData.body);
-          favouriteController.favouriteList.value = map;
+            payload: payload,
+          );
+          debugPrint("NEARBY VENDORS :::: ${nearbys.body}");
+          if (nearbys.statusCode >= 200 && nearbys.statusCode <= 299) {
+            Map<String, dynamic> map = jsonDecode(nearbys.body);
+            vendorController.nearbyVendors.value = map;
+          }
         }
-      });
-
-      APIService()
-          .getFavouritesStreamed(
-        accessToken: accessToken,
-        customerId: profileController.userData.value['id'],
-        vendorType: "restaurant",
-        page: 1,
-      )
-          .listen((onData) {
-        // debugPrint("RESTAURANT FAVOURITES :: ${onData.body}");
-        favouriteController.isLoading.value = false;
-        if (onData.statusCode >= 200 && onData.statusCode <= 299) {
-          Map<String, dynamic> map = jsonDecode(onData.body);
-          favouriteController.favouriteRestaurants.value = map;
-        }
-      });
-
-      APIService()
-          .getFavouritesStreamed(
-        accessToken: accessToken,
-        customerId: profileController.userData.value['id'],
-        vendorType: "grocery_store",
-        page: 1,
-      )
-          .listen((onData) {
-        // debugPrint("STORE  FAVOURITES :: ${onData.body}");
-        favouriteController.isLoading.value = false;
-        if (onData.statusCode >= 200 && onData.statusCode <= 299) {
-          Map<String, dynamic> map = jsonDecode(onData.body);
-          favouriteController.favouriteStores.value = map;
-        }
-      });
-
-      APIService()
-          .getCartStreamed(
-        accessToken: accessToken,
-        customerId: profileController.userData.value['id'],
-        page: 1,
-      )
-          .listen((onData) {
-        // debugPrint("MY SHOPPING CART :: ${onData.body}");
-        if (onData.statusCode >= 200 && onData.statusCode <= 299) {
-          Map<String, dynamic> map = jsonDecode(onData.body);
-          cartController.cartData.value = map;
-        }
-      });
-
-      APIService()
-          .getShippingAdressesStreamed(
-        accessToken: accessToken,
-        customerId: profileController.userData.value['id'],
-        page: 1,
-      )
-          .listen((onData) {
-        // debugPrint("MY SHIPPING ADDRESSES :: ${onData.body}");
-        if (onData.statusCode >= 200 && onData.statusCode <= 299) {
-          Map<String, dynamic> map = jsonDecode(onData.body);
-
-          shippingAddressController.shippingAddresses.value = map;
-        }
-      });
-
-      APIService()
-          .getWalletStreamed(
-        accessToken: accessToken,
-        customerId: profileController.userData.value['id'],
-      )
-          .listen((onData) {
-        // debugPrint("MY WALLET  :: ${onData.body}");
-        if (onData.statusCode >= 200 && onData.statusCode <= 299) {
-          Map<String, dynamic> map = jsonDecode(onData.body);
-          walletController.userWallet.value = map;
-        }
-      });
-
-      APIService()
-          .getTransactionsStreamed(
-        accessToken: accessToken,
-        customerId: profileController.userData.value['id'],
-        page: 1,
-      )
-          .listen((onData) {
-        debugPrint("MY WALLET TRANSACTIONS :: ${onData.body}");
-        if (onData.statusCode >= 200 && onData.statusCode <= 299) {
-          Map<String, dynamic> map = jsonDecode(onData.body);
-          walletController.walletTransactions.value = map;
-        }
-      });
-
-      APIService()
-          .getOrdersStreamed(
-        accessToken: accessToken,
-        customerId: profileController.userData.value['id'],
-        page: 1,
-      )
-          .listen((onData) {
-        debugPrint("MY ORDERS  :: ${onData.body}");
-        if (onData.statusCode >= 200 && onData.statusCode <= 299) {
-          Map<String, dynamic> map = jsonDecode(onData.body);
-          orderController.myOrders.value = map;
-        }
-      });
-
-      APIService()
-          .getOrdersInprogressStreamed(
-        accessToken: accessToken,
-        customerId: profileController.userData.value['id'],
-        page: 1,
-      )
-          .listen((onData) {
-        // debugPrint("MY ORDERS REFRESHED  :: ${onData.body}");
-        if (onData.statusCode >= 200 && onData.statusCode <= 299) {
-          Map<String, dynamic> map = jsonDecode(onData.body);
-          orderController.myInprogressOrders.value = map;
-        }
-      });
-
-      APIService()
-          .getOrdersDeliveredStreamed(
-        accessToken: accessToken,
-        customerId: profileController.userData.value['id'],
-        page: 1,
-      )
-          .listen((onData) {
-        // debugPrint("MY ORDERS REFRESHED  :: ${onData.body}");
-        if (onData.statusCode >= 200 && onData.statusCode <= 299) {
-          Map<String, dynamic> map = jsonDecode(onData.body);
-          orderController.myDeliveredOrders.value = map;
-        }
-      });
-
-      APIService()
-          .getOrdersCancelledStreamed(
-        accessToken: accessToken,
-        customerId: profileController.userData.value['id'],
-        page: 1,
-      )
-          .listen((onData) {
-        // debugPrint("MY ORDERS REFRESHED  :: ${onData.body}");
-        if (onData.statusCode >= 200 && onData.statusCode <= 299) {
-          Map<String, dynamic> map = jsonDecode(onData.body);
-          orderController.myCancelledOrders.value = map;
-        }
-      });
-
-      APIService()
-          .getParcelOrdersStreamed(
-        accessToken: accessToken,
-        customerId: profileController.userData.value['id'],
-        page: 1,
-      )
-          .listen((onData) {
-        // debugPrint("MY ORDERS REFRESHED  :: ${onData.body}");
-        if (onData.statusCode >= 200 && onData.statusCode <= 299) {
-          Map<String, dynamic> map = jsonDecode(onData.body);
-          orderController.myParcelOrders.value = map;
-        }
-      });
-    } catch (e) {
-      debugPrint("$e");
+      } catch (e) {
+        debugPrint("$e");
+      }
     }
   }
 

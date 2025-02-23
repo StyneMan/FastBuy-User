@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:country_code_picker/country_code_picker.dart';
 import 'package:customer/app/splash_screen.dart';
 import 'package:customer/constant/constant.dart';
-import 'package:customer/constant/show_toast_dialog.dart';
 import 'package:customer/controllers/cart_controller.dart';
 import 'package:customer/controllers/global_setting_controller.dart';
 import 'package:customer/controllers/my_profile_controller.dart';
@@ -22,7 +21,6 @@ import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import 'package:provider/provider.dart';
-import 'package:socket_io_client/socket_io_client.dart';
 
 import 'models/user_model.dart';
 
@@ -55,7 +53,6 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
   final _controller = Get.put(OtpController());
   final _cartcontroller = Get.put(CartController());
   final _profilecontroller = Get.put(MyProfileController());
-  // late Socket socket;
 
   final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
@@ -100,7 +97,6 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
         "notification",
         (data) {
           debugPrint("DATA FROM CHAT >> $data");
-          // Constant.toast("${data['message']}");
         },
       );
 
@@ -124,7 +120,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
     Constant.checkPermission(
       context: context,
       onTap: () async {
-        ShowToastDialog.showLoader("Please wait".tr);
+        // ShowToastDialog.showLoader("Please wait".tr);
         ShippingAddress addressModel = ShippingAddress();
         try {
           await Geolocator.requestPermission();
@@ -161,7 +157,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
           });
 
           // Constant.selectedLocation = addressModel;
-          ShowToastDialog.closeLoader();
+          // ShowToastDialog.closeLoader();
 
           // Get.offAll(const DashBoardScreen());
         } catch (e) {
@@ -177,7 +173,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver {
           // });
 
           // Constant.selectedLocation = addressModel;
-          ShowToastDialog.closeLoader();
+          // ShowToastDialog.closeLoader();
 
           // Get.offAll(const DashBoardScreen());
         }

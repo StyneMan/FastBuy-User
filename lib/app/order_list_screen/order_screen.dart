@@ -1,14 +1,18 @@
+import 'dart:convert';
+
 import 'package:customer/app/auth_screen/login_screen.dart';
 import 'package:customer/app/order_list_screen/order_details_screen.dart';
 import 'package:customer/constant/constant.dart';
+import 'package:customer/constant/show_toast_dialog.dart';
 import 'package:customer/controllers/my_profile_controller.dart';
 import 'package:customer/controllers/order_controller.dart';
-import 'package:customer/models/order_model.dart';
+import 'package:customer/services/api_service.dart';
 import 'package:customer/themes/app_them_data.dart';
 import 'package:customer/themes/responsive.dart';
 import 'package:customer/themes/round_button_fill.dart';
 import 'package:customer/utils/dark_theme_provider.dart';
 import 'package:customer/utils/network_image_widget.dart';
+import 'package:customer/utils/preferences.dart';
 import 'package:customer/widget/my_separator.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -28,12 +32,15 @@ class OrderScreen extends StatelessWidget {
         builder: (controller) {
           // debugPrint("CHECKITO :: ${controller.myOrders.value}");
           return Scaffold(
+            backgroundColor: themeChange.getThem()
+                ? AppThemeData.surfaceDark
+                : const Color(0xFFFAF6F1),
             body: Padding(
               padding:
                   EdgeInsets.only(top: MediaQuery.of(context).viewPadding.top),
               child: controller.isLoading.value
                   ? Constant.loader()
-                  : _profileController.userData.value.isEmpty
+                  : _profileController.userData.isEmpty
                       ? Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 16),
                           child: Column(
@@ -90,44 +97,44 @@ class OrderScreen extends StatelessWidget {
                           length: 4,
                           child: Column(
                             children: [
-                              Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 16),
-                                child: Row(
-                                  children: [
-                                    Expanded(
-                                      child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
-                                        children: [
-                                          Text(
-                                            "My Order".tr,
-                                            style: TextStyle(
-                                              fontSize: 24,
-                                              color: themeChange.getThem()
-                                                  ? AppThemeData.grey50
-                                                  : AppThemeData.grey900,
-                                              fontFamily: AppThemeData.semiBold,
-                                              fontWeight: FontWeight.w500,
-                                            ),
-                                          ),
-                                          Text(
-                                            "Keep track your 'delivered', 'in progress' and 'cancelled' orders all in one place."
-                                                .tr,
-                                            style: TextStyle(
-                                              color: themeChange.getThem()
-                                                  ? AppThemeData.grey50
-                                                  : AppThemeData.grey900,
-                                              fontFamily: AppThemeData.regular,
-                                              fontWeight: FontWeight.w400,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
+                              // Padding(
+                              //   padding:
+                              //       const EdgeInsets.symmetric(horizontal: 16),
+                              //   child: Row(
+                              //     children: [
+                              //       Expanded(
+                              //         child: Column(
+                              //           crossAxisAlignment:
+                              //               CrossAxisAlignment.start,
+                              //           children: [
+                              //             Text(
+                              //               "My Order".tr,
+                              //               style: TextStyle(
+                              //                 fontSize: 24,
+                              //                 color: themeChange.getThem()
+                              //                     ? AppThemeData.grey50
+                              //                     : AppThemeData.grey900,
+                              //                 fontFamily: AppThemeData.semiBold,
+                              //                 fontWeight: FontWeight.w500,
+                              //               ),
+                              //             ),
+                              //             Text(
+                              //               "Keep track your 'delivered', 'in progress' and 'cancelled' orders all in one place."
+                              //                   .tr,
+                              //               style: TextStyle(
+                              //                 color: themeChange.getThem()
+                              //                     ? AppThemeData.grey50
+                              //                     : AppThemeData.grey900,
+                              //                 fontFamily: AppThemeData.regular,
+                              //                 fontWeight: FontWeight.w400,
+                              //               ),
+                              //             ),
+                              //           ],
+                              //         ),
+                              //       ),
+                              //     ],
+                              //   ),
+                              // ),
                               const SizedBox(
                                 height: 16,
                               ),
@@ -198,41 +205,48 @@ class OrderScreen extends StatelessWidget {
                                       Expanded(
                                         child: TabBarView(
                                           children: [
-                                            controller.myOrders.value['data']
-                                                    .isEmpty
-                                                ? Constant.showEmptyView(
-                                                    message:
-                                                        "No orders found".tr)
-                                                : RefreshIndicator(
-                                                    onRefresh: () =>
-                                                        controller.getOrder(),
-                                                    child: ListView.builder(
-                                                      itemCount: controller
-                                                          .myOrders
-                                                          .value['data']
-                                                          ?.length,
-                                                      shrinkWrap: true,
-                                                      padding: EdgeInsets.zero,
-                                                      itemBuilder:
-                                                          (context, index) {
-                                                        // OrderModel orderModel =
-                                                        //     controller
-                                                        //         .allList[index];
-                                                        final item = controller
-                                                                .myOrders
-                                                                .value['data']
-                                                            [index];
-                                                        return itemView(
-                                                          themeChange,
-                                                          context,
-                                                          item,
-                                                          controller,
-                                                        );
-                                                      },
-                                                    ),
-                                                  ),
-                                            controller.myInprogressOrders
-                                                    .value['data'].isEmpty
+                                            controller.myOrders.isEmpty
+                                                ? const SizedBox()
+                                                : controller.myOrders
+                                                        .value['data']?.isEmpty
+                                                    ? Constant.showEmptyView(
+                                                        message:
+                                                            "No orders found"
+                                                                .tr)
+                                                    : RefreshIndicator(
+                                                        onRefresh: () =>
+                                                            controller
+                                                                .getOrder(),
+                                                        child: ListView.builder(
+                                                          itemCount: controller
+                                                              .myOrders
+                                                              .value['data']
+                                                              ?.length,
+                                                          shrinkWrap: true,
+                                                          padding:
+                                                              EdgeInsets.zero,
+                                                          itemBuilder:
+                                                              (context, index) {
+                                                            // OrderModel orderModel =
+                                                            //     controller
+                                                            //         .allList[index];
+                                                            final item = controller
+                                                                    .myOrders
+                                                                    .value[
+                                                                'data'][index];
+                                                            return itemView(
+                                                              themeChange,
+                                                              context,
+                                                              item,
+                                                              controller,
+                                                            );
+                                                          },
+                                                        ),
+                                                      ),
+                                            (controller.myInprogressOrders
+                                                            .value['data'] ??
+                                                        [])
+                                                    ?.isEmpty
                                                 ? Constant.showEmptyView(
                                                     message:
                                                         "No orders found".tr)
@@ -263,8 +277,10 @@ class OrderScreen extends StatelessWidget {
                                                       },
                                                     ),
                                                   ),
-                                            controller.myDeliveredOrders
-                                                    .value['data'].isEmpty
+                                            (controller.myDeliveredOrders
+                                                            .value['data'] ??
+                                                        [])
+                                                    ?.isEmpty
                                                 ? Constant.showEmptyView(
                                                     message: "No orders found")
                                                 : RefreshIndicator(
@@ -294,8 +310,10 @@ class OrderScreen extends StatelessWidget {
                                                       },
                                                     ),
                                                   ),
-                                            controller.myCancelledOrders
-                                                    .value['data'].isEmpty
+                                            (controller.myCancelledOrders
+                                                            .value['data'] ??
+                                                        [])
+                                                    ?.isEmpty
                                                 ? Constant.showEmptyView(
                                                     message: "No orders found")
                                                 : RefreshIndicator(
@@ -487,15 +505,15 @@ class OrderScreen extends StatelessWidget {
               ),
               Row(
                 children: [
-                  item['order_status'] == "completed"
+                  item['order_status'] == "completed" &&
+                          item['order_type'] != "parcel_order"
                       ? Expanded(
                           child: InkWell(
                             onTap: () {
-                              // for (var element in orderModel.products!) {
-                              //   controller.addToCart(cartProductModel: element);
-                              //   ShowToastDialog.showToast(
-                              //       "Item Added In a cart");
-                              // }
+                              reorder(
+                                controller: controller,
+                                item: item,
+                              );
                             },
                             child: Text(
                               "Reorder".tr,
@@ -510,8 +528,9 @@ class OrderScreen extends StatelessWidget {
                             ),
                           ),
                         )
-                      : item['order_status'] == "ready_for_delivery" ||
-                              item['order_status'] == "in_delivery"
+                      : item['order_status'] == "rider_picked_order" ||
+                              item['order_status'] == "in_delivery" ||
+                              item['order_status'] == "rider_arrived_customer"
                           ? Expanded(
                               child: InkWell(
                                 onTap: () {
@@ -567,5 +586,56 @@ class OrderScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  reorder({
+    required item,
+    required OrderController controller,
+  }) async {
+    try {
+      ShowToastDialog.showLoader("Please wait".tr);
+      debugPrint("ITEM CHECKITOLOA ::: ${item['items']}");
+      List<Map<String, dynamic>> items = [];
+      for (var k = 0; k < item['items'].length; k++) {
+        final elem = item['items'][k];
+        debugPrint("ELEM AT ::: ${elem}");
+        items.add({
+          "name": elem['name'],
+          "amount": elem['product']['sale_amount'],
+          "product_id": elem['product']['id'],
+          "selections": elem['selections'],
+          "total_amount": elem['total_amount']
+        });
+      }
+
+      Map payload = {
+        "total_amount": item['total_amount'],
+        "vendor_id": item['vendor']['id'],
+        "items": items,
+        "vendor_note": item['vendor_note'],
+      };
+      final accessToken = Preferences.getString(Preferences.accessTokenKey);
+      final resp = await APIService().reorderToCart(
+        accessToken: accessToken,
+        payload: payload,
+      );
+      ShowToastDialog.closeLoader();
+      debugPrint("ADD TO CART RESPONSE ::: ${resp.body}");
+      if (resp.statusCode >= 200 && resp.statusCode <= 299) {
+        Map<String, dynamic> map = jsonDecode(resp.body);
+        Constant.toast("${map['message']}");
+        // Show SnackBar with extended duration
+        controller.cartController.currentCartItems.value = map['data']['items'];
+        controller.cartController.isInCart.value = true;
+        controller.cartController.refreshCart();
+        controller.cartController.currCartItem = map['data'];
+      } else {
+        Map<String, dynamic> errMap = jsonDecode(resp.body);
+        Constant.toast("${errMap['message']}");
+      }
+    } catch (e) {
+      debugPrint("ERROR : $e");
+      ShowToastDialog.closeLoader();
+    }
   }
 }

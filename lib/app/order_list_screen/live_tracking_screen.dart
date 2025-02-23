@@ -73,18 +73,18 @@ class LiveTrackingScreen extends StatelessWidget {
                           initialCameraPosition: CameraPosition(
                             zoom: 15,
                             target: LatLng(
-                              controller.driverUserModel.value.location!
-                                          .latitude !=
+                              controller.orderModel.value['rider']
+                                          ['current_lat'] !=
                                       null
-                                  ? controller.driverUserModel.value.location!
-                                          .latitude ??
+                                  ? double.parse(
+                                          "${controller.orderModel.value['rider']['current_lat']}") ??
                                       45.521563
                                   : 45.521563,
-                              controller.driverUserModel.value.location!
-                                          .longitude !=
+                              controller.orderModel.value['rider']
+                                          ['current_lng'] !=
                                       null
-                                  ? controller.driverUserModel.value.location!
-                                          .longitude ??
+                                  ? double.parse(
+                                          "${controller.orderModel.value['rider']['current_lat']}") ??
                                       45.521563
                                   : 45.521563,
                             ),

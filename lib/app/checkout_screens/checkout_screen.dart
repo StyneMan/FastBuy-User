@@ -24,11 +24,11 @@ import 'package:provider/provider.dart';
 
 class CheckoutScreen extends StatefulWidget {
   final cart;
-  final int index;
+  // final int index;
   const CheckoutScreen({
     super.key,
     required this.cart,
-    required this.index,
+    // required this.index,
   });
 
   @override
@@ -46,13 +46,12 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     final themeChange = Provider.of<DarkThemeProvider>(context);
 
     return Scaffold(
-      backgroundColor: themeChange.getThem()
-          ? AppThemeData.surfaceDark
-          : AppThemeData.surface,
+      backgroundColor:
+          themeChange.getThem() ? Colors.transparent : const Color(0xFFFAF6F1),
       appBar: AppBar(
         backgroundColor: themeChange.getThem()
-            ? AppThemeData.surfaceDark
-            : AppThemeData.surface,
+            ? Colors.transparent
+            : const Color(0xFFFAF6F1),
         title: Text(
           "Checkout".tr,
           style: TextStyle(
@@ -168,7 +167,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                     child: controller.activeCheckoutStep.value == 0
                         ? DeliveryStep(
                             cart: widget.cart,
-                            index: widget.index,
+                            // index: widget.index,
                             onSelectDelivery: (value) {
                               controller.deliveryType.value = value;
                             },
@@ -176,7 +175,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                         : PaymentStep(
                             controller: controller,
                             cart: widget.cart,
-                            index: widget.index,
+                            // index: widget.index,
                             onSelectPayment: (value) {
                               controller.selectedPaymentMethod.value = value;
                             },
@@ -251,19 +250,17 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                                           },
                                           "orderInfo": {
                                             "amount": double.parse(
-                                                "${cartController.cartData.value['data'][widget.index]['total_amount']}"),
-                                            "items": cartController
-                                                    .cartData.value['data']
-                                                [widget.index]['items'],
+                                                "${widget.cart['total_amount']}"),
+                                            "items": widget.cart['items'],
                                             "customerId":
                                                 "${dashboardController.profileController.userData.value['id']}",
-                                            "vendorId": widget.cart['vendor']
-                                                ['id'],
+                                            "vendorLocationId":
+                                                widget.cart['vendor_location']
+                                                    ['id']['id'],
                                             "riderNote":
                                                 controller.riderNote.value,
-                                            "vendorNote": cartController
-                                                    .cartData.value['data']
-                                                [widget.index]['vendor_note'],
+                                            "vendorNote":
+                                                widget.cart['vendor_note'],
                                             "orderType": widget.cart['vendor']
                                                         ['vendor_type'] ==
                                                     "restaurant"
@@ -317,7 +314,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       ShowToastDialog.showLoader("Please wait".tr);
       final accessToken = Preferences.getString(Preferences.accessTokenKey);
       Map payload = {
-        "vendorId": widget.cart['vendor']['id'],
+        "vendorLocationId": widget.cart['vendor_location']['id'],
         "totalAmount": int.parse("${widget.cart['total_amount']}"),
         "latitude": "${addressController.location.value.latitude}",
         "longitude": "${addressController.location.value.longitude}",
@@ -351,34 +348,15 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     try {
       ShowToastDialog.showLoader("Please wait".tr);
       final accessToken = Preferences.getString(Preferences.accessTokenKey);
-      var defaultGateway = {};
-      if (dashboardController.profileController.paymentGateways.value.isEmpty) {
-        // Do nothing
-      } else {
-        final gateway = dashboardController
-            .profileController.paymentGateways.value
-            .where((item) => item['is_default'])
-            .toList();
-
-        debugPrint("dEFAULT GATEWAY HERE ::: $gateway");
-
-        if (gateway.isEmpty) {
-          // Default to the first item in the list
-          defaultGateway =
-              dashboardController.profileController.paymentGateways[0];
-        } else {
-          defaultGateway = gateway[0];
-        }
-      }
 
       Map payload = {
         "userType": "customer",
-        "paymentGateway": defaultGateway['provider'],
         "paymentInfo": {
           "amount": double.parse(
               "${controller.deliveryEstimates.value['service_charge'] + widget.cart['total_amount'] + controller.deliveryEstimates.value['delivery_fee'] - controller.couponAppliedAmount.value}"), // payable amount here
           "email_address":
-              '${dashboardController.profileController.userData.value['email_address']} ',
+              '${dashboardController.profileController.userData.value['email_address']}'
+                  .trim(),
           "full_name":
               "${dashboardController.profileController.userData.value['first_name']} ${dashboardController.profileController.userData.value['last_name']}",
           "customer_id":
@@ -388,16 +366,16 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
           "title": "Order Purchase",
         },
         "orderInfo": {
-          "amount": double.parse(
-              "${cartController.cartData.value['data'][widget.index]['total_amount']}"),
-          "items": cartController.cartData.value['data'][widget.index]['items'],
+          "amount": double.parse("${widget.cart['total_amount']}"),
+          "items": widget.cart['items'],
           "customerId":
               "${dashboardController.profileController.userData.value['id']}",
-          "vendorId": widget.cart['vendor']['id'],
+          "vendorLocationId": widget.cart['vendor_location']['id'],
           "riderNote": controller.riderNote.value,
-          "vendorNote": cartController.cartData.value['data'][widget.index]
-              ['vendor_note'],
-          "orderType": widget.cart['vendor']['vendor_type'] == "restaurant"
+          "vendorNote": widget.cart['vendor_note'],
+          "orderType": widget.cart['vendor_location']['vendor']
+                      ['vendor_type'] ==
+                  "restaurant"
               ? "restaurant_order"
               : "store_order",
           "deliveryType": controller.deliveryType.value,
@@ -422,7 +400,9 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       if (response.statusCode >= 200 && response.statusCode <= 299) {
         Map<String, dynamic> map = jsonDecode(response.body);
         // Now open payment link here
-        Get.to(MercadoPagoScreen(initialURl: map['data']['link']))!
+        Get.to(MercadoPagoScreen(
+                initialURl:
+                    map['data']['link'] ?? map['data']['authorization_url']))!
             .then((value) {
           if (value) {
             ShowToastDialog.showToast("Payment Successful!!");
@@ -442,7 +422,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
             });
             // Navigate to the Orders Screen from here
             dashboardController.selectedIndex.value = 3;
-            Get.off(
+            Get.offAll(
               const DashBoardScreen(),
               transition: Transition.cupertino,
             );

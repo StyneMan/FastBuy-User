@@ -1,10 +1,10 @@
 import 'package:customer/models/on_boarding_model.dart';
-import 'package:customer/utils/fire_store_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 class OnBoardingController extends GetxController {
   var selectedPageIndex = 0.obs;
+  var percentage = 0.0.obs;
 
   bool get isLastPage => selectedPageIndex.value == onBoardingList.length - 1;
   var pageController = PageController();
@@ -15,7 +15,7 @@ class OnBoardingController extends GetxController {
     super.onInit();
   }
 
-  RxBool isLoading = true.obs;
+  RxBool isLoading = false.obs;
   RxList<OnBoardingModel> onBoardingList = <OnBoardingModel>[].obs;
 
   getOnBoardingData() async {

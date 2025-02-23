@@ -4,6 +4,7 @@ import 'package:customer/app/auth_screen/login_screen.dart';
 import 'package:customer/app/cart_screen/cart_screen.dart';
 import 'package:customer/app/home_screen/category_restaurant_screen.dart';
 import 'package:customer/app/home_screen/discount_restaurant_list_screen.dart';
+import 'package:customer/app/home_screen/offer/offer_view.dart';
 import 'package:customer/app/home_screen/restaurant_list_screen.dart';
 import 'package:customer/app/home_screen/story_view.dart';
 import 'package:customer/app/home_screen/view_all_category_screen.dart';
@@ -19,9 +20,6 @@ import 'package:customer/controllers/home_controller.dart';
 import 'package:customer/controllers/map_view_controller.dart';
 import 'package:customer/controllers/my_profile_controller.dart';
 import 'package:customer/models/BannerModel.dart';
-import 'package:customer/models/coupon_model.dart';
-import 'package:customer/models/favourite_model.dart';
-import 'package:customer/models/product_model.dart';
 import 'package:customer/models/story_model.dart';
 import 'package:customer/models/user_model.dart';
 import 'package:customer/models/vendor_category_model.dart';
@@ -32,20 +30,16 @@ import 'package:customer/themes/custom_dialog_box.dart';
 import 'package:customer/themes/responsive.dart';
 import 'package:customer/themes/round_button_fill.dart';
 import 'package:customer/utils/dark_theme_provider.dart';
-import 'package:customer/utils/fire_store_utils.dart';
 import 'package:customer/utils/network_image_widget.dart';
 import 'package:customer/utils/preferences.dart';
 import 'package:customer/widget/place_picker_osm.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:geocoding/geocoding.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:map_location_picker/map_location_picker.dart';
 // import 'package:google_maps_place_picker_mb/google_maps_place_picker.dart';
 import 'package:provider/provider.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 import '../../themes/text_field_widget.dart';
 
@@ -250,8 +244,8 @@ class HomeScreen extends StatelessWidget {
                                                         ShippingAddress
                                                             addressModel =
                                                             value;
-                                                        Constant.selectedLocation =
-                                                            addressModel;
+                                                        // Constant.selectedLocation =
+                                                        //     addressModel;
                                                         controller.getData();
                                                       }
                                                     },
@@ -300,8 +294,8 @@ class HomeScreen extends StatelessWidget {
                                                                                 .lat,
                                                                         longitude:
                                                                             value.lon);
-                                                                Constant.selectedLocation =
-                                                                    addressModel;
+                                                                // Constant.selectedLocation =
+                                                                //     addressModel;
                                                                 controller
                                                                     .getData();
                                                               }
@@ -339,8 +333,8 @@ class HomeScreen extends StatelessWidget {
                                                                             .geometry!
                                                                             .location
                                                                             .lng);
-                                                                    Constant.selectedLocation =
-                                                                        addressModel;
+                                                                    // Constant.selectedLocation =
+                                                                    //     addressModel;
                                                                     controller
                                                                         .getData();
                                                                     Get.back();
@@ -419,8 +413,8 @@ class HomeScreen extends StatelessWidget {
                                                                 currentLocation;
                                                           });
 
-                                                          Constant.selectedLocation =
-                                                              addressModel;
+                                                          // Constant.selectedLocation =
+                                                          //     addressModel;
                                                           ShowToastDialog
                                                               .closeLoader();
                                                           controller.getData();
@@ -435,9 +429,10 @@ class HomeScreen extends StatelessWidget {
                                                 TextSpan(
                                                   children: [
                                                     TextSpan(
-                                                      text: Constant
-                                                          .selectedLocation
-                                                          .getFullAddress(),
+                                                      text: "",
+                                                      // Constant
+                                                      //     .selectedLocation
+                                                      //     .getFullAddress(),
                                                       style: TextStyle(
                                                         fontFamily:
                                                             AppThemeData.medium,
@@ -598,7 +593,8 @@ class HomeScreen extends StatelessWidget {
                                           titleView(themeChange,
                                               "Explore the Categories", () {
                                             Get.to(
-                                                const ViewAllCategoryScreen());
+                                              const ViewAllCategoryScreen(),
+                                            );
                                           }),
                                           const SizedBox(
                                             height: 10,
@@ -610,46 +606,48 @@ class HomeScreen extends StatelessWidget {
                                     const SizedBox(
                                       height: 32,
                                     ),
-                                    controller.bannerModel.isEmpty
-                                        ? const SizedBox()
-                                        : Padding(
-                                            padding: const EdgeInsets.symmetric(
-                                                horizontal: 16),
-                                            child: BannerView(
-                                                controller: controller),
-                                          ),
-                                    controller.couponRestaurantList.isEmpty
-                                        ? const SizedBox()
-                                        : Padding(
-                                            padding: const EdgeInsets.symmetric(
-                                                horizontal: 16),
-                                            child: Column(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.start,
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: [
-                                                titleView(themeChange,
-                                                    "Largest Discounts".tr, () {
-                                                  Get.to(
-                                                      const DiscountRestaurantListScreen(),
-                                                      arguments: {
-                                                        "vendorList": controller
-                                                            .couponRestaurantList,
-                                                        "couponList": controller
-                                                            .couponList,
-                                                        "title":
-                                                            "Discounts Restaurants"
-                                                      });
-                                                }),
-                                                const SizedBox(
-                                                  height: 16,
-                                                ),
-                                                OfferView(
-                                                    controller: controller),
-                                              ],
-                                            ),
-                                          ),
+                                    // controller.bannerModel.isEmpty
+                                    //     ? const SizedBox()
+                                    //     : Padding(
+                                    //         padding: const EdgeInsets.symmetric(
+                                    //             horizontal: 16),
+                                    //         child: BannerView(
+                                    //             controller: controller),
+                                    //       ),
+
+                                    // controller.couponRestaurantList.isEmpty
+                                    //     ? const SizedBox()
+                                    //     : Padding(
+                                    //         padding: const EdgeInsets.symmetric(
+                                    //             horizontal: 16),
+                                    //         child: Column(
+                                    //           mainAxisAlignment:
+                                    //               MainAxisAlignment.start,
+                                    //           crossAxisAlignment:
+                                    //               CrossAxisAlignment.start,
+                                    //           children: [
+                                    //             titleView(themeChange,
+                                    //                 "Largest Discounts".tr, () {
+                                    //               Get.to(
+                                    //                   const DiscountVendorsScreen(),
+                                    //                   arguments: {
+                                    //                     "vendorList": controller
+                                    //                         .couponRestaurantList,
+                                    //                     "couponList": controller
+                                    //                         .couponList,
+                                    //                     "title":
+                                    //                         "Discounts Restaurants"
+                                    //                   });
+                                    //             }),
+                                    //             const SizedBox(
+                                    //               height: 16,
+                                    //             ),
+                                    //             OfferView(
+                                    //               controller: controller,
+                                    //             ),
+                                    //           ],
+                                    //         ),
+                                    //       ),
                                     const SizedBox(
                                       height: 28,
                                     ),
@@ -657,10 +655,11 @@ class HomeScreen extends StatelessWidget {
                                         ? const SizedBox()
                                         : Container(
                                             decoration: const BoxDecoration(
-                                                image: DecorationImage(
-                                                    image: AssetImage(
-                                                        "assets/images/ic_new_arrival_bg.png"),
-                                                    fit: BoxFit.cover)),
+                                              image: DecorationImage(
+                                                  image: AssetImage(
+                                                      "assets/images/ic_new_arrival_bg.png"),
+                                                  fit: BoxFit.cover),
+                                            ),
                                             child: Padding(
                                               padding:
                                                   const EdgeInsets.symmetric(
@@ -1294,16 +1293,17 @@ class PopularRestaurant extends StatelessWidget {
                                       width: 5,
                                     ),
                                     Text(
-                                      "${Constant.getDistance(
-                                        lat1: vendorModel.latitude.toString(),
-                                        lng1: vendorModel.longitude.toString(),
-                                        lat2: Constant
-                                            .selectedLocation.location!.latitude
-                                            .toString(),
-                                        lng2: Constant.selectedLocation
-                                            .location!.longitude
-                                            .toString(),
-                                      )} ${Constant.distanceType}",
+                                      "",
+                                      // "${Constant.getDistance(
+                                      //   lat1: vendorModel.latitude.toString(),
+                                      //   lng1: vendorModel.longitude.toString(),
+                                      //   lat2: Constant
+                                      //       .selectedLocation.location!.latitude
+                                      //       .toString(),
+                                      //   lng2: Constant.selectedLocation
+                                      //       .location!.longitude
+                                      //       .toString(),
+                                      // )} ${Constant.distanceType}",
                                       style: TextStyle(
                                         color: themeChange.getThem()
                                             ? AppThemeData.secondary300
@@ -1552,16 +1552,17 @@ class AllRestaurant extends StatelessWidget {
                                       width: 5,
                                     ),
                                     Text(
-                                      "${Constant.getDistance(
-                                        lat1: vendorModel.latitude.toString(),
-                                        lng1: vendorModel.longitude.toString(),
-                                        lat2: Constant
-                                            .selectedLocation.location!.latitude
-                                            .toString(),
-                                        lng2: Constant.selectedLocation
-                                            .location!.longitude
-                                            .toString(),
-                                      )} ${Constant.distanceType}",
+                                      "",
+                                      // "${Constant.getDistance(
+                                      //   lat1: vendorModel.latitude.toString(),
+                                      //   lng1: vendorModel.longitude.toString(),
+                                      //   lat2: Constant
+                                      //       .selectedLocation.location!.latitude
+                                      //       .toString(),
+                                      //   lng2: Constant.selectedLocation
+                                      //       .location!.longitude
+                                      //       .toString(),
+                                      // )} ${Constant.distanceType}",
                                       style: TextStyle(
                                         color: themeChange.getThem()
                                             ? AppThemeData.secondary300
@@ -1788,16 +1789,17 @@ class NewArrival extends StatelessWidget {
                               width: 10,
                             ),
                             Text(
-                              "${Constant.getDistance(
-                                lat1: vendorModel.latitude.toString(),
-                                lng1: vendorModel.longitude.toString(),
-                                lat2: Constant
-                                    .selectedLocation.location!.latitude
-                                    .toString(),
-                                lng2: Constant
-                                    .selectedLocation.location!.longitude
-                                    .toString(),
-                              )} km",
+                              "10 Km",
+                              // "${Constant.getDistance(
+                              //   lat1: vendorModel.latitude.toString(),
+                              //   lng1: vendorModel.longitude.toString(),
+                              //   lat2: Constant
+                              //       .selectedLocation.location!.latitude
+                              //       .toString(),
+                              //   lng2: Constant
+                              //       .selectedLocation.location!.longitude
+                              //       .toString(),
+                              // )} km",
                               textAlign: TextAlign.start,
                               maxLines: 1,
                               style: TextStyle(
@@ -1837,264 +1839,118 @@ class NewArrival extends StatelessWidget {
   }
 }
 
-class OfferView extends StatelessWidget {
-  final HomeController controller;
+// class BannerView extends StatelessWidget {
+//   final HomeController controller;
 
-  const OfferView({super.key, required this.controller});
+//   const BannerView({super.key, required this.controller});
 
-  @override
-  Widget build(BuildContext context) {
-    final themeChange = Provider.of<DarkThemeProvider>(context);
-    return SizedBox(
-      height: Responsive.height(17, context),
-      child: ListView.builder(
-        physics: const BouncingScrollPhysics(),
-        scrollDirection: Axis.horizontal,
-        itemCount: controller.couponRestaurantList.length >= 15
-            ? 15
-            : controller.couponRestaurantList.length,
-        itemBuilder: (BuildContext context, int index) {
-          VendorModel vendorModel = controller.couponRestaurantList[index];
-          CouponModel offerModel = controller.couponList[index];
-          return InkWell(
-            onTap: () {
-              Get.to(const RestaurantDetailsScreen(),
-                  arguments: {"vendorModel": vendorModel});
-            },
-            child: Padding(
-              padding: const EdgeInsets.only(right: 10),
-              child: SizedBox(
-                width: Responsive.width(38, context),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Expanded(
-                      child: ClipRRect(
-                        borderRadius:
-                            const BorderRadius.all(Radius.circular(10)),
-                        child: Stack(
-                          children: [
-                            NetworkImageWidget(
-                              imageUrl: vendorModel.photo.toString(),
-                              fit: BoxFit.cover,
-                              height: Responsive.height(100, context),
-                              width: Responsive.width(100, context),
-                            ),
-                            Container(
-                              decoration: BoxDecoration(
-                                gradient: LinearGradient(
-                                  begin: const Alignment(-0.00, -1.00),
-                                  end: const Alignment(0, 1),
-                                  colors: [
-                                    Colors.black.withOpacity(0),
-                                    AppThemeData.grey900
-                                  ],
-                                ),
-                              ),
-                            ),
-                            Positioned(
-                              bottom: 5,
-                              left: 10,
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    "Upto",
-                                    textAlign: TextAlign.start,
-                                    maxLines: 1,
-                                    style: TextStyle(
-                                      fontSize: 18,
-                                      overflow: TextOverflow.ellipsis,
-                                      fontFamily: AppThemeData.regular,
-                                      fontWeight: FontWeight.w900,
-                                      color: themeChange.getThem()
-                                          ? AppThemeData.grey50
-                                          : AppThemeData.grey50,
-                                    ),
-                                  ),
-                                  Text(
-                                    "${offerModel.discountType == "Fix Price" ? "${Constant.currencyModel!.symbol}" : ""}${offerModel.discount}${offerModel.discountType == "Percentage" ? "% off".tr : "off".tr}",
-                                    textAlign: TextAlign.start,
-                                    maxLines: 1,
-                                    style: TextStyle(
-                                      overflow: TextOverflow.ellipsis,
-                                      fontFamily: AppThemeData.semiBold,
-                                      color: themeChange.getThem()
-                                          ? AppThemeData.grey50
-                                          : AppThemeData.grey50,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            )
-                          ],
-                        ),
-                      ),
-                    ),
-                    const SizedBox(
-                      height: 5,
-                    ),
-                    Text(
-                      vendorModel.title.toString(),
-                      textAlign: TextAlign.start,
-                      maxLines: 1,
-                      style: TextStyle(
-                        fontSize: 16,
-                        overflow: TextOverflow.ellipsis,
-                        fontFamily: AppThemeData.semiBold,
-                        color: themeChange.getThem()
-                            ? AppThemeData.grey50
-                            : AppThemeData.grey900,
-                      ),
-                    ),
-                    Row(
-                      children: [
-                        SvgPicture.asset(
-                          "assets/icons/ic_star.svg",
-                          colorFilter: ColorFilter.mode(
-                              AppThemeData.primary300, BlendMode.srcIn),
-                        ),
-                        const SizedBox(
-                          width: 10,
-                        ),
-                        Text(
-                          "${Constant.calculateReview(reviewCount: vendorModel.reviewsCount.toString(), reviewSum: vendorModel.reviewsSum.toString())} (${vendorModel.reviewsCount!.toStringAsFixed(0)})",
-                          textAlign: TextAlign.start,
-                          maxLines: 1,
-                          style: TextStyle(
-                            overflow: TextOverflow.ellipsis,
-                            fontFamily: AppThemeData.medium,
-                            fontWeight: FontWeight.w500,
-                            color: themeChange.getThem()
-                                ? AppThemeData.grey300
-                                : AppThemeData.grey600,
-                          ),
-                        ),
-                      ],
-                    )
-                  ],
-                ),
-              ),
-            ),
-          );
-        },
-      ),
-    );
-  }
-}
+//   @override
+//   Widget build(BuildContext context) {
+//     return Column(
+//       children: [
+//         SizedBox(
+//           height: 150,
+//           child: PageView.builder(
+//             physics: const BouncingScrollPhysics(),
+//             controller: controller.pageController.value,
+//             scrollDirection: Axis.horizontal,
+//             itemCount: controller.bannerModel.length,
+//             padEnds: false,
+//             pageSnapping: true,
+//             allowImplicitScrolling: true,
+//             onPageChanged: (value) {
+//               controller.currentPage.value = value;
+//             },
+//             itemBuilder: (BuildContext context, int index) {
+//               BannerModel bannerModel = controller.bannerModel[index];
+//               return InkWell(
+//                 onTap: () async {
+//                   // if (bannerModel.redirect_type == "store") {
+//                   //   ShowToastDialog.showLoader("Please wait".tr);
+//                   //   VendorModel? vendorModel =
+//                   //       await FireStoreUtils.getVendorById(
+//                   //           bannerModel.redirect_id.toString());
 
-class BannerView extends StatelessWidget {
-  final HomeController controller;
+//                   //   if (vendorModel!.zoneId == Constant.selectedZone!.id) {
+//                   //     ShowToastDialog.closeLoader();
+//                   //     Get.to(const RestaurantDetailsScreen(),
+//                   //         arguments: {"vendorModel": vendorModel});
+//                   //   } else {
+//                   //     ShowToastDialog.closeLoader();
+//                   //     ShowToastDialog.showToast(
+//                   //         "Sorry, The Zone is not available in your area. change the other location first.");
+//                   //   }
+//                   // } else if (bannerModel.redirect_type == "product") {
+//                   //   ShowToastDialog.showLoader("Please wait".tr);
+//                   //   ProductModel? productModel =
+//                   //       await FireStoreUtils.getProductById(
+//                   //           bannerModel.redirect_id.toString());
+//                   //   VendorModel? vendorModel =
+//                   //       await FireStoreUtils.getVendorById(
+//                   //           productModel!.vendorID.toString());
 
-  const BannerView({super.key, required this.controller});
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        SizedBox(
-          height: 150,
-          child: PageView.builder(
-            physics: const BouncingScrollPhysics(),
-            controller: controller.pageController.value,
-            scrollDirection: Axis.horizontal,
-            itemCount: controller.bannerModel.length,
-            padEnds: false,
-            pageSnapping: true,
-            allowImplicitScrolling: true,
-            onPageChanged: (value) {
-              controller.currentPage.value = value;
-            },
-            itemBuilder: (BuildContext context, int index) {
-              BannerModel bannerModel = controller.bannerModel[index];
-              return InkWell(
-                onTap: () async {
-                  // if (bannerModel.redirect_type == "store") {
-                  //   ShowToastDialog.showLoader("Please wait".tr);
-                  //   VendorModel? vendorModel =
-                  //       await FireStoreUtils.getVendorById(
-                  //           bannerModel.redirect_id.toString());
-
-                  //   if (vendorModel!.zoneId == Constant.selectedZone!.id) {
-                  //     ShowToastDialog.closeLoader();
-                  //     Get.to(const RestaurantDetailsScreen(),
-                  //         arguments: {"vendorModel": vendorModel});
-                  //   } else {
-                  //     ShowToastDialog.closeLoader();
-                  //     ShowToastDialog.showToast(
-                  //         "Sorry, The Zone is not available in your area. change the other location first.");
-                  //   }
-                  // } else if (bannerModel.redirect_type == "product") {
-                  //   ShowToastDialog.showLoader("Please wait".tr);
-                  //   ProductModel? productModel =
-                  //       await FireStoreUtils.getProductById(
-                  //           bannerModel.redirect_id.toString());
-                  //   VendorModel? vendorModel =
-                  //       await FireStoreUtils.getVendorById(
-                  //           productModel!.vendorID.toString());
-
-                  //   if (vendorModel!.zoneId == Constant.selectedZone!.id) {
-                  //     ShowToastDialog.closeLoader();
-                  //     Get.to(const RestaurantDetailsScreen(),
-                  //         arguments: {"vendorModel": vendorModel});
-                  //   } else {
-                  //     ShowToastDialog.closeLoader();
-                  //     ShowToastDialog.showToast(
-                  //         "Sorry, The Zone is not available in your area. change the other location first.");
-                  //   }
-                  // } else if (bannerModel.redirect_type == "external_link") {
-                  //   final uri = Uri.parse(bannerModel.redirect_id.toString());
-                  //   if (await canLaunchUrl(uri)) {
-                  //     await launchUrl(uri);
-                  //   } else {
-                  //     ShowToastDialog.showToast("Could not launch");
-                  //   }
-                  // }
-                },
-                child: Padding(
-                  padding: const EdgeInsets.only(right: 14),
-                  child: ClipRRect(
-                    borderRadius: const BorderRadius.all(Radius.circular(12)),
-                    child: NetworkImageWidget(
-                      imageUrl: bannerModel.photo.toString(),
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                ),
-              );
-            },
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.symmetric(vertical: 10),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: List.generate(
-              controller.bannerModel.length,
-              (index) {
-                return Obx(
-                  () => Container(
-                    margin: const EdgeInsets.only(right: 5),
-                    alignment: Alignment.centerLeft,
-                    height: 9,
-                    width: 9,
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: controller.currentPage.value == index
-                          ? AppThemeData.primary300
-                          : Colors.black12,
-                    ),
-                  ),
-                );
-              },
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-}
+//                   //   if (vendorModel!.zoneId == Constant.selectedZone!.id) {
+//                   //     ShowToastDialog.closeLoader();
+//                   //     Get.to(const RestaurantDetailsScreen(),
+//                   //         arguments: {"vendorModel": vendorModel});
+//                   //   } else {
+//                   //     ShowToastDialog.closeLoader();
+//                   //     ShowToastDialog.showToast(
+//                   //         "Sorry, The Zone is not available in your area. change the other location first.");
+//                   //   }
+//                   // } else if (bannerModel.redirect_type == "external_link") {
+//                   //   final uri = Uri.parse(bannerModel.redirect_id.toString());
+//                   //   if (await canLaunchUrl(uri)) {
+//                   //     await launchUrl(uri);
+//                   //   } else {
+//                   //     ShowToastDialog.showToast("Could not launch");
+//                   //   }
+//                   // }
+//                 },
+//                 child: Padding(
+//                   padding: const EdgeInsets.only(right: 14),
+//                   child: ClipRRect(
+//                     borderRadius: const BorderRadius.all(Radius.circular(12)),
+//                     child: NetworkImageWidget(
+//                       imageUrl: bannerModel.photo.toString(),
+//                       fit: BoxFit.cover,
+//                     ),
+//                   ),
+//                 ),
+//               );
+//             },
+//           ),
+//         ),
+//         Padding(
+//           padding: const EdgeInsets.symmetric(vertical: 10),
+//           child: Row(
+//             mainAxisAlignment: MainAxisAlignment.center,
+//             crossAxisAlignment: CrossAxisAlignment.center,
+//             children: List.generate(
+//               controller.bannerModel.length,
+//               (index) {
+//                 return Obx(
+//                   () => Container(
+//                     margin: const EdgeInsets.only(right: 5),
+//                     alignment: Alignment.centerLeft,
+//                     height: 9,
+//                     width: 9,
+//                     decoration: BoxDecoration(
+//                       shape: BoxShape.circle,
+//                       color: controller.currentPage.value == index
+//                           ? AppThemeData.primary300
+//                           : Colors.black12,
+//                     ),
+//                   ),
+//                 );
+//               },
+//             ),
+//           ),
+//         ),
+//       ],
+//     );
+//   }
+// }
 
 class BannerBottomView extends StatelessWidget {
   final HomeController controller;
@@ -2457,11 +2313,11 @@ class MapView extends StatelessWidget {
               initialCameraPosition: CameraPosition(
                 zoom: 18,
                 target: controller.homeController.allNearestRestaurant.isEmpty
-                    ? LatLng(
-                        Constant.selectedLocation.location!.latitude ??
-                            45.521563,
-                        Constant.selectedLocation.location!.longitude ??
-                            -122.677433,
+                    ? const LatLng(
+                        // Constant.selectedLocation.location?.latitude ??
+                        45.521563,
+                        // Constant.selectedLocation.location?.longitude ??
+                        -122.677433,
                       )
                     : LatLng(
                         controller.homeController.allNearestRestaurant.first
@@ -2769,24 +2625,25 @@ class MapView extends StatelessWidget {
                                                                 width: 5,
                                                               ),
                                                               Text(
-                                                                "${Constant.getDistance(
-                                                                  lat1: vendorModel
-                                                                      .latitude
-                                                                      .toString(),
-                                                                  lng1: vendorModel
-                                                                      .longitude
-                                                                      .toString(),
-                                                                  lat2: Constant
-                                                                      .selectedLocation
-                                                                      .location!
-                                                                      .latitude
-                                                                      .toString(),
-                                                                  lng2: Constant
-                                                                      .selectedLocation
-                                                                      .location!
-                                                                      .longitude
-                                                                      .toString(),
-                                                                )} ${Constant.distanceType}",
+                                                                "",
+                                                                // "${Constant.getDistance(
+                                                                //   lat1: vendorModel
+                                                                //       .latitude
+                                                                //       .toString(),
+                                                                //   lng1: vendorModel
+                                                                //       .longitude
+                                                                //       .toString(),
+                                                                //   lat2: Constant
+                                                                //       .selectedLocation
+                                                                //       .location!
+                                                                //       .latitude
+                                                                //       .toString(),
+                                                                //   lng2: Constant
+                                                                //       .selectedLocation
+                                                                //       .location!
+                                                                //       .longitude
+                                                                //       .toString(),
+                                                                // )} ${Constant.distanceType}",
                                                                 style: TextStyle(
                                                                     color: themeChange.getThem()
                                                                         ? AppThemeData

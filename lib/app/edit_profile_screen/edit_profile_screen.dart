@@ -27,7 +27,9 @@ class EditProfileScreen extends StatelessWidget {
             appBar: AppBar(
               centerTitle: false,
               titleSpacing: 0,
-              backgroundColor: themeChange.getThem() ? AppThemeData.surfaceDark : AppThemeData.surface,
+              backgroundColor: themeChange.getThem()
+                  ? AppThemeData.surfaceDark
+                  : AppThemeData.surface,
             ),
             body: SingleChildScrollView(
               child: Padding(
@@ -39,16 +41,21 @@ class EditProfileScreen extends StatelessWidget {
                       "Profile Information".tr,
                       style: TextStyle(
                         fontSize: 24,
-                        color: themeChange.getThem() ? AppThemeData.grey50 : AppThemeData.grey900,
+                        color: themeChange.getThem()
+                            ? AppThemeData.grey50
+                            : AppThemeData.grey900,
                         fontFamily: AppThemeData.semiBold,
                         fontWeight: FontWeight.w500,
                       ),
                     ),
                     Text(
-                      "View and update your personal details, contact information, and preferences.".tr,
+                      "View and update your personal details, contact information, and preferences."
+                          .tr,
                       style: TextStyle(
                         fontSize: 16,
-                        color: themeChange.getThem() ? AppThemeData.grey50 : AppThemeData.grey900,
+                        color: themeChange.getThem()
+                            ? AppThemeData.grey50
+                            : AppThemeData.grey900,
                         fontFamily: AppThemeData.regular,
                         fontWeight: FontWeight.w400,
                       ),
@@ -69,7 +76,9 @@ class EditProfileScreen extends StatelessWidget {
                                     fit: BoxFit.cover,
                                   ),
                                 )
-                              : Constant().hasValidUrl(controller.profileImage.value) == false
+                              : Constant().hasValidUrl(
+                                          controller.profileImage.value) ==
+                                      false
                                   ? ClipRRect(
                                       borderRadius: BorderRadius.circular(60),
                                       child: Image.file(
@@ -95,13 +104,16 @@ class EditProfileScreen extends StatelessWidget {
                                       ),
                                     ),
                           Positioned(
-                              bottom: 0,
-                              right: 0,
-                              child: InkWell(
-                                  onTap: () {
-                                    buildBottomSheet(context, controller);
-                                  },
-                                  child: SvgPicture.asset("assets/icons/ic_edit.svg")))
+                            bottom: 0,
+                            right: 0,
+                            child: InkWell(
+                              onTap: () {
+                                buildBottomSheet(context, controller);
+                              },
+                              child:
+                                  SvgPicture.asset("assets/icons/ic_edit.svg"),
+                            ),
+                          )
                         ],
                       ),
                     ),
@@ -115,6 +127,12 @@ class EditProfileScreen extends StatelessWidget {
                             title: 'First Name'.tr,
                             controller: controller.firstNameController.value,
                             hintText: 'First Name'.tr,
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return "First name is required!";
+                              }
+                              return null;
+                            },
                           ),
                         ),
                         const SizedBox(
@@ -125,6 +143,12 @@ class EditProfileScreen extends StatelessWidget {
                             title: 'Last Name'.tr,
                             controller: controller.lastNameController.value,
                             hintText: 'Last Name'.tr,
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return "Last name is required!";
+                              }
+                              return null;
+                            },
                           ),
                         ),
                       ],
@@ -148,7 +172,9 @@ class EditProfileScreen extends StatelessWidget {
               ),
             ),
             bottomNavigationBar: Container(
-              color: themeChange.getThem() ? AppThemeData.grey900 : AppThemeData.grey50,
+              color: themeChange.getThem()
+                  ? AppThemeData.grey900
+                  : AppThemeData.grey50,
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
               child: Padding(
                   padding: const EdgeInsets.only(bottom: 20),
@@ -196,7 +222,8 @@ class EditProfileScreen extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             IconButton(
-                                onPressed: () => controller.pickFile(source: ImageSource.camera),
+                                onPressed: () => controller.pickFile(
+                                    source: ImageSource.camera),
                                 icon: const Icon(
                                   Icons.camera_alt,
                                   size: 32,
@@ -218,7 +245,8 @@ class EditProfileScreen extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             IconButton(
-                              onPressed: () => controller.pickFile(source: ImageSource.gallery),
+                              onPressed: () => controller.pickFile(
+                                  source: ImageSource.gallery),
                               icon: const Icon(
                                 Icons.photo_library_sharp,
                                 size: 32,

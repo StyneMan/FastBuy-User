@@ -1,11 +1,14 @@
 import 'dart:convert';
 
+import 'package:customer/app/checkout_screens/checkout_screen.dart';
 import 'package:customer/app/product_screens/product_list.dart';
 import 'package:customer/constant/show_toast_dialog.dart';
+import 'package:customer/controllers/cart_controller.dart';
 import 'package:customer/controllers/favourite_controller.dart';
 import 'package:customer/services/api_service.dart';
 import 'package:customer/services/socket/socket_manager.dart';
 import 'package:customer/themes/app_them_data.dart';
+import 'package:customer/themes/round_button_fill.dart';
 import 'package:customer/utils/dark_theme_provider.dart';
 import 'package:customer/utils/preferences.dart';
 import 'package:flutter/material.dart';
@@ -32,19 +35,48 @@ class _VendorDetailState extends State<VendorDetail>
   late Socket socket;
   bool _isTempLiked = false;
 
+  final cartController = Get.find<CartController>();
+
   @override
   void initState() {
     if (widget.item != null) {
       tabController = TabController(
-          length: ((widget.item['categories'] ?? [])?.length) + 1, vsync: this);
+          length: ((widget.item['vendor']['categories'] ?? [])?.length) + 1,
+          vsync: this);
     }
+    if (cartController.cartData.value.isNotEmpty) {
+      if (cartController.cartData.value['data']?.length > 0) {
+        // now check if this vendor's product is in cart
+        debugPrint("VENDDOR LOCATION ID : ${widget.item['id']}");
+        for (var i = 0;
+            i < cartController.cartData.value['data']?.length;
+            i++) {
+          final itemElem = cartController.cartData.value['data'][i];
+          debugPrint(
+              "CART VENDOR LOCATION ID : ${itemElem['vendor_location']['id']}");
+
+          if (itemElem['vendor_location']['id'] == widget.item['id']) {
+            setState(() {
+              cartController.isInCart.value = true;
+              cartController.currCartItem.value = itemElem;
+            });
+            break;
+          } else {
+            setState(() {
+              cartController.isInCart.value = false;
+            });
+          }
+        }
+      }
+    }
+
     super.initState();
     initSocketIO();
   }
 
   initSocketIO() {
     socket = SocketManager().socket;
-    socket.emit("cart", "CART INITIALIZED FROM CLIENT ::: ");
+    // socket.emit("cart", "CART INITIALIZED FROM CLIENT ::: ");
     // socket.on("notification", (val) {
     //   debugPrint("USER-CONNECTED :: :: $val");
     // });
@@ -77,15 +109,17 @@ class _VendorDetailState extends State<VendorDetail>
 
   @override
   Widget build(BuildContext context) {
-    final categories = (widget.item['categories'] ?? []) as List;
+    final categories = (widget.item['vendor']['categories'] ?? []) as List;
     final themeChange = Provider.of<DarkThemeProvider>(context);
     return Scaffold(
-      backgroundColor: themeChange.getThem()
-          ? AppThemeData.surfaceDark
-          : AppThemeData.surface,
+      backgroundColor:
+          themeChange.getThem() ? Colors.transparent : const Color(0xFFFAF6F1),
       appBar: AppBar(
         automaticallyImplyLeading: true,
         centerTitle: true,
+        backgroundColor: themeChange.getThem()
+            ? Colors.transparent
+            : const Color(0xFFFAF6F1),
       ),
       body: ListView(
         children: [
@@ -98,7 +132,7 @@ class _VendorDetailState extends State<VendorDetail>
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(2.0),
                   image: DecorationImage(
-                    image: NetworkImage("${widget.item['cover']}"),
+                    image: NetworkImage("${widget.item['vendor']['cover']}"),
                     fit: BoxFit.cover,
                   ),
                 ),
@@ -110,10 +144,12 @@ class _VendorDetailState extends State<VendorDetail>
                   child: Container(
                     color: Colors.white,
                     child: Image.network(
-                      '${widget.item['logo']}',
+                      '${widget.item['vendor']['logo']}',
                       width: 50,
                       height: 50,
                       fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) =>
+                          const SizedBox(),
                     ),
                   ),
                 ),
@@ -138,7 +174,8 @@ class _VendorDetailState extends State<VendorDetail>
                         children: [
                           Expanded(
                             child: Text(
-                              "${widget.item['name']}".tr,
+                              "${widget.item['vendor']['name']} ${widget.item['branch_name']}"
+                                  .tr,
                               style: TextStyle(
                                 fontSize: 18,
                                 color: themeChange.getThem()
@@ -154,9 +191,15 @@ class _VendorDetailState extends State<VendorDetail>
                             onPressed: () async {
                               try {
                                 // Persist UI first
-                                setState(() {
-                                  _isTempLiked = !_isTempLiked;
-                                });
+                                if (_isTempLiked) {
+                                  setState(() {
+                                    _isTempLiked = false;
+                                  });
+                                } else {
+                                  setState(() {
+                                    _isTempLiked = true;
+                                  });
+                                }
                                 // ShowToastDialog.showLoader(
                                 //     "Please wait".tr);
                                 final String accessToken =
@@ -164,7 +207,7 @@ class _VendorDetailState extends State<VendorDetail>
                                         Preferences.accessTokenKey);
                                 final resp = await APIService().addFavourite(
                                   accessToken: accessToken,
-                                  vendorId: widget.item['id'],
+                                  branchId: widget.item['id'],
                                 );
                                 ShowToastDialog.closeLoader();
                                 debugPrint(
@@ -180,9 +223,12 @@ class _VendorDetailState extends State<VendorDetail>
                                 ShowToastDialog.closeLoader();
                               }
                             },
-                            icon: controller.favouriteList.value['data']
-                                        .where((p0) =>
-                                            p0['vendorId'] == widget.item['id'])
+                            icon: (controller.favouriteList.value.isNotEmpty
+                                            ? controller
+                                                .favouriteList.value['data']
+                                            : [])
+                                        ?.where((p0) =>
+                                            p0['branchId'] == widget.item['id'])
                                         .isNotEmpty ||
                                     _isTempLiked
                                 ? SvgPicture.asset(
@@ -191,7 +237,7 @@ class _VendorDetailState extends State<VendorDetail>
                                 : SvgPicture.asset(
                                     "assets/icons/ic_like.svg",
                                   ),
-                          )
+                          ),
                         ],
                       );
                     }),
@@ -210,7 +256,7 @@ class _VendorDetailState extends State<VendorDetail>
                 const SizedBox(
                   height: 10.0,
                 ),
-                widget.item['business_schedule'] == null
+                widget.item['vendor']['business_schedule'] == null
                     ? const SizedBox()
                     : Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -233,7 +279,7 @@ class _VendorDetailState extends State<VendorDetail>
                                   ),
                                 ),
                                 Text(
-                                  "Mon - Fri: ${widget.item['business_schedule']['mon_fri']['opening_time']} - ${widget.item['business_schedule']['mon_fri']['closing_time']}"
+                                  "Mon - Fri: ${widget.item['vendor']['business_schedule']['mon_fri']['opening_time']} - ${widget.item['business_schedule']['mon_fri']['closing_time']}"
                                       .tr,
                                   style: TextStyle(
                                     fontSize: 13,
@@ -328,14 +374,14 @@ class _VendorDetailState extends State<VendorDetail>
                         controller: tabController,
                         children: [
                           ProductList(
-                            vendorId: widget.item['id'],
+                            branchId: widget.item['id'],
                             categoryId: null,
                           ),
                           // Content for each category tab
                           ...categories.map(
                             (category) => Center(
                               child: ProductList(
-                                vendorId: widget.item['id'],
+                                branchId: widget.item['id'],
                                 categoryId: category['id'],
                               ),
                             ),
@@ -349,6 +395,33 @@ class _VendorDetailState extends State<VendorDetail>
             ),
           ),
         ],
+      ),
+      bottomNavigationBar: Obx(
+        () => cartController.isInCart.value
+            ? Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 17,
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.only(bottom: 0),
+                  child: RoundedButtonFill(
+                    title: "Proceed to Checkout".tr,
+                    height: 5.5,
+                    color: AppThemeData.primary300,
+                    fontSizes: 16,
+                    onPress: () async {
+                      Get.to(
+                        CheckoutScreen(
+                          cart: cartController.currCartItem,
+                        ),
+                        transition: Transition.cupertino,
+                      );
+                    },
+                  ),
+                ),
+              )
+            : const SizedBox(),
       ),
     );
   }

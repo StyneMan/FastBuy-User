@@ -22,6 +22,13 @@ class Preferences {
   static const xenditSettings = "xenditSettings";
 
   static const accessTokenKey = "accessToken";
+  static const currLatitude = "latitude";
+  static const currLongitude = "longitude";
+  static const currAddress = "address";
+  static const currLocality = "locality";
+  static const currLandmark = "landmark";
+
+  static const shippingAddress = "shippingAddress";
 
   static late SharedPreferences pref;
 

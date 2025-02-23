@@ -16,17 +16,17 @@ class RiderNoteDialog extends StatelessWidget {
   final formkey = GlobalKey<FormState>();
   final noteController = TextEditingController();
   final controller = Get.find<OrderController>();
-  final parcelcontroller = Get.find<LogisticsController>();
+  final parcelcontroller = Get.put(LogisticsController());
 
   @override
   Widget build(BuildContext context) {
     final themeChange = Provider.of<DarkThemeProvider>(context);
     return Dialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
-      insetPadding: const EdgeInsets.all(30),
+      insetPadding: const EdgeInsets.all(21),
       clipBehavior: Clip.antiAliasWithSaveLayer,
       child: Padding(
-        padding: const EdgeInsets.all(30),
+        padding: const EdgeInsets.all(16),
         child: SizedBox(
           width: 500,
           child: Column(
@@ -43,7 +43,6 @@ class RiderNoteDialog extends StatelessWidget {
                   const SizedBox(width: 10),
                 ],
               ),
-              const SizedBox(height: 16),
               Form(
                 key: formkey,
                 child: Column(
@@ -56,10 +55,10 @@ class RiderNoteDialog extends StatelessWidget {
                       maxLine: 3,
                     ),
                     const SizedBox(
-                      height: 9.0,
+                      height: 6.0,
                     ),
                     Padding(
-                      padding: const EdgeInsets.only(bottom: 20),
+                      padding: const EdgeInsets.only(bottom: 16),
                       child: RoundedButtonFill(
                         title: "Save".tr,
                         height: 5.5,

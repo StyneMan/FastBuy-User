@@ -31,11 +31,39 @@ class AddressListController extends GetxController {
 
   @override
   void onInit() {
-    // TODO: implement onInit
+    initAddress();
     // getUser();
     refreshShipping();
 
     super.onInit();
+  }
+
+  initAddress() async {
+    try {
+      final lati = Preferences.getString(Preferences.currLatitude);
+      final longi = Preferences.getString(Preferences.currLongitude);
+      final addr = Preferences.getString(Preferences.currAddress);
+      final shipping = Preferences.getString(Preferences.shippingAddress);
+      location.value.latitude = double.parse(lati);
+      location.value.longitude = double.parse(longi);
+
+      Map<String, dynamic> map = jsonDecode(shipping);
+      debugPrint("PREFERENCE SHIPPING INFO ::: ${map}");
+
+      if (map.isNotEmpty) {
+        shippingModel.value = ShippingAddress(
+          address: addr,
+          addressAs: "Home",
+          id: "1",
+          isDefault: map['isDefault'],
+          landmark: map['landmark'],
+          locality: map['locality'],
+          location: location.value,
+        );
+      }
+    } catch (e) {
+      debugPrint("eRRO $e");
+    }
   }
 
   refreshShipping() {

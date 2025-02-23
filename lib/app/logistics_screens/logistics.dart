@@ -10,7 +10,6 @@ import 'package:customer/themes/responsive.dart';
 import 'package:customer/utils/dark_theme_provider.dart';
 import 'package:customer/utils/network_image_widget.dart';
 import 'package:customer/widget/my_separator.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -31,10 +30,12 @@ class _LogisticScreenState extends State<LogisticScreen> {
   Widget build(BuildContext context) {
     final themeChange = Provider.of<DarkThemeProvider>(context);
     return Scaffold(
-      backgroundColor: themeChange.getThem()
-          ? AppThemeData.surfaceDark
-          : AppThemeData.surface,
+      backgroundColor:
+          themeChange.getThem() ? Colors.transparent : const Color(0xFFFAF6F1),
       appBar: AppBar(
+        backgroundColor: themeChange.getThem()
+            ? Colors.transparent
+            : const Color(0xFFFAF6F1),
         automaticallyImplyLeading: true,
       ),
       body: GetX(

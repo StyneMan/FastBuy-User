@@ -10,6 +10,7 @@ import 'my_profile_controller.dart';
 class FavouriteController extends GetxController {
   RxBool favouriteRestaurant = true.obs;
   final profileController = Get.find<MyProfileController>();
+
   // RxList<FavouriteItemModel> favouriteItemList = <FavouriteItemModel>[].obs;
   // // RxList<FavouriteModel> favouriteList = <FavouriteModel>[].obs;
   // RxList<VendorModel> favouriteVendorList = <VendorModel>[].obs;
@@ -31,6 +32,19 @@ class FavouriteController extends GetxController {
     try {
       final accessToken = Preferences.getString(Preferences.accessTokenKey);
       if (accessToken.isNotEmpty) {
+        APIService()
+            .getFavouriteListStreamed(
+          accessToken: accessToken,
+          customerId: profileController.userData.value['id'],
+        )
+            .listen((onData) {
+          // debugPrint("ALL FAVOURITES :: ${onData.body}");
+          if (onData.statusCode >= 200 && onData.statusCode <= 299) {
+            Map<String, dynamic> map = jsonDecode(onData.body);
+            favouriteList.value = map;
+          }
+        });
+
         APIService()
             .getFavouritesStreamed(
           accessToken: accessToken,
@@ -63,7 +77,9 @@ class FavouriteController extends GetxController {
           }
         });
       }
+      isLoading.value = false;
     } catch (e) {
+      isLoading.value = false;
       debugPrint("$e");
     }
   }

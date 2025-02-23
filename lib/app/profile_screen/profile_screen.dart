@@ -1,12 +1,10 @@
 import 'package:customer/app/auth_screen/login_screen.dart';
-import 'package:customer/app/change%20langauge/change_language_screen.dart';
 import 'package:customer/app/chat_screens/driver_inbox_screen.dart';
 import 'package:customer/app/chat_screens/restaurant_inbox_screen.dart';
 import 'package:customer/app/edit_profile_screen/edit_profile_screen.dart';
 import 'package:customer/app/refer_friend_screen/refer_friend_screen.dart';
 import 'package:customer/app/terms_and_condition/terms_and_condition_screen.dart';
 import 'package:customer/constant/constant.dart';
-import 'package:customer/constant/show_toast_dialog.dart';
 import 'package:customer/controllers/my_profile_controller.dart';
 import 'package:customer/themes/app_them_data.dart';
 import 'package:customer/themes/custom_dialog_box.dart';
@@ -28,9 +26,8 @@ class ProfileScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final themeChange = Provider.of<DarkThemeProvider>(context);
     return Scaffold(
-      backgroundColor: themeChange.getThem()
-          ? AppThemeData.surfaceDark
-          : AppThemeData.surface,
+      backgroundColor:
+          themeChange.getThem() ? Colors.transparent : const Color(0xFFFAF6F1),
       body: GetX(
           init: MyProfileController(),
           builder: (controller) {
@@ -113,13 +110,13 @@ class ProfileScreen extends StatelessWidget {
                                               Get.to(const EditProfileScreen());
                                             },
                                           ),
-                                    cardDecoration(
-                                        themeChange,
-                                        controller,
-                                        "assets/images/ic_gift.svg",
-                                        "Gift Card".tr, () {
-                                      // Get.to(const GiftCardScreen());
-                                    }),
+                                    // cardDecoration(
+                                    //     themeChange,
+                                    //     controller,
+                                    //     "assets/images/ic_gift.svg",
+                                    //     "Gift Card".tr, () {
+                                    //   Get.to(const GiftCardScreen());
+                                    // }),
                                   ],
                                 ),
                               ),
@@ -155,13 +152,13 @@ class ProfileScreen extends StatelessWidget {
                                     horizontal: 10, vertical: 8),
                                 child: Column(
                                   children: [
-                                    cardDecoration(
-                                        themeChange,
-                                        controller,
-                                        "assets/icons/ic_change_language.svg",
-                                        "Change Language".tr, () {
-                                      Get.to(const ChangeLanguageScreen());
-                                    }),
+                                    // cardDecoration(
+                                    //     themeChange,
+                                    //     controller,
+                                    //     "assets/icons/ic_change_language.svg",
+                                    //     "Change Language".tr, () {
+                                    //   Get.to(const ChangeLanguageScreen());
+                                    // }),
                                     cardDecoration(
                                         themeChange,
                                         controller,
@@ -377,7 +374,7 @@ class ProfileScreen extends StatelessWidget {
                                     horizontal: 10, vertical: 6),
                                 child: Column(
                                   children: [
-                                    Constant.userModel == null
+                                    controller.userData.value.isEmpty
                                         ? cardDecoration(
                                             themeChange,
                                             controller,
@@ -427,7 +424,7 @@ class ProfileScreen extends StatelessWidget {
                             const SizedBox(
                               height: 10,
                             ),
-                            Constant.userModel == null
+                            controller.userData.value.isEmpty
                                 ? const SizedBox()
                                 : Padding(
                                     padding: const EdgeInsets.symmetric(
@@ -501,19 +498,6 @@ class ProfileScreen extends StatelessWidget {
                                       ),
                                     ),
                                   ),
-                            Center(
-                              child: Text(
-                                "V: ${"1.0.0" ?? Constant.appVersion}",
-                                textAlign: TextAlign.center,
-                                style: TextStyle(
-                                  fontFamily: AppThemeData.medium,
-                                  fontSize: 14,
-                                  color: themeChange.getThem()
-                                      ? AppThemeData.grey50
-                                      : AppThemeData.grey900,
-                                ),
-                              ),
-                            )
                           ],
                         ),
                       ),

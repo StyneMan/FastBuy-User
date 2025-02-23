@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 class AppThemeData {
+  static const Color bgcolor = Color(0xFFFFF7ED);
   static const Color primary50 = Color(0xFFFFF7ED);
   static const Color primary100 = Color(0xFFFAC075);
   static const Color primary200 = Color(0xFFF9AF4E);

@@ -4,7 +4,7 @@ List<BannerModel> bannerModels = [
   BannerModel(
     setOrder: 1,
     photo:
-        'https://img.jagranjosh.com/images/2024/August/2582024/janmashtami-images.jpg',
+        'https://graphicsfamily.com/wp-content/uploads/edd/2024/12/Ecommerce-Shoes-Website-Banner-Ad-Design-scaled.jpg',
     title: 'Summer Sale',
     isPublish: true,
     redirect_type: 'product',
@@ -12,8 +12,7 @@ List<BannerModel> bannerModels = [
   ),
   BannerModel(
     setOrder: 2,
-    photo:
-        'https://t3.ftcdn.net/jpg/03/24/73/92/360_F_324739203_keeq8udvv0P2h1MLYJ0GLSlTBagoXS48.jpg',
+    photo: 'https://i.imgur.com/HBZdxh7.jpeg',
     title: 'New Arrivals',
     isPublish: true,
     redirect_type: 'category',
@@ -22,7 +21,7 @@ List<BannerModel> bannerModels = [
   BannerModel(
     setOrder: 3,
     photo:
-        'https://images.ctfassets.net/hrltx12pl8hq/5596z2BCR9KmT1KeRBrOQa/4070fd4e2f1a13f71c2c46afeb18e41c/shutterstock_451077043-hero1.jpg?fit=fill&w=600&h=400',
+        'https://moodiedavittreport.com/wp-content/uploads/2023/07/glenfiddich-perpetual.jpg',
     title: 'Flash Deals',
     isPublish: false,
     redirect_type: 'promotion',
@@ -31,8 +30,7 @@ List<BannerModel> bannerModels = [
   BannerModel(
     setOrder: 4,
     photo:
-        'https://img.jagranjosh.com/images/2024/August/2582024/janmashtami-images.jpg',
-    title: 'Winter Collection',
+        'https://counseal.com/app/uploads/2024/01/website-featured-Starting-Your-Delivery-Business-in-Nigeria.jpg',
     isPublish: true,
     redirect_type: 'collection',
     redirect_id: 'collection101',

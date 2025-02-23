@@ -24,249 +24,216 @@ class FavouriteScreen extends StatelessWidget {
           return Scaffold(
             backgroundColor: themeChange.getThem()
                 ? AppThemeData.surfaceDark
-                : AppThemeData.surface,
+                : const Color(0xFFFAF6F1),
             body: SafeArea(
               child: controller.isLoading.value
                   ? Constant.loader()
                   : Padding(
                       padding: EdgeInsets.only(
                           top: MediaQuery.of(context).viewPadding.top),
-                      child: Column(
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 16),
-                            child: Row(
-                              children: [
-                                SizedBox(
-                                  width:
-                                      MediaQuery.of(context).size.width * 0.5,
-                                  child: Text(
-                                    "Your Favourites, All in One Place".tr,
-                                    style: TextStyle(
-                                      fontSize: 24,
-                                      color: themeChange.getThem()
-                                          ? AppThemeData.grey50
-                                          : AppThemeData.grey900,
-                                      fontFamily: AppThemeData.semiBold,
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
+                      child: Expanded(
+                        child: _profileController.userData.value.isEmpty
+                            ? Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 16,
                                 ),
-                              ],
-                            ),
-                          ),
-                          const SizedBox(
-                            height: 20,
-                          ),
-                          Expanded(
-                            child: _profileController.userData.value.isEmpty
-                                ? Padding(
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Image.asset(
+                                      "assets/images/login.gif",
+                                      height: 120,
+                                    ),
+                                    const SizedBox(
+                                      height: 12,
+                                    ),
+                                    Text(
+                                      "Please Log In to Continue".tr,
+                                      style: TextStyle(
+                                        color: themeChange.getThem()
+                                            ? AppThemeData.grey100
+                                            : AppThemeData.grey800,
+                                        fontSize: 22,
+                                        fontFamily: AppThemeData.semiBold,
+                                      ),
+                                    ),
+                                    const SizedBox(
+                                      height: 5,
+                                    ),
+                                    Text(
+                                      "You’re not logged in. Please sign in to access your account and explore all features."
+                                          .tr,
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(
+                                        color: themeChange.getThem()
+                                            ? AppThemeData.grey50
+                                            : AppThemeData.grey500,
+                                        fontSize: 16,
+                                        fontFamily: AppThemeData.bold,
+                                      ),
+                                    ),
+                                    const SizedBox(
+                                      height: 20,
+                                    ),
+                                    RoundedButtonFill(
+                                      title: "Log in".tr,
+                                      width: 55,
+                                      height: 5.5,
+                                      color: AppThemeData.primary300,
+                                      textColor: AppThemeData.grey50,
+                                      onPress: () async {
+                                        Get.offAll(LoginScreen());
+                                      },
+                                    ),
+                                  ],
+                                ),
+                              )
+                            : Column(
+                                children: [
+                                  Padding(
                                     padding: const EdgeInsets.symmetric(
                                       horizontal: 16,
                                     ),
-                                    child: Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.center,
-                                      children: [
-                                        Image.asset(
-                                          "assets/images/login.gif",
-                                          height: 120,
+                                    child: Container(
+                                      decoration: ShapeDecoration(
+                                        color: themeChange.getThem()
+                                            ? AppThemeData.grey700
+                                            : AppThemeData.grey200,
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(120),
                                         ),
-                                        const SizedBox(
-                                          height: 12,
-                                        ),
-                                        Text(
-                                          "Please Log In to Continue".tr,
-                                          style: TextStyle(
-                                            color: themeChange.getThem()
-                                                ? AppThemeData.grey100
-                                                : AppThemeData.grey800,
-                                            fontSize: 22,
-                                            fontFamily: AppThemeData.semiBold,
-                                          ),
-                                        ),
-                                        const SizedBox(
-                                          height: 5,
-                                        ),
-                                        Text(
-                                          "You’re not logged in. Please sign in to access your account and explore all features."
-                                              .tr,
-                                          textAlign: TextAlign.center,
-                                          style: TextStyle(
-                                            color: themeChange.getThem()
-                                                ? AppThemeData.grey50
-                                                : AppThemeData.grey500,
-                                            fontSize: 16,
-                                            fontFamily: AppThemeData.bold,
-                                          ),
-                                        ),
-                                        const SizedBox(
-                                          height: 20,
-                                        ),
-                                        RoundedButtonFill(
-                                          title: "Log in".tr,
-                                          width: 55,
-                                          height: 5.5,
-                                          color: AppThemeData.primary300,
-                                          textColor: AppThemeData.grey50,
-                                          onPress: () async {
-                                            Get.offAll(LoginScreen());
-                                          },
-                                        ),
-                                      ],
-                                    ),
-                                  )
-                                : Column(
-                                    children: [
-                                      Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                          horizontal: 16,
-                                        ),
-                                        child: Container(
-                                          decoration: ShapeDecoration(
-                                            color: themeChange.getThem()
-                                                ? AppThemeData.grey700
-                                                : AppThemeData.grey200,
-                                            shape: RoundedRectangleBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(120),
-                                            ),
-                                          ),
-                                          child: Padding(
-                                            padding: const EdgeInsets.all(8.0),
-                                            child: Row(
-                                              children: [
-                                                Expanded(
-                                                  child: InkWell(
-                                                    onTap: () {
-                                                      controller
-                                                          .favouriteRestaurant
-                                                          .value = true;
-                                                    },
-                                                    child: Container(
-                                                      decoration: controller
-                                                                  .favouriteRestaurant
-                                                                  .value ==
-                                                              false
-                                                          ? null
-                                                          : ShapeDecoration(
-                                                              color:
-                                                                  AppThemeData
-                                                                      .grey900,
-                                                              shape:
-                                                                  RoundedRectangleBorder(
-                                                                borderRadius:
-                                                                    BorderRadius
-                                                                        .circular(
-                                                                            120),
-                                                              ),
+                                      ),
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: Row(
+                                          children: [
+                                            Expanded(
+                                              child: InkWell(
+                                                onTap: () {
+                                                  controller.favouriteRestaurant
+                                                      .value = true;
+                                                },
+                                                child: Container(
+                                                  decoration: controller
+                                                              .favouriteRestaurant
+                                                              .value ==
+                                                          false
+                                                      ? null
+                                                      : ShapeDecoration(
+                                                          color: AppThemeData
+                                                              .grey900,
+                                                          shape:
+                                                              RoundedRectangleBorder(
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                              120,
                                                             ),
-                                                      child: Padding(
-                                                        padding:
-                                                            const EdgeInsets
-                                                                .symmetric(
-                                                                horizontal: 16,
-                                                                vertical: 10),
-                                                        child: Text(
-                                                          "Favourite Restaurants"
-                                                              .tr,
-                                                          textAlign:
-                                                              TextAlign.center,
-                                                          style: TextStyle(
-                                                            fontFamily:
-                                                                AppThemeData
-                                                                    .semiBold,
-                                                            color: themeChange
+                                                          ),
+                                                        ),
+                                                  child: Padding(
+                                                    padding: const EdgeInsets
+                                                        .symmetric(
+                                                        horizontal: 16,
+                                                        vertical: 10),
+                                                    child: Text(
+                                                      "Favourite Restaurants"
+                                                          .tr,
+                                                      textAlign:
+                                                          TextAlign.center,
+                                                      style: TextStyle(
+                                                        fontFamily: AppThemeData
+                                                            .semiBold,
+                                                        color: themeChange
+                                                                .getThem()
+                                                            ? AppThemeData
+                                                                .primary300
+                                                            : AppThemeData
+                                                                .primary300,
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                            Expanded(
+                                              child: InkWell(
+                                                onTap: () {
+                                                  controller.favouriteRestaurant
+                                                      .value = false;
+                                                },
+                                                child: Container(
+                                                  decoration: controller
+                                                              .favouriteRestaurant
+                                                              .value ==
+                                                          true
+                                                      ? null
+                                                      : ShapeDecoration(
+                                                          color: AppThemeData
+                                                              .grey900,
+                                                          shape:
+                                                              RoundedRectangleBorder(
+                                                            borderRadius:
+                                                                BorderRadius
+                                                                    .circular(
+                                                                        120),
+                                                          ),
+                                                        ),
+                                                  child: Padding(
+                                                    padding: const EdgeInsets
+                                                        .symmetric(
+                                                        horizontal: 16,
+                                                        vertical: 10),
+                                                    child: Text(
+                                                      "Favourite Stores".tr,
+                                                      textAlign:
+                                                          TextAlign.center,
+                                                      style: TextStyle(
+                                                        fontFamily: AppThemeData
+                                                            .semiBold,
+                                                        color: controller
+                                                                    .favouriteRestaurant
+                                                                    .value ==
+                                                                true
+                                                            ? themeChange
+                                                                    .getThem()
+                                                                ? AppThemeData
+                                                                    .grey400
+                                                                : AppThemeData
+                                                                    .grey500
+                                                            : themeChange
                                                                     .getThem()
                                                                 ? AppThemeData
                                                                     .primary300
                                                                 : AppThemeData
                                                                     .primary300,
-                                                          ),
-                                                        ),
                                                       ),
                                                     ),
                                                   ),
                                                 ),
-                                                Expanded(
-                                                  child: InkWell(
-                                                    onTap: () {
-                                                      controller
-                                                          .favouriteRestaurant
-                                                          .value = false;
-                                                    },
-                                                    child: Container(
-                                                      decoration: controller
-                                                                  .favouriteRestaurant
-                                                                  .value ==
-                                                              true
-                                                          ? null
-                                                          : ShapeDecoration(
-                                                              color:
-                                                                  AppThemeData
-                                                                      .grey900,
-                                                              shape:
-                                                                  RoundedRectangleBorder(
-                                                                borderRadius:
-                                                                    BorderRadius
-                                                                        .circular(
-                                                                            120),
-                                                              ),
-                                                            ),
-                                                      child: Padding(
-                                                        padding:
-                                                            const EdgeInsets
-                                                                .symmetric(
-                                                                horizontal: 16,
-                                                                vertical: 10),
-                                                        child: Text(
-                                                          "Favourite Stores".tr,
-                                                          textAlign:
-                                                              TextAlign.center,
-                                                          style: TextStyle(
-                                                            fontFamily:
-                                                                AppThemeData
-                                                                    .semiBold,
-                                                            color: controller
-                                                                        .favouriteRestaurant
-                                                                        .value ==
-                                                                    true
-                                                                ? themeChange
-                                                                        .getThem()
-                                                                    ? AppThemeData
-                                                                        .grey400
-                                                                    : AppThemeData
-                                                                        .grey500
-                                                                : themeChange
-                                                                        .getThem()
-                                                                    ? AppThemeData
-                                                                        .primary300
-                                                                    : AppThemeData
-                                                                        .primary300,
-                                                          ),
-                                                        ),
-                                                      ),
-                                                    ),
-                                                  ),
-                                                )
-                                              ],
-                                            ),
-                                          ),
+                                              ),
+                                            )
+                                          ],
                                         ),
                                       ),
-                                      const SizedBox(
-                                        height: 20,
+                                    ),
+                                  ),
+                                  const SizedBox(
+                                    height: 20,
+                                  ),
+                                  Expanded(
+                                    child: Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 18,
                                       ),
-                                      Expanded(
-                                        child: Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                            horizontal: 18,
-                                          ),
-                                          child: controller
-                                                  .favouriteRestaurant.value
-                                              ? controller.favouriteRestaurants
+                                      child: controller
+                                              .favouriteRestaurant.value
+                                          ? controller.favouriteRestaurants
+                                                  .value.isEmpty
+                                              ? const SizedBox()
+                                              : controller.favouriteRestaurants
                                                       .value['data'].isEmpty
                                                   ? Constant.showEmptyView(
                                                       message:
@@ -285,14 +252,17 @@ class FavouriteScreen extends StatelessWidget {
                                                               int index) {
                                                         debugPrint(
                                                             "CHECK ING RES FAVS ::: ${controller.favouriteRestaurants.value['data']}");
-                                                        final vendorModel = controller
-                                                                .favouriteRestaurants
-                                                                .value['data']
-                                                            [index]['vendor'];
+                                                        final vendorLocationModel =
+                                                            controller.favouriteRestaurants
+                                                                        .value[
+                                                                    'data'][index]
+                                                                [
+                                                                'vendor_location'];
                                                         return InkWell(
                                                           onTap: () {},
                                                           child: VendorCard(
-                                                            item: vendorModel,
+                                                            item:
+                                                                vendorLocationModel,
                                                           ),
                                                         );
                                                       },
@@ -302,6 +272,9 @@ class FavouriteScreen extends StatelessWidget {
                                                         height: 16.0,
                                                       ),
                                                     )
+                                          : controller.favouriteRestaurants
+                                                  .value.isEmpty
+                                              ? const SizedBox()
                                               : controller.favouriteStores
                                                       .value['data'].isEmpty
                                                   ? Constant.showEmptyView(
@@ -321,14 +294,17 @@ class FavouriteScreen extends StatelessWidget {
                                                               int index) {
                                                         debugPrint(
                                                             "CHECK ING STOREs FAVS ::: ${controller.favouriteRestaurants.value['data']}");
-                                                        final vendorModel = controller
-                                                                .favouriteStores
-                                                                .value['data']
-                                                            [index]['vendor'];
+                                                        final vendorLocationModel =
+                                                            controller.favouriteStores
+                                                                        .value[
+                                                                    'data'][index]
+                                                                [
+                                                                'vendor_location'];
                                                         return InkWell(
                                                           onTap: () {},
                                                           child: VendorCard(
-                                                            item: vendorModel,
+                                                            item:
+                                                                vendorLocationModel,
                                                           ),
                                                         );
                                                       },
@@ -338,12 +314,10 @@ class FavouriteScreen extends StatelessWidget {
                                                         height: 16.0,
                                                       ),
                                                     ),
-                                        ),
-                                      ),
-                                    ],
+                                    ),
                                   ),
-                          )
-                        ],
+                                ],
+                              ),
                       ),
                     ),
             ),

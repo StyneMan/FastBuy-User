@@ -78,22 +78,16 @@ class ProductCard extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        "${product['name']}".tr,
-                        style: TextStyle(
-                          fontSize: 15,
-                          color: themeChange.getThem()
-                              ? AppThemeData.primary400
-                              : AppThemeData.secondary400,
-                          fontFamily: AppThemeData.regular,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ],
+                  Text(
+                    "${product['name']}".tr,
+                    style: TextStyle(
+                      fontSize: 15,
+                      color: themeChange.getThem()
+                          ? AppThemeData.primary400
+                          : AppThemeData.secondary400,
+                      fontFamily: AppThemeData.regular,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.start,

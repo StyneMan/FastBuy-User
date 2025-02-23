@@ -1,4 +1,3 @@
-import 'package:customer/app/home_screen/category_restaurant_screen.dart';
 import 'package:customer/app/logistics_screens/logistics.dart';
 import 'package:customer/app/vendor_screens/all_vendors.dart';
 import 'package:customer/controllers/home_controller.dart';
@@ -20,89 +19,30 @@ class CategoriesView extends StatelessWidget {
   Widget build(BuildContext context) {
     final themeChange = Provider.of<DarkThemeProvider>(context);
     return Container(
-      decoration: ShapeDecoration(
-        color:
-            themeChange.getThem() ? AppThemeData.grey900 : AppThemeData.grey50,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(24),
-        ),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 10),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            const SizedBox(
-              height: 10,
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          "Browse Categories",
-                          style: TextStyle(
-                            fontFamily: AppThemeData.semiBold,
-                            color: themeChange.getThem()
-                                ? AppThemeData.grey50
-                                : AppThemeData.grey900,
-                            fontSize: 18,
-                          ),
-                        ),
-                      ),
-                      // InkWell(
-                      //   onTap: () {
-                      //     Get.to(const ViewAllCategoryScreen());
-                      //   },
-                      //   child: Text(
-                      //     "See all",
-                      //     textAlign: TextAlign.center,
-                      //     style: TextStyle(
-                      //       fontFamily: AppThemeData.medium,
-                      //       color: themeChange.getThem()
-                      //           ? AppThemeData.primary300
-                      //           : AppThemeData.primary300,
-                      //       fontSize: 14,
-                      //     ),
-                      //   ),
-                      // ),
-                    ],
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(horizontal: 10),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: List.generate(
+          controller.vendorCategoryModel.length >= 8
+              ? 8
+              : controller.vendorCategoryModel.length,
+          (index) {
+            VendorCategoryModel vendorCategoryModel =
+                controller.vendorCategoryModel[index];
+            return SizedBox(
+              width: 100,
+              child: Container(
+                decoration: ShapeDecoration(
+                  color: themeChange.getThem()
+                      ? AppThemeData.grey900
+                      : AppThemeData.grey50,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(24),
                   ),
-                  // const GradientText(
-                  //   'Best Servings Food',
-                  //   style: TextStyle(
-                  //     fontSize: 24,
-                  //     fontFamily: 'Inter Tight',
-                  //     fontWeight: FontWeight.w800,
-                  //   ),
-                  //   gradient: LinearGradient(colors: [
-                  //     Color(0xFF3961F1),
-                  //     Color(0xFF11D0EA),
-                  //   ]),
-                  // ),
-                ],
-              ),
-            ),
-            const SizedBox(
-              height: 10,
-            ),
-            GridView.builder(
-              padding: EdgeInsets.zero,
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 3, childAspectRatio: 5 / 6),
-              itemCount: controller.vendorCategoryModel.length >= 8
-                  ? 8
-                  : controller.vendorCategoryModel.length,
-              physics: const NeverScrollableScrollPhysics(),
-              shrinkWrap: true,
-              itemBuilder: (context, index) {
-                VendorCategoryModel vendorCategoryModel =
-                    controller.vendorCategoryModel[index];
-                return InkWell(
+                ),
+                child: InkWell(
                   onTap: () {
                     if (vendorCategoryModel.title?.toLowerCase() ==
                         "send packages") {
@@ -132,40 +72,21 @@ class CategoriesView extends StatelessWidget {
                   },
                   child: Center(
                     child: Container(
-                      height: 100,
-                      padding: const EdgeInsets.all(8.0),
+                      height: 75,
+                      padding: const EdgeInsets.all(16.0),
                       margin: const EdgeInsets.all(2.0),
-                      child: Column(
-                        children: [
-                          ClipOval(
-                            child: SizedBox(
-                              width: 60,
-                              height: 60,
-                              child: Image.asset(
-                                vendorCategoryModel.photo.toString(),
-                                fit: BoxFit.cover,
-                              ),
-                            ),
-                          ),
-                          Text(
-                            "${vendorCategoryModel.title}",
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              fontFamily: AppThemeData.medium,
-                              color: themeChange.getThem()
-                                  ? AppThemeData.grey50
-                                  : AppThemeData.grey900,
-                              fontSize: 12,
-                            ),
-                          ),
-                        ],
+                      child: ClipOval(
+                        child: Image.asset(
+                          vendorCategoryModel.photo.toString(),
+                          fit: BoxFit.cover,
+                        ),
                       ),
                     ),
                   ),
-                );
-              },
-            ),
-          ],
+                ),
+              ),
+            );
+          },
         ),
       ),
     );

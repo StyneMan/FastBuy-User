@@ -2,7 +2,7 @@ import 'package:customer/utils/preferences.dart';
 import 'package:get/get.dart';
 
 class MyProfileController extends GetxController {
-  RxBool isLoading = true.obs;
+  RxBool isLoading = false.obs;
   var userData = {}.obs;
   var policy = "".obs;
   var terms = "".obs;

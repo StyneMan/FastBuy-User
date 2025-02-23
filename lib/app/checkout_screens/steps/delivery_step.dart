@@ -16,12 +16,12 @@ typedef void InitCallback(String value);
 
 class DeliveryStep extends StatefulWidget {
   final cart;
-  final int index;
+  // final int index;
   final InitCallback onSelectDelivery;
   const DeliveryStep({
     super.key,
     required this.cart,
-    required this.index,
+    // required this.index,
     required this.onSelectDelivery,
   });
 
@@ -174,7 +174,7 @@ class _DeliveryStepState extends State<DeliveryStep> {
                             child: Container(
                               color: Colors.white,
                               child: Image.network(
-                                '${widget.cart['vendor']['logo']}',
+                                '${widget.cart['vendor_location']['vendor']['logo']}',
                                 width: 36,
                                 height: 36,
                                 fit: BoxFit.cover,
@@ -189,7 +189,8 @@ class _DeliveryStepState extends State<DeliveryStep> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                "${widget.cart['vendor']['name']}".tr,
+                                "${widget.cart['vendor_location']['vendor']['name']} ${widget.cart['vendor_location']['branch_name']}"
+                                    .tr,
                                 style: TextStyle(
                                   fontSize: 15,
                                   color: themeChange.getThem()
@@ -376,9 +377,11 @@ class _DeliveryStepState extends State<DeliveryStep> {
                   ),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           const Icon(Icons.storefront),
                           const SizedBox(
@@ -453,7 +456,7 @@ class _DeliveryStepState extends State<DeliveryStep> {
         heightFactor: 0.9,
         child: CartDetail(
           cart: cart,
-          index: widget.index,
+          // index: widget.index,
           hideActions: true,
         ),
       ),

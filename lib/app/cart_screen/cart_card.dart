@@ -2,11 +2,15 @@ import 'package:customer/app/cart_screen/cart_detail.dart';
 import 'package:customer/app/checkout_screens/checkout_screen.dart';
 import 'package:customer/app/vendor_screens/vendor_detail.dart';
 import 'package:customer/constant/constant.dart';
+import 'package:customer/constant/show_toast_dialog.dart';
+import 'package:customer/controllers/cart_controller.dart';
+import 'package:customer/services/api_service.dart';
 import 'package:customer/themes/app_them_data.dart';
 import 'package:customer/themes/responsive.dart';
 import 'package:customer/themes/round_button_border.dart';
 import 'package:customer/themes/round_button_fill.dart';
 import 'package:customer/utils/dark_theme_provider.dart';
+import 'package:customer/utils/preferences.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:provider/provider.dart';
@@ -14,10 +18,12 @@ import 'package:provider/provider.dart';
 class CartCard extends StatelessWidget {
   final item;
   final int index;
+  final CartController controller;
   const CartCard({
     super.key,
     required this.item,
     required this.index,
+    required this.controller,
   });
 
   @override
@@ -49,7 +55,7 @@ class CartCard extends StatelessWidget {
                       child: Container(
                         color: Colors.white,
                         child: Image.network(
-                          '${item['vendor']['logo']}',
+                          '${item['vendor_location']['vendor']['logo']}',
                           width: 36,
                           height: 36,
                           fit: BoxFit.cover,
@@ -64,7 +70,8 @@ class CartCard extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          "${item['vendor']['name']}".tr,
+                          "${item['vendor_location']['vendor']['name']} ${item['vendor_location']['branch_name']}"
+                              .tr,
                           style: TextStyle(
                             fontSize: 15,
                             color: themeChange.getThem()
@@ -152,14 +159,13 @@ class CartCard extends StatelessWidget {
                 Get.to(
                   CheckoutScreen(
                     cart: item,
-                    index: index,
                   ),
                   transition: Transition.cupertino,
                 );
               } else {
                 Get.to(
                   VendorDetail(
-                    item: item['vendor'],
+                    item: item['vendor_location'],
                   ),
                   transition: Transition.cupertino,
                 );
@@ -173,7 +179,9 @@ class CartCard extends StatelessWidget {
             height: 16.0,
           ),
           RoundedButtonBorder(
-            onPress: () {},
+            onPress: () {
+              deleteCart(controller: controller);
+            },
             title: "Remove Item",
             borderColor: AppThemeData.primary400,
             textColor: AppThemeData.primary400,
@@ -201,10 +209,27 @@ class CartCard extends StatelessWidget {
         heightFactor: 0.9,
         child: CartDetail(
           cart: cart,
-          // list: cart['items'],
-          index: index,
         ),
       ),
     );
+  }
+
+  deleteCart({required CartController controller}) async {
+    try {
+      ShowToastDialog.showLoader("Please wait".tr);
+      // controller.cartData.value['data'][widget.index]['items'] = lst;
+      final token = Preferences.getString(Preferences.accessTokenKey);
+      final resp = await APIService().deleteCart(
+        accessToken: token,
+        cartId: item['id'],
+      );
+      ShowToastDialog.closeLoader();
+      debugPrint("RESPONSE DELETE CART ::: ${resp.body}");
+      // Npw refresh cart here
+      controller.refreshCart();
+    } catch (e) {
+      debugPrint("$e");
+      ShowToastDialog.closeLoader();
+    }
   }
 }

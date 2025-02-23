@@ -1,7 +1,6 @@
 import 'package:customer/app/restaurant_details_screen/restaurant_details_screen.dart';
 import 'package:customer/constant/constant.dart';
 import 'package:customer/controllers/restaurant_list_controller.dart';
-import 'package:customer/models/favourite_model.dart';
 import 'package:customer/models/vendor_model.dart';
 import 'package:customer/themes/app_them_data.dart';
 import 'package:customer/themes/responsive.dart';
@@ -241,38 +240,38 @@ class RestaurantListScreen extends StatelessWidget {
                                                     const SizedBox(
                                                       width: 5,
                                                     ),
-                                                    Text(
-                                                      "${Constant.getDistance(
-                                                        lat1: vendorModel
-                                                            .latitude
-                                                            .toString(),
-                                                        lng1: vendorModel
-                                                            .longitude
-                                                            .toString(),
-                                                        lat2: Constant
-                                                            .selectedLocation
-                                                            .location!
-                                                            .latitude
-                                                            .toString(),
-                                                        lng2: Constant
-                                                            .selectedLocation
-                                                            .location!
-                                                            .longitude
-                                                            .toString(),
-                                                      )} ${Constant.distanceType}",
-                                                      style: TextStyle(
-                                                        color: themeChange
-                                                                .getThem()
-                                                            ? AppThemeData
-                                                                .secondary300
-                                                            : AppThemeData
-                                                                .secondary300,
-                                                        fontFamily: AppThemeData
-                                                            .semiBold,
-                                                        fontWeight:
-                                                            FontWeight.w600,
-                                                      ),
-                                                    ),
+                                                    // Text(
+                                                    //   "${Constant.getDistance(
+                                                    //     lat1: vendorModel
+                                                    //         .latitude
+                                                    //         .toString(),
+                                                    //     lng1: vendorModel
+                                                    //         .longitude
+                                                    //         .toString(),
+                                                    //     lat2: Constant
+                                                    //         .selectedLocation
+                                                    //         .location!
+                                                    //         .latitude
+                                                    //         .toString(),
+                                                    //     lng2: Constant
+                                                    //         .selectedLocation
+                                                    //         .location!
+                                                    //         .longitude
+                                                    //         .toString(),
+                                                    //   )} ${Constant.distanceType}",
+                                                    //   style: TextStyle(
+                                                    //     color: themeChange
+                                                    //             .getThem()
+                                                    //         ? AppThemeData
+                                                    //             .secondary300
+                                                    //         : AppThemeData
+                                                    //             .secondary300,
+                                                    //     fontFamily: AppThemeData
+                                                    //         .semiBold,
+                                                    //     fontWeight:
+                                                    //         FontWeight.w600,
+                                                    //   ),
+                                                    // ),
                                                   ],
                                                 ),
                                               ),

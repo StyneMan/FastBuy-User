@@ -5,13 +5,13 @@ import 'package:customer/app/auth_screen/signup_screen.dart';
 import 'package:customer/app/dash_board_screens/dash_board_screen.dart';
 import 'package:customer/app/forgot_password_screen/forgot_password_screen.dart';
 import 'package:customer/app/location_permission_screen/location_permission_screen.dart';
-import 'package:customer/constant/constant.dart';
 import 'package:customer/controllers/login_controller.dart';
 import 'package:customer/themes/app_them_data.dart';
 import 'package:customer/themes/round_button_border.dart';
 import 'package:customer/themes/round_button_fill.dart';
 import 'package:customer/themes/text_field_widget.dart';
 import 'package:customer/utils/dark_theme_provider.dart';
+import 'package:customer/utils/preferences.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -41,11 +41,13 @@ class LoginScreen extends StatelessWidget {
               actions: [
                 InkWell(
                   onTap: () async {
+                    final lat = Preferences.getString(Preferences.currLatitude);
+                    final lng = Preferences.getString(Preferences.currLatitude);
                     LocationPermission permission =
                         await Geolocator.checkPermission();
                     if (permission == LocationPermission.always ||
                         permission == LocationPermission.whileInUse) {
-                      if (Constant.selectedLocation.location == null) {
+                      if (lat.isEmpty || lng.isEmpty) {
                         Get.offAll(const LocationPermissionScreen());
                       } else {
                         Get.offAll(const DashBoardScreen());

@@ -39,42 +39,6 @@ class SplashController extends GetxController {
         } catch (e) {
           debugPrint(e.toString());
         }
-
-        // await FireStoreUtils.getUserProfile(FireStoreUtils.getCurrentUid())
-        //     .then((value) async {
-        //   if (value != null) {
-        //     UserModel userModel = value;
-        //     log(userModel.toJson().toString());
-        //     if (userModel.role == Constant.userRoleCustomer) {
-        //       if (userModel.active == true) {
-        //         userModel.fcmToken = await NotificationService.getToken();
-        //         await FireStoreUtils.updateUser(userModel);
-        //         if (userModel.shippingAddress != null &&
-        //             userModel.shippingAddress!.isNotEmpty) {
-        //           if (userModel.shippingAddress!
-        //               .where((element) => element.isDefault == true)
-        //               .isNotEmpty) {
-        //             Constant.selectedLocation = userModel.shippingAddress!
-        //                 .where((element) => element.isDefault == true)
-        //                 .single;
-        //           } else {
-        //             Constant.selectedLocation =
-        //                 userModel.shippingAddress!.first;
-        //           }
-        //           Get.offAll(const DashBoardScreen());
-        //         } else {
-        //           Get.offAll(const LocationPermissionScreen());
-        //         }
-        //       } else {
-        //         await FirebaseAuth.instance.signOut();
-        //         Get.offAll(LoginScreen());
-        //       }
-        //     } else {
-        //       await FirebaseAuth.instance.signOut();
-        //       Get.offAll(LoginScreen());
-        //     }
-        //   }
-        // });
       } else {
         // await FirebaseAuth.instance.signOut();
         Preferences.setString(Preferences.accessTokenKey, "");

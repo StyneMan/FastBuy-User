@@ -276,7 +276,7 @@ class APIService {
       String? vendorType}) async {
     if (vendorType == null || vendorType.isEmpty) {
       return await client.get(
-        Uri.parse('${Constant.baseURL}/vendor/all?page=$page'),
+        Uri.parse('${Constant.baseURL}/vendor/locations?page=$page'),
         headers: {
           "Content-type": "application/json",
           "Authorization": "Bearer $accessToken",
@@ -284,13 +284,27 @@ class APIService {
       );
     } else {
       return await client.get(
-        Uri.parse('${Constant.baseURL}/vendor/all?page=$page&type=$vendorType'),
+        Uri.parse(
+            '${Constant.baseURL}/vendor/locations?page=$page&type=$vendorType'),
         headers: {
           "Content-type": "application/json",
           "Authorization": "Bearer $accessToken",
         },
       );
     }
+  }
+
+  Future<http.Response> getNearbyVendors({
+    required int page,
+    required Map payload,
+  }) async {
+    return await client.post(
+      Uri.parse('${Constant.baseURL}/vendor/nearby?page=$page'),
+      headers: {
+        "Content-type": "application/json",
+      },
+      body: jsonEncode(payload),
+    );
   }
 
   Future<http.Response> estimateParcelFare(
@@ -335,19 +349,19 @@ class APIService {
     );
   }
 
-  Future<http.Response> getVendorProducts(
-      {required String vendorId, required int page, String? categoryId}) async {
+  Future<http.Response> getVendorLocationProducts(
+      {required String branchId, required int page, String? categoryId}) async {
     if (categoryId != null) {
       return await http.get(
         Uri.parse(
-            '${Constant.baseURL}/products/vendor/$vendorId/all?page=$page&categoryId=$categoryId'),
+            '${Constant.baseURL}/products/branch/$branchId/all?page=$page&categoryId=$categoryId'),
         headers: {
           "Content-type": "application/json",
         },
       );
     }
     return await client.get(
-      Uri.parse('${Constant.baseURL}/products/vendor/$vendorId/all?page=$page'),
+      Uri.parse('${Constant.baseURL}/products/branch/$branchId/all?page=$page'),
       headers: {
         "Content-type": "application/json",
       },
@@ -364,9 +378,9 @@ class APIService {
   }
 
   Future<http.Response> addFavourite(
-      {required String accessToken, required String vendorId}) async {
+      {required String accessToken, required String branchId}) async {
     return await client.put(
-      Uri.parse('${Constant.baseURL}/customer/vendor/$vendorId/favourite'),
+      Uri.parse('${Constant.baseURL}/customer/vendor/$branchId/favourite'),
       headers: {
         "Content-type": "application/json",
         "Authorization": "Bearer $accessToken",
@@ -429,6 +443,18 @@ class APIService {
     );
   }
 
+  Future<http.Response> reorderToCart(
+      {required String accessToken, required Map payload}) async {
+    return await client.post(
+      Uri.parse('${Constant.baseURL}/customer/cart/reorder'),
+      headers: {
+        "Content-type": "application/json",
+        "Authorization": "Bearer $accessToken",
+      },
+      body: jsonEncode(payload),
+    );
+  }
+
   Future<http.Response> updateCart(
       {required String accessToken,
       required Map payload,
@@ -443,10 +469,21 @@ class APIService {
     );
   }
 
-  Future<http.Response> removeCart(
+  Future<http.Response> deleteCart(
       {required String accessToken, required String cartId}) async {
     return await client.put(
       Uri.parse('${Constant.baseURL}/customer/cart/$cartId/delete'),
+      headers: {
+        "Content-type": "application/json",
+        "Authorization": "Bearer $accessToken",
+      },
+    );
+  }
+
+  Future<http.Response> clearAllCartItems(
+      {required String accessToken, required String cartId}) async {
+    return await client.put(
+      Uri.parse('${Constant.baseURL}/customer/cart/$cartId/clear'),
       headers: {
         "Content-type": "application/json",
         "Authorization": "Bearer $accessToken",
@@ -526,12 +563,12 @@ class APIService {
     }
   }
 
-  Future<http.Response> initFlutterwave({
+  Future<http.Response> initPayment({
     required String accessToken,
     required Map payload,
   }) async {
     return await client.post(
-      Uri.parse('${Constant.baseURL}/bank/payments/flutterwave/init'),
+      Uri.parse('${Constant.baseURL}/bank/payment/init'),
       headers: {
         "Content-type": "application/json",
         "Authorization": "Bearer $accessToken",
@@ -707,6 +744,15 @@ class APIService {
   Future<http.Response> searcher({required String key}) async {
     return await http.get(
       Uri.parse('${Constant.baseURL}/customer/search/result?query=$key'),
+      headers: {
+        "Content-type": "application/json",
+      },
+    );
+  }
+
+  Future<http.Response> banners() async {
+    return await http.get(
+      Uri.parse('${Constant.baseURL}/banner/published'),
       headers: {
         "Content-type": "application/json",
       },

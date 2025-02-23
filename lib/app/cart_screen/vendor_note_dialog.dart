@@ -29,10 +29,10 @@ class VendorNoteDialog extends StatelessWidget {
     final themeChange = Provider.of<DarkThemeProvider>(context);
     return Dialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
-      insetPadding: const EdgeInsets.all(30),
+      insetPadding: const EdgeInsets.all(21),
       clipBehavior: Clip.antiAliasWithSaveLayer,
       child: Padding(
-        padding: const EdgeInsets.all(30),
+        padding: const EdgeInsets.all(21),
         child: SizedBox(
           width: 500,
           child: Column(
@@ -46,10 +46,8 @@ class VendorNoteDialog extends StatelessWidget {
                     icon: const Icon(Icons.close),
                     onPressed: () => Navigator.pop(context),
                   ),
-                  const SizedBox(width: 10),
                 ],
               ),
-              const SizedBox(height: 16),
               Form(
                 key: formkey,
                 child: Column(
@@ -62,7 +60,7 @@ class VendorNoteDialog extends StatelessWidget {
                       maxLine: 3,
                     ),
                     const SizedBox(
-                      height: 9.0,
+                      height: 6.0,
                     ),
                     Padding(
                       padding: const EdgeInsets.only(bottom: 20),

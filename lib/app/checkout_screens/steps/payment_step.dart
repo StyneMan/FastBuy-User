@@ -20,13 +20,13 @@ class PaymentStep extends StatelessWidget {
   final InitCallback onSelectPayment;
   final OrderController controller;
   final cart;
-  final int index;
+  // final int index;
   PaymentStep({
     super.key,
     required this.onSelectPayment,
     required this.controller,
     required this.cart,
-    required this.index,
+    // required this.index,
   });
 
   final couponEditController = TextEditingController();

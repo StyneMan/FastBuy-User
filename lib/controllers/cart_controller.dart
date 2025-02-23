@@ -24,7 +24,6 @@ import 'package:customer/models/user_model.dart';
 import 'package:customer/models/vendor_model.dart';
 import 'package:customer/payment/MercadoPagoScreen.dart';
 import 'package:customer/payment/PayFastScreen.dart';
-import 'package:customer/payment/getPaytmTxtToken.dart';
 import 'package:customer/payment/midtrans_screen.dart';
 import 'package:customer/payment/orangePayScreen.dart';
 import 'package:customer/payment/paystack/pay_stack_screen.dart';
@@ -49,6 +48,9 @@ class CartController extends GetxController {
   RxList currentCartItems = [].obs;
   final profileController = Get.put(MyProfileController());
   RxString vendorNote = "".obs;
+  RxBool isInCart = false.obs;
+  RxInt currCartIndex = 0.obs;
+  var currCartItem = {}.obs;
 
   Rx<TextEditingController> reMarkController = TextEditingController().obs;
   Rx<TextEditingController> couponCodeController = TextEditingController().obs;
@@ -82,7 +84,7 @@ class CartController extends GetxController {
 
   @override
   void onInit() {
-    selectedAddress.value = Constant.selectedLocation;
+    // selectedAddress.value = Constant.selectedLocation;
     refreshCart();
     super.onInit();
   }

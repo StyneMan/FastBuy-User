@@ -18,12 +18,12 @@ class CartScreen extends StatelessWidget {
         builder: (controller) {
           return Scaffold(
             backgroundColor: themeChange.getThem()
-                ? AppThemeData.surfaceDark
-                : AppThemeData.surface,
+                ? Colors.transparent
+                : const Color(0xFFFAF6F1),
             appBar: AppBar(
               backgroundColor: themeChange.getThem()
-                  ? AppThemeData.surfaceDark
-                  : AppThemeData.surface,
+                  ? Colors.transparent
+                  : const Color(0xFFFAF6F1),
               title: Text(
                 "My Cart".tr,
                 style: TextStyle(
@@ -47,6 +47,7 @@ class CartScreen extends StatelessWidget {
                         return CartCard(
                           item: item,
                           index: index,
+                          controller: controller,
                         );
                       },
                       separatorBuilder: (context, index) => const SizedBox(

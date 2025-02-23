@@ -11,19 +11,19 @@ import 'package:provider/provider.dart';
 
 class ProductList extends StatelessWidget {
   final String? categoryId;
-  final String vendorId;
+  final String branchId;
   const ProductList({
     super.key,
     this.categoryId,
-    required this.vendorId,
+    required this.branchId,
   });
 
   @override
   Widget build(BuildContext context) {
     final themeChange = Provider.of<DarkThemeProvider>(context);
     return FutureBuilder(
-        future: APIService().getVendorProducts(
-          vendorId: vendorId,
+        future: APIService().getVendorLocationProducts(
+          branchId: branchId,
           page: 1,
           categoryId: categoryId,
         ),

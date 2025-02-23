@@ -1,13 +1,16 @@
-import 'package:customer/app/chat_screens/chat_screen.dart';
+import 'dart:convert';
+
 import 'package:customer/app/order_list_screen/live_tracking_screen.dart';
 import 'package:customer/constant/constant.dart';
 import 'package:customer/constant/show_toast_dialog.dart';
 import 'package:customer/controllers/order_details_controller.dart';
+import 'package:customer/services/api_service.dart';
 import 'package:customer/themes/app_them_data.dart';
 import 'package:customer/themes/responsive.dart';
 import 'package:customer/themes/round_button_fill.dart';
 import 'package:customer/utils/dark_theme_provider.dart';
 import 'package:customer/utils/network_image_widget.dart';
+import 'package:customer/utils/preferences.dart';
 import 'package:customer/widget/my_separator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -119,7 +122,7 @@ class OrderDetailsScreen extends StatelessWidget {
                                           CrossAxisAlignment.start,
                                       children: [
                                         Text(
-                                          "${item['vendor']['name']}",
+                                          "${item['vendor']['name']} ${item['vendor_location']['branch_name']}",
                                           textAlign: TextAlign.start,
                                           style: TextStyle(
                                             fontFamily: AppThemeData.semiBold,
@@ -130,7 +133,7 @@ class OrderDetailsScreen extends StatelessWidget {
                                           ),
                                         ),
                                         Text(
-                                          "${item['vendor']['street']}",
+                                          "${item['vendor_location']['street']}",
                                           textAlign: TextAlign.start,
                                           style: TextStyle(
                                             fontFamily: AppThemeData.medium,
@@ -150,7 +153,7 @@ class OrderDetailsScreen extends StatelessWidget {
                                       : InkWell(
                                           onTap: () {
                                             Constant.makePhoneCall(
-                                              item['vendor']['owner']
+                                              item['vendor_location']
                                                       ['intl_phone_format']
                                                   .toString(),
                                             );
@@ -431,92 +434,93 @@ class OrderDetailsScreen extends StatelessWidget {
                                                             item['order_status'] ==
                                                                 "completed"
                                                         ? const SizedBox()
-                                                        : InkWell(
-                                                            onTap: () async {
-                                                              ShowToastDialog
-                                                                  .showLoader(
-                                                                "Please wait"
-                                                                    .tr,
-                                                              );
+                                                        : const SizedBox()
+                                                    // InkWell(
+                                                    //     onTap: () async {
+                                                    //       ShowToastDialog
+                                                    //           .showLoader(
+                                                    //         "Please wait"
+                                                    //             .tr,
+                                                    //       );
 
-                                                              Future.delayed(
-                                                                const Duration(
-                                                                    seconds: 3),
-                                                                () {
-                                                                  ShowToastDialog
-                                                                      .closeLoader();
-                                                                },
-                                                              );
+                                                    //       Future.delayed(
+                                                    //         const Duration(
+                                                    //             seconds: 3),
+                                                    //         () {
+                                                    //           ShowToastDialog
+                                                    //               .closeLoader();
+                                                    //         },
+                                                    //       );
 
-                                                              Get.to(
-                                                                const ChatScreen(),
-                                                                arguments: {
-                                                                  "customerName":
-                                                                      '${item['customer']['first_name']} ${item['customer']['last_name']}',
-                                                                  "restaurantName": item[
-                                                                              'order_type'] ==
-                                                                          "parcel_order"
-                                                                      ? "FastBuy Logistics"
-                                                                      : '${item['vendor']['name']}',
-                                                                  "orderId":
-                                                                      '${item['order_id']}',
-                                                                  "restaurantId":
-                                                                      item['order_type'] ==
-                                                                              "parcel_order"
-                                                                          ? ""
-                                                                          : '${item['vendor']['id']}',
-                                                                  "customerId":
-                                                                      '${item['customer']['id']}',
-                                                                  "customerProfileImage":
-                                                                      '${item['customer']['photo_url']}',
-                                                                  "restaurantProfileImage": item[
-                                                                              'order_type'] ==
-                                                                          "parcel_order"
-                                                                      ? "https://i.imgur.com/ZmYTJoA.png"
-                                                                      : '${item['vendor']['logo']}',
-                                                                  "token": "",
-                                                                  "chatType":
-                                                                      "restaurant",
-                                                                },
-                                                              );
-                                                            },
-                                                            child: Container(
-                                                              width: 42,
-                                                              height: 42,
-                                                              decoration:
-                                                                  ShapeDecoration(
-                                                                shape:
-                                                                    RoundedRectangleBorder(
-                                                                  side:
-                                                                      BorderSide(
-                                                                    width: 1,
-                                                                    color: themeChange.getThem()
-                                                                        ? AppThemeData
-                                                                            .grey700
-                                                                        : AppThemeData
-                                                                            .grey200,
-                                                                  ),
-                                                                  borderRadius:
-                                                                      BorderRadius
-                                                                          .circular(
-                                                                    120,
-                                                                  ),
-                                                                ),
-                                                              ),
-                                                              child: Padding(
-                                                                padding:
-                                                                    const EdgeInsets
-                                                                        .all(
-                                                                  8.0,
-                                                                ),
-                                                                child:
-                                                                    SvgPicture
-                                                                        .asset(
-                                                                  "assets/icons/ic_wechat.svg",
-                                                                ),
-                                                              ),
-                                                            ),
-                                                          )
+                                                    //       Get.to(
+                                                    //         const ChatScreen(),
+                                                    //         arguments: {
+                                                    //           "customerName":
+                                                    //               '${item['customer']['first_name']} ${item['customer']['last_name']}',
+                                                    //           "restaurantName": item[
+                                                    //                       'order_type'] ==
+                                                    //                   "parcel_order"
+                                                    //               ? "FastBuy Logistics"
+                                                    //               : '${item['vendor']['name']}',
+                                                    //           "orderId":
+                                                    //               '${item['order_id']}',
+                                                    //           "restaurantId":
+                                                    //               item['order_type'] ==
+                                                    //                       "parcel_order"
+                                                    //                   ? ""
+                                                    //                   : '${item['vendor']['id']}',
+                                                    //           "customerId":
+                                                    //               '${item['customer']['id']}',
+                                                    //           "customerProfileImage":
+                                                    //               '${item['customer']['photo_url']}',
+                                                    //           "restaurantProfileImage": item[
+                                                    //                       'order_type'] ==
+                                                    //                   "parcel_order"
+                                                    //               ? "https://i.imgur.com/ZmYTJoA.png"
+                                                    //               : '${item['vendor']['logo']}',
+                                                    //           "token": "",
+                                                    //           "chatType":
+                                                    //               "restaurant",
+                                                    //         },
+                                                    //       );
+                                                    //     },
+                                                    //     child: Container(
+                                                    //       width: 42,
+                                                    //       height: 42,
+                                                    //       decoration:
+                                                    //           ShapeDecoration(
+                                                    //         shape:
+                                                    //             RoundedRectangleBorder(
+                                                    //           side:
+                                                    //               BorderSide(
+                                                    //             width: 1,
+                                                    //             color: themeChange.getThem()
+                                                    //                 ? AppThemeData
+                                                    //                     .grey700
+                                                    //                 : AppThemeData
+                                                    //                     .grey200,
+                                                    //           ),
+                                                    //           borderRadius:
+                                                    //               BorderRadius
+                                                    //                   .circular(
+                                                    //             120,
+                                                    //           ),
+                                                    //         ),
+                                                    //       ),
+                                                    //       child: Padding(
+                                                    //         padding:
+                                                    //             const EdgeInsets
+                                                    //                 .all(
+                                                    //           8.0,
+                                                    //         ),
+                                                    //         child:
+                                                    //             SvgPicture
+                                                    //                 .asset(
+                                                    //           "assets/icons/ic_wechat.svg",
+                                                    //         ),
+                                                    //       ),
+                                                    //     ),
+                                                    //   )
                                                   ],
                                                 )
                                               : Column(
@@ -571,10 +575,8 @@ class OrderDetailsScreen extends StatelessWidget {
                                                         width: 5,
                                                       ),
                                                       Text(
-                                                        "full name",
-                                                        // controller.orderModel
-                                                        //     .value.driver!
-                                                        //     .fullName(),
+                                                        "${item['rider']['first_name']} ${item['rider']['last_name']}"
+                                                            .capitalize!,
                                                         textAlign:
                                                             TextAlign.right,
                                                         style: TextStyle(
@@ -1736,9 +1738,10 @@ class OrderDetailsScreen extends StatelessWidget {
                 ),
               ),
             ),
-            bottomNavigationBar: item['order_status'] == "ready_for_delivery" ||
-                    item['order_status'] == "in_delivery" ||
-                    item['order_status'] == "completed"
+            bottomNavigationBar: item['order_status'] == "in_delivery" ||
+                    item['order_status'] == "completed" ||
+                    item['order_status'] == "rider_arrived_customer" ||
+                    item['order_status'] == "rider_picked_order"
                 ? Container(
                     color: themeChange.getThem()
                         ? AppThemeData.grey900
@@ -1747,38 +1750,92 @@ class OrderDetailsScreen extends StatelessWidget {
                         horizontal: 16, vertical: 20),
                     child: Padding(
                       padding: const EdgeInsets.only(bottom: 20),
-                      child: item['order_status'] == "ready_for_delivery" ||
-                              item['order_status'] == "in_delivery"
+                      child: item['order_status'] == "rider_picked_order" ||
+                              item['order_status'] == "in_delivery" ||
+                              item['order_status'] == "rider_arrived_customer"
                           ? RoundedButtonFill(
                               title: "Track Order".tr,
                               height: 5.5,
                               color: AppThemeData.warning300,
                               textColor: AppThemeData.grey900,
                               onPress: () async {
-                                Get.to(const LiveTrackingScreen(), arguments: {
-                                  "orderModel": controller.orderModel.value
-                                });
+                                Get.to(
+                                  const LiveTrackingScreen(),
+                                  arguments: {"orderModel": item},
+                                );
                               },
                             )
-                          : RoundedButtonFill(
-                              title: "Reorder".tr,
-                              height: 5.5,
-                              color: AppThemeData.primary300,
-                              textColor: AppThemeData.grey50,
-                              onPress: () async {
-                                // for (var element
-                                //     in controller.orderModel.value.products!) {
-                                //   controller.addToCart(
-                                //       cartProductModel: element);
-                                //   ShowToastDialog.showToast(
-                                //       "Item Added In a cart");
-                                // }
-                              },
-                            ),
+                          : item['order_type'] == "parcel_order"
+                              ? const SizedBox()
+                              : RoundedButtonFill(
+                                  title: "Reorder".tr,
+                                  height: 5.5,
+                                  color: AppThemeData.primary300,
+                                  textColor: AppThemeData.grey50,
+                                  onPress: () async {
+                                    // add back to cart
+                                    reorder(
+                                      item: item,
+                                      controller: controller,
+                                    );
+                                  },
+                                ),
                     ),
                   )
                 : const SizedBox(),
           );
         });
+  }
+
+  reorder({
+    required item,
+    required OrderDetailsController controller,
+  }) async {
+    try {
+      ShowToastDialog.showLoader("Please wait".tr);
+      debugPrint("ITEM CHECKITOLOA ::: ${item['items']}");
+      List<Map<String, dynamic>> items = [];
+      for (var k = 0; k < item['items'].length; k++) {
+        final elem = item['items'][k];
+        debugPrint("ELEM AT ::: ${elem}");
+        items.add({
+          "name": elem['name'],
+          "amount": elem['product']['sale_amount'],
+          "product_id": elem['product']['id'],
+          "selections": elem['selections'],
+          "total_amount": elem['total_amount']
+        });
+      }
+
+      Map payload = {
+        "total_amount": item['total_amount'],
+        "vendor_id": item['vendor']['id'],
+        "items": items,
+        "vendor_note": item['vendor_note'],
+      };
+      final accessToken = Preferences.getString(Preferences.accessTokenKey);
+      final resp = await APIService().reorderToCart(
+        accessToken: accessToken,
+        payload: payload,
+      );
+      ShowToastDialog.closeLoader();
+      debugPrint("ADD TO CART RESPONSE ::: ${resp.body}");
+      if (resp.statusCode >= 200 && resp.statusCode <= 299) {
+        Map<String, dynamic> map = jsonDecode(resp.body);
+        Constant.toast("${map['message']}");
+        // Show SnackBar with extended duration
+        controller.cartController.currentCartItems.value = map['data']['items'];
+
+        controller.cartController.isInCart.value = true;
+        controller.cartController.refreshCart();
+        controller.cartController.currCartItem = map['data'];
+      } else {
+        Map<String, dynamic> errMap = jsonDecode(resp.body);
+        Constant.toast("${errMap['message']}");
+      }
+    } catch (e) {
+      debugPrint("ERROR : $e");
+      ShowToastDialog.closeLoader();
+    }
   }
 }

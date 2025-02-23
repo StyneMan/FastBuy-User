@@ -5,6 +5,7 @@ import 'package:customer/app/address_screens/edit_address.dart';
 import 'package:customer/constant/constant.dart';
 import 'package:customer/constant/show_toast_dialog.dart';
 import 'package:customer/controllers/address_list_controller.dart';
+import 'package:customer/controllers/vendors_controller.dart';
 import 'package:customer/models/user_model.dart';
 import 'package:customer/services/api_service.dart';
 import 'package:customer/themes/app_them_data.dart';
@@ -199,6 +200,8 @@ class AddressListScreen extends StatelessWidget {
                                   .shippingAddresses.value['data'][index];
                               return InkWell(
                                 onTap: () {
+                                  final vendorController =
+                                      Get.find<VendorsController>();
                                   if (receiver != null &&
                                       receiver!.isNotEmpty) {
                                     controller.location2.value.latitude =
@@ -238,6 +241,14 @@ class AddressListScreen extends StatelessWidget {
                                             "${item['longitude']}"),
                                       ),
                                     );
+
+                                    Future.delayed(const Duration(seconds: 2),
+                                        () {
+                                      getNearestVendors(
+                                        addressController: controller,
+                                        vendorController: vendorController,
+                                      );
+                                    });
 
                                     Get.back();
                                   }
@@ -525,6 +536,28 @@ class AddressListScreen extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  getNearestVendors(
+      {required AddressListController addressController,
+      required VendorsController vendorController}) async {
+    if (addressController.location.value.latitude != null &&
+        addressController.location.value.longitude != null) {
+      Map payload = {
+        "lat": addressController.location.value.latitude,
+        "lng": addressController.location.value.longitude,
+      };
+
+      final nearbys = await APIService().getNearbyVendors(
+        page: 1,
+        payload: payload,
+      );
+      debugPrint("NEARBY VENDORS :::: ${nearbys.body}");
+      if (nearbys.statusCode >= 200 && nearbys.statusCode <= 299) {
+        Map<String, dynamic> map = jsonDecode(nearbys.body);
+        vendorController.nearbyVendors.value = map;
+      }
+    }
   }
 
   setDefaultAddress(

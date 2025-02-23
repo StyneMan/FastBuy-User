@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:customer/controllers/cart_controller.dart';
 import 'package:customer/controllers/my_profile_controller.dart';
 import 'package:customer/models/cart_product_model.dart';
 import 'package:customer/services/api_service.dart';
@@ -9,6 +10,7 @@ import 'package:get/get.dart';
 
 class OrderController extends GetxController {
   final profileController = Get.find<MyProfileController>();
+  final cartController = Get.find<CartController>();
 
   var myOrders = {}.obs;
   var myParcelOrders = {}.obs;

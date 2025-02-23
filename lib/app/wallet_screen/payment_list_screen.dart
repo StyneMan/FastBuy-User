@@ -1,6 +1,5 @@
 import 'package:customer/app/wallet_screen/wallet_screen.dart';
 import 'package:customer/constant/constant.dart';
-import 'package:customer/constant/show_toast_dialog.dart';
 import 'package:customer/controllers/wallet_controller.dart';
 import 'package:customer/themes/app_them_data.dart';
 import 'package:customer/themes/round_button_fill.dart';
@@ -57,13 +56,18 @@ class PaymentListScreen extends StatelessWidget {
                             textInputType:
                                 const TextInputType.numberWithOptions(
                                     decimal: true, signed: true),
-                            prefix: const Padding(
-                              padding: EdgeInsets.all(12.0),
-                              child: Text("₦",
-                                  //Constant.currencyModel!.symbol.toString(),
-                                  style: TextStyle(
-                                      fontSize: 20,
-                                      color: AppThemeData.grey800)),
+                            prefix: Padding(
+                              padding: const EdgeInsets.all(12.0),
+                              child: Text(
+                                "₦",
+                                //Constant.currencyModel!.symbol.toString(),
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  color: themeChange.getThem()
+                                      ? AppThemeData.grey100
+                                      : AppThemeData.primary100,
+                                ),
+                              ),
                             ),
                             inputFormatters: [
                               FilteringTextInputFormatter.allow(
@@ -93,51 +97,13 @@ class PaymentListScreen extends StatelessWidget {
                               textColor: AppThemeData.grey50,
                               fontSizes: 16,
                               onPress: () async {
-                                var defaultGateway = {};
                                 if (formkey.currentState!.validate()) {
-                                  // Now get default payment gateway or usse first item
-                                  if (controller.profileController
-                                      .paymentGateways.value.isEmpty) {
-                                    ShowToastDialog.showToast(
-                                        "Payment gateways not added".tr);
-                                  } else {
-                                    final gateway = controller
-                                        .profileController.paymentGateways.value
-                                        .where((item) => item['is_default'])
-                                        .toList();
-
-                                    debugPrint(
-                                        "dEFAULT GATEWAY HERE ::: $gateway");
-
-                                    if (gateway.isEmpty) {
-                                      // Default to the first item in the list
-                                      defaultGateway = controller
-                                          .profileController.paymentGateways[0];
-                                    } else {
-                                      defaultGateway = gateway[0];
-                                    }
-
-                                    if (defaultGateway['provider'] ==
-                                        "flutter_wave") {
-                                      // USE FLUTTERWAVE
-                                      Get.back();
-                                      controller.flutterWaveInitiatePayment(
-                                        context: context,
-                                        amount: controller
-                                            .topUpAmountController.value.text,
-                                      );
-                                    }
-
-                                    if (defaultGateway['provider'] ==
-                                        "paystack") {
-                                      // USE PAYSTACK
-                                      Get.back();
-                                      controller.payStackPayment(
-                                        controller
-                                            .topUpAmountController.value.text,
-                                      );
-                                    }
-                                  }
+                                  Get.back();
+                                  controller.initiatePayment(
+                                    context: context,
+                                    amount: controller
+                                        .topUpAmountController.value.text,
+                                  );
                                 }
                               },
                             ),

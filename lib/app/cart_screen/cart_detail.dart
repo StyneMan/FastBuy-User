@@ -17,12 +17,12 @@ import 'package:provider/provider.dart';
 
 class CartDetail extends StatefulWidget {
   final cart;
-  final int index;
+  // final int index;
   final bool hideActions;
   const CartDetail({
     super.key,
     required this.cart,
-    required this.index,
+    // required this.index,
     this.hideActions = false,
   });
 
@@ -164,7 +164,7 @@ class _CartDetailState extends State<CartDetail> {
                                             ),
                                           ),
                                           Text(
-                                            "${item['selections']?.length} ${item['selections']?.length > 1 ? "selections" : "selection"}",
+                                            "${item['extras']?.length} ${item['extras']?.length > 1 ? "selections" : "selection"}",
                                           ),
                                         ],
                                       )
@@ -188,7 +188,7 @@ class _CartDetailState extends State<CartDetail> {
                           onTap: () {
                             Get.to(
                               VendorDetail(
-                                item: widget.cart['vendor'],
+                                item: widget.cart['vendor_location'],
                               ),
                               transition: Transition.cupertino,
                             );
@@ -223,9 +223,11 @@ class _CartDetailState extends State<CartDetail> {
                       },
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
                               const Icon(Icons.storefront),
                               const SizedBox(
@@ -245,6 +247,7 @@ class _CartDetailState extends State<CartDetail> {
                                     )
                                   : Text(
                                       "Leave a note for the vendor".tr,
+                                      textAlign: TextAlign.start,
                                       style: TextStyle(
                                         fontSize: 15,
                                         color: themeChange.getThem()
@@ -293,7 +296,7 @@ class _CartDetailState extends State<CartDetail> {
                               Get.to(
                                 CheckoutScreen(
                                   cart: widget.cart,
-                                  index: widget.index,
+                                  // index: widget.index,
                                 ),
                                 transition: Transition.cupertino,
                               );
@@ -306,7 +309,12 @@ class _CartDetailState extends State<CartDetail> {
                         ? const SizedBox()
                         : RoundedButtonBorder(
                             title: "Clear Order",
-                            onPress: () {},
+                            onPress: () {
+                              clearAllItems(
+                                controller: controller,
+                                cartId: widget.cart['id'],
+                              );
+                            },
                             height: 5.5,
                             fontSizes: 16,
                             textColor: AppThemeData.primary300,
@@ -346,6 +354,23 @@ class _CartDetailState extends State<CartDetail> {
         cartItemId: item['id'],
       );
       debugPrint("RESPONSE DELETE CART ITEM ::: ${resp.body}");
+      // Npw refresh cart here
+      controller.refreshCart();
+    } catch (e) {
+      debugPrint("$e");
+    }
+  }
+
+  clearAllItems(
+      {required CartController controller, required String cartId}) async {
+    try {
+      // controller.cartData.value['data'][widget.index]['items'] = lst;
+      final token = Preferences.getString(Preferences.accessTokenKey);
+      final resp = await APIService().clearAllCartItems(
+        accessToken: token,
+        cartId: cartId,
+      );
+      debugPrint("RESPONSE DELETE CART ::: ${resp.body}");
       // Npw refresh cart here
       controller.refreshCart();
     } catch (e) {

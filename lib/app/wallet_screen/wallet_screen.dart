@@ -27,7 +27,7 @@ class WalletScreen extends StatelessWidget {
           return Scaffold(
             backgroundColor: themeChange.getThem()
                 ? AppThemeData.surfaceDark
-                : AppThemeData.surface,
+                : const Color(0xFFFAF6F1),
             body: controller.isLoading.value
                 ? Constant.loader()
                 : _profileController.userData.value.isEmpty
@@ -92,47 +92,47 @@ class WalletScreen extends StatelessWidget {
                               mainAxisAlignment: MainAxisAlignment.center,
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 16,
-                                  ),
-                                  child: Row(
-                                    children: [
-                                      Expanded(
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              "My Wallet".tr,
-                                              style: TextStyle(
-                                                fontSize: 24,
-                                                color: themeChange.getThem()
-                                                    ? AppThemeData.grey50
-                                                    : AppThemeData.grey900,
-                                                fontFamily:
-                                                    AppThemeData.semiBold,
-                                                fontWeight: FontWeight.w500,
-                                              ),
-                                            ),
-                                            Text(
-                                              "Keep track of your balance, transactions, and payment methods all in one place."
-                                                  .tr,
-                                              style: TextStyle(
-                                                color: themeChange.getThem()
-                                                    ? AppThemeData.grey50
-                                                    : AppThemeData.grey900,
-                                                fontFamily:
-                                                    AppThemeData.regular,
-                                                fontWeight: FontWeight.w400,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
+                                // Padding(
+                                //   padding: const EdgeInsets.symmetric(
+                                //     horizontal: 16,
+                                //   ),
+                                //   child: Row(
+                                //     children: [
+                                //       Expanded(
+                                //         child: Column(
+                                //           crossAxisAlignment:
+                                //               CrossAxisAlignment.start,
+                                //           children: [
+                                //             Text(
+                                //               "My Wallet".tr,
+                                //               style: TextStyle(
+                                //                 fontSize: 24,
+                                //                 color: themeChange.getThem()
+                                //                     ? AppThemeData.grey50
+                                //                     : AppThemeData.grey900,
+                                //                 fontFamily:
+                                //                     AppThemeData.semiBold,
+                                //                 fontWeight: FontWeight.w500,
+                                //               ),
+                                //             ),
+                                //             Text(
+                                //               "Keep track of your balance, transactions, and payment methods all in one place."
+                                //                   .tr,
+                                //               style: TextStyle(
+                                //                 color: themeChange.getThem()
+                                //                     ? AppThemeData.grey50
+                                //                     : AppThemeData.grey900,
+                                //                 fontFamily:
+                                //                     AppThemeData.regular,
+                                //                 fontWeight: FontWeight.w400,
+                                //               ),
+                                //             ),
+                                //           ],
+                                //         ),
+                                //       ),
+                                //     ],
+                                //   ),
+                                // ),
                                 const SizedBox(
                                   height: 20,
                                 ),
@@ -140,15 +140,23 @@ class WalletScreen extends StatelessWidget {
                                   padding: const EdgeInsets.symmetric(
                                       horizontal: 16),
                                   child: Container(
-                                    decoration: const BoxDecoration(
-                                      borderRadius: BorderRadius.all(
+                                    decoration: BoxDecoration(
+                                      borderRadius: const BorderRadius.all(
                                         Radius.circular(20),
                                       ),
-                                      color: AppThemeData.secondary300,
-                                      // image: DecorationImage(
-                                      //     image: AssetImage(
-                                      //         "assets/images/wallet.png"),
-                                      //     fit: BoxFit.fill),
+                                      gradient: LinearGradient(
+                                        colors: themeChange.getThem()
+                                            ? [
+                                                AppThemeData.grey800,
+                                                AppThemeData.grey400
+                                              ]
+                                            : [
+                                                AppThemeData.secondary400,
+                                                AppThemeData.primary400,
+                                              ], // Purple to Blue
+                                        begin: Alignment.topLeft,
+                                        end: Alignment.bottomRight,
+                                      ),
                                     ),
                                     child: Padding(
                                       padding: const EdgeInsets.symmetric(
@@ -200,10 +208,6 @@ class WalletScreen extends StatelessWidget {
                                                     return PaymentListScreen();
                                                   },
                                                 );
-                                                // topupWalletBottomSheet(
-                                                //   context,
-                                                //   controller,
-                                                // );
                                               },
                                             ),
                                           )
@@ -216,7 +220,9 @@ class WalletScreen extends StatelessWidget {
                             ),
                             // controller.walletTransactionList.isEmpty
                             Expanded(
-                              child: controller.walletTransactions.value['data']
+                              child: (controller.walletTransactions
+                                                  .value['data'] ??
+                                              [])
                                           ?.length <
                                       1
                                   ? Constant.showEmptyView(

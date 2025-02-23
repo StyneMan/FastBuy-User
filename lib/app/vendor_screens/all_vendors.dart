@@ -27,11 +27,13 @@ class _VendorsState extends State<Vendors> {
   Widget build(BuildContext context) {
     final themeChange = Provider.of<DarkThemeProvider>(context);
     return Scaffold(
-      backgroundColor: themeChange.getThem()
-          ? AppThemeData.surfaceDark
-          : AppThemeData.surface,
+      backgroundColor:
+          themeChange.getThem() ? Colors.transparent : const Color(0xFFFAF6F1),
       appBar: AppBar(
         automaticallyImplyLeading: true,
+        backgroundColor: themeChange.getThem()
+            ? Colors.transparent
+            : const Color(0xFFFAF6F1),
         title: Text(
           widget.title.tr,
           style: TextStyle(
@@ -102,7 +104,8 @@ class _VendorsState extends State<Vendors> {
                           separatorBuilder: (context, index) =>
                               const SizedBox(height: 16.0),
                           itemCount:
-                              controller.restaurantVendors.value['data'].length,
+                              (controller.restaurantVendors.value['data'] ?? [])
+                                  ?.length,
                         ),
                       ),
                     ],
@@ -138,7 +141,8 @@ class _VendorsState extends State<Vendors> {
                     },
                     separatorBuilder: (context, index) =>
                         const SizedBox(height: 16.0),
-                    itemCount: controller.storeVendors.value['data'].length,
+                    itemCount:
+                        (controller.storeVendors.value['data'] ?? [])?.length,
                   ),
                 ),
               ],
@@ -175,7 +179,8 @@ class _VendorsState extends State<Vendors> {
                   },
                   separatorBuilder: (context, index) =>
                       const SizedBox(height: 16.0),
-                  itemCount: controller.allvendors.value['data'].length,
+                  itemCount:
+                      (controller.allvendors.value['data'] ?? [])?.length,
                 ),
               ),
             ],
