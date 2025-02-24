@@ -14,7 +14,7 @@ import 'package:customer/controllers/cart_controller.dart';
 import 'package:customer/controllers/dash_board_controller.dart';
 import 'package:customer/controllers/home_controller.dart';
 import 'package:customer/controllers/my_profile_controller.dart';
-// import 'package:customer/controllers/vendors_controller.dart';
+
 import 'package:customer/models/user_model.dart';
 import 'package:customer/themes/app_them_data.dart';
 import 'package:customer/themes/responsive.dart';

@@ -35,9 +35,9 @@ import 'package:fluttertoast/fluttertoast.dart';
 RxList<CartProductModel> cartItem = <CartProductModel>[].obs;
 
 class Constant {
-  static String baseURL = "http://192.168.1.71:3880/api/v1";
+  static String baseURL = "http://192.168.108.247:3880/api/v1";
   // "https://myserver.myfastbuy.com/api/v1";
-  static String baseURL2 = "http://192.168.1.71:3880";
+  static String baseURL2 = "http://192.168.108.247:3880";
   // "https://myserver.myfastbuy.com";
   //
   static String userRoleDriver = 'driver';

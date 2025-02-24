@@ -50,12 +50,12 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyAxhkmS25b-ZJhbRwZCKO1hPgHGPxDkh0U',
-    appId: '1:1081445553303:android:65fbe16305ee31f2a485d2',
-    messagingSenderId: '1081445553303',
-    projectId: 'fastbuy-c3644',
+    apiKey: 'AIzaSyBCz64rLta5FeCFO628VXLU-zHE1P2TKyo',
+    appId: '1:750683930797:android:33aef0d183c5fdf8398624',
+    messagingSenderId: '750683930797',
+    projectId: 'myfastbuy-3b290',
     databaseURL: 'YOUR_ANDROID_DATABASE_URL',
-    storageBucket: 'fastbuy-c3644.firebasestorage.app',
+    storageBucket: 'myfastbuy-3b290.firebasestorage.app',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
@@ -69,5 +69,4 @@ class DefaultFirebaseOptions {
     iosClientId: 'YOUR_IOS_CLIENT_ID',
     iosBundleId: 'YOUR_IOS_BUNDLE_ID',
   );
-
 }

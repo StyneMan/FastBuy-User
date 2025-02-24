@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:customer/app/auth_screen/otp_screen.dart';
 import 'package:customer/app/dash_board_screens/dash_board_screen.dart';
@@ -6,6 +7,7 @@ import 'package:customer/constant/constant.dart';
 import 'package:customer/constant/show_toast_dialog.dart';
 import 'package:customer/controllers/my_profile_controller.dart';
 import 'package:customer/services/api_service.dart';
+import 'package:customer/utils/notification_service.dart';
 import 'package:customer/utils/preferences.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
@@ -24,7 +26,6 @@ class LoginController extends GetxController {
 
   @override
   void onInit() {
-    // TODO: implement onInit
     super.onInit();
   }
 
@@ -41,7 +42,7 @@ class LoginController extends GetxController {
       ShowToastDialog.closeLoader();
       if (resp.statusCode >= 200 && resp.statusCode <= 299) {
         // all good here
-        Map<String, dynamic> map = jsonDecode("${resp.body}");
+        Map<String, dynamic> map = jsonDecode(resp.body);
         Constant.toast(map['message']);
 
         if (map.containsKey('user') && map['user'] != null) {
@@ -49,13 +50,29 @@ class LoginController extends GetxController {
           Preferences.setString(Preferences.accessTokenKey, map['accessToken']);
           Constant.toast(map['message']);
           //Store access token her
-          _profileController.setProfile(map['user']);
 
-          // Now navigate to dashboard from here
-          Get.off(
-            const DashBoardScreen(),
-            transition: Transition.cupertino,
-          );
+          String token = await NotificationService.getToken();
+          log(":::::::TOKEN:::::: $token");
+          Map payload = {
+            "token": token,
+          };
+          var tokenResp = await APIService()
+              .updateFCMToken(accessToken: map['accessToken'], body: payload);
+          debugPrint("UPDATE FCM RESPONSE ::: ${tokenResp.body}");
+          if (tokenResp.statusCode >= 200 && tokenResp.statusCode <= 299) {
+            Map<String, dynamic> fcmMap = jsonDecode(tokenResp.body);
+            _profileController.setProfile(fcmMap['user']);
+
+            // Now navigate to dashboard from here
+            Get.off(
+              const DashBoardScreen(),
+              transition: Transition.cupertino,
+            );
+          } else {
+            Map<String, dynamic> errorMap = jsonDecode(resp.body);
+            Constant.toast(errorMap['message']);
+          }
+          // Now store token to user record
         } else {
           // Prompt user to verify account first
           debugPrint(
@@ -71,7 +88,7 @@ class LoginController extends GetxController {
           );
         }
       } else {
-        Map<String, dynamic> errorMap = jsonDecode("${resp.body}");
+        Map<String, dynamic> errorMap = jsonDecode(resp.body);
         Constant.toast(errorMap['message']);
       }
     } catch (e) {

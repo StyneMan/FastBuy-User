@@ -44,8 +44,8 @@ class ChatController extends GetxController {
       customerId.value = argumentData['customerId'];
       customerName.value = argumentData['customerName'];
       customerProfileImage.value = argumentData['customerProfileImage'] ?? "";
-      restaurantId.value = argumentData['restaurantId'];
-      restaurantName.value = argumentData['restaurantName'];
+      restaurantId.value = argumentData['vendorId'];
+      restaurantName.value = argumentData['vendorName'];
       restaurantProfileImage.value =
           argumentData['restaurantProfileImage'] ?? "";
       token.value = argumentData['token'];

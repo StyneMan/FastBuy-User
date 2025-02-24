@@ -30,7 +30,6 @@ class OrderController extends GetxController {
 
   @override
   void onInit() {
-    // TODO: implement onInit
     getOrder();
     super.onInit();
   }
@@ -38,75 +37,78 @@ class OrderController extends GetxController {
   getOrder() async {
     if (profileController.userData.value.isNotEmpty) {
       final accessToken = Preferences.getString(Preferences.accessTokenKey);
-      APIService()
-          .getOrdersStreamed(
-        accessToken: accessToken,
-        customerId: profileController.userData.value['id'],
-        page: 1,
-      )
-          .listen((onData) {
-        // debugPrint("MY ORDERS REFRESHED  :: ${onData.body}");
-        if (onData.statusCode >= 200 && onData.statusCode <= 299) {
-          Map<String, dynamic> map = jsonDecode(onData.body);
-          myOrders.value = map;
-        }
-      });
 
-      APIService()
-          .getOrdersInprogressStreamed(
-        accessToken: accessToken,
-        customerId: profileController.userData.value['id'],
-        page: 1,
-      )
-          .listen((onData) {
-        // debugPrint("MY ORDERS REFRESHED  :: ${onData.body}");
-        if (onData.statusCode >= 200 && onData.statusCode <= 299) {
-          Map<String, dynamic> map = jsonDecode(onData.body);
-          myInprogressOrders.value = map;
-        }
-      });
+      if (accessToken.isNotEmpty) {
+        APIService()
+            .getOrdersStreamed(
+          accessToken: accessToken,
+          customerId: profileController.userData.value['id'],
+          page: 1,
+        )
+            .listen((onData) {
+          // debugPrint("MY ORDERS REFRESHED  :: ${onData.body}");
+          if (onData.statusCode >= 200 && onData.statusCode <= 299) {
+            Map<String, dynamic> map = jsonDecode(onData.body);
+            myOrders.value = map;
+          }
+        });
 
-      APIService()
-          .getOrdersDeliveredStreamed(
-        accessToken: accessToken,
-        customerId: profileController.userData.value['id'],
-        page: 1,
-      )
-          .listen((onData) {
-        // debugPrint("MY ORDERS REFRESHED  :: ${onData.body}");
-        if (onData.statusCode >= 200 && onData.statusCode <= 299) {
-          Map<String, dynamic> map = jsonDecode(onData.body);
-          myDeliveredOrders.value = map;
-        }
-      });
+        APIService()
+            .getOrdersInprogressStreamed(
+          accessToken: accessToken,
+          customerId: profileController.userData.value['id'],
+          page: 1,
+        )
+            .listen((onData) {
+          // debugPrint("MY ORDERS REFRESHED  :: ${onData.body}");
+          if (onData.statusCode >= 200 && onData.statusCode <= 299) {
+            Map<String, dynamic> map = jsonDecode(onData.body);
+            myInprogressOrders.value = map;
+          }
+        });
 
-      APIService()
-          .getOrdersCancelledStreamed(
-        accessToken: accessToken,
-        customerId: profileController.userData.value['id'],
-        page: 1,
-      )
-          .listen((onData) {
-        // debugPrint("MY ORDERS REFRESHED  :: ${onData.body}");
-        if (onData.statusCode >= 200 && onData.statusCode <= 299) {
-          Map<String, dynamic> map = jsonDecode(onData.body);
-          myCancelledOrders.value = map;
-        }
-      });
+        APIService()
+            .getOrdersDeliveredStreamed(
+          accessToken: accessToken,
+          customerId: profileController.userData.value['id'],
+          page: 1,
+        )
+            .listen((onData) {
+          // debugPrint("MY ORDERS REFRESHED  :: ${onData.body}");
+          if (onData.statusCode >= 200 && onData.statusCode <= 299) {
+            Map<String, dynamic> map = jsonDecode(onData.body);
+            myDeliveredOrders.value = map;
+          }
+        });
 
-      APIService()
-          .getParcelOrdersStreamed(
-        accessToken: accessToken,
-        customerId: profileController.userData.value['id'],
-        page: 1,
-      )
-          .listen((onData) {
-        // debugPrint("MY ORDERS REFRESHED  :: ${onData.body}");
-        if (onData.statusCode >= 200 && onData.statusCode <= 299) {
-          Map<String, dynamic> map = jsonDecode(onData.body);
-          myParcelOrders.value = map;
-        }
-      });
+        APIService()
+            .getOrdersCancelledStreamed(
+          accessToken: accessToken,
+          customerId: profileController.userData.value['id'],
+          page: 1,
+        )
+            .listen((onData) {
+          // debugPrint("MY ORDERS REFRESHED  :: ${onData.body}");
+          if (onData.statusCode >= 200 && onData.statusCode <= 299) {
+            Map<String, dynamic> map = jsonDecode(onData.body);
+            myCancelledOrders.value = map;
+          }
+        });
+
+        APIService()
+            .getParcelOrdersStreamed(
+          accessToken: accessToken,
+          customerId: profileController.userData.value['id'],
+          page: 1,
+        )
+            .listen((onData) {
+          // debugPrint("MY ORDERS REFRESHED  :: ${onData.body}");
+          if (onData.statusCode >= 200 && onData.statusCode <= 299) {
+            Map<String, dynamic> map = jsonDecode(onData.body);
+            myParcelOrders.value = map;
+          }
+        });
+      }
     }
 
     isLoading.value = false;

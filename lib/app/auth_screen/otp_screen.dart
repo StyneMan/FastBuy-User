@@ -11,6 +11,7 @@ import 'package:customer/services/api_service.dart';
 import 'package:customer/themes/app_them_data.dart';
 import 'package:customer/themes/round_button_fill.dart';
 import 'package:customer/utils/dark_theme_provider.dart';
+import 'package:customer/utils/notification_service.dart';
 import 'package:customer/utils/preferences.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -118,13 +119,28 @@ class _OtpScreenState extends State<OtpScreen> {
             //Store access token here
             Preferences.setString(
                 Preferences.accessTokenKey, map['accessToken']);
-            _profileController.setProfile(map['user']);
 
-            // Now navigate to dashboard from here
-            Get.off(
-              const DashBoardScreen(),
-              transition: Transition.cupertino,
-            );
+            String token = await NotificationService.getToken();
+            debugPrint(":::::::TOKEN:::::: $token");
+            Map payload = {
+              "token": token,
+            };
+            var tokenResp = await APIService()
+                .updateFCMToken(accessToken: map['accessToken'], body: payload);
+            debugPrint("UPDATE FCM RESPONSE ::: ${tokenResp.body}");
+            if (tokenResp.statusCode >= 200 && tokenResp.statusCode <= 299) {
+              Map<String, dynamic> fcmMap = jsonDecode(tokenResp.body);
+              _profileController.setProfile(fcmMap['user']);
+
+              // Now navigate to dashboard from here
+              Get.off(
+                const DashBoardScreen(),
+                transition: Transition.cupertino,
+              );
+            } else {
+              Map<String, dynamic> errorMap = jsonDecode(resp.body);
+              Constant.toast(errorMap['message']);
+            }
           }
         } else {
           Map<String, dynamic> errMap = jsonDecode(resp.body);

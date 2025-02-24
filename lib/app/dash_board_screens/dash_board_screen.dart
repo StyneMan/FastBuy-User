@@ -4,12 +4,11 @@ import 'package:customer/controllers/dash_board_controller.dart';
 import 'package:customer/themes/app_them_data.dart';
 import 'package:customer/utils/dark_theme_provider.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 
 import 'package:iconify_flutter_plus/iconify_flutter_plus.dart'; // For Iconify Widget
-import 'package:iconify_flutter_plus/icons/zondicons.dart'; // for Non Colorful Icons
+// for Non Colorful Icons
 // import 'package:colorful_iconify_flutter_plus/icons/emojione.dart'; // for Colorful Icons
 
 class DashBoardScreen extends StatelessWidget {
@@ -49,7 +48,7 @@ class DashBoardScreen extends StatelessWidget {
             // },
             child: Scaffold(
               backgroundColor: themeChange.getThem()
-                  ? Colors.transparent
+                  ? AppThemeData.surfaceDark
                   : const Color(0xFFFAF6F1),
               body: controller.pageList[controller.selectedIndex.value],
               bottomNavigationBar: Container(

@@ -89,33 +89,35 @@ class WalletController extends GetxController {
   refreshWallet() async {
     try {
       final accessToken = Preferences.getString(Preferences.accessTokenKey);
-      APIService()
-          .getWalletStreamed(
-        accessToken: accessToken,
-        customerId: profileController.userData.value['id'],
-      )
-          .listen((onData) {
-        // debugPrint("MY WALLET  :: ${onData.body}");
-        if (onData.statusCode >= 200 && onData.statusCode <= 299) {
-          Map<String, dynamic> map = jsonDecode(onData.body);
-          userWallet.value = map;
-        }
-      });
+      if (accessToken.isNotEmpty) {
+        APIService()
+            .getWalletStreamed(
+          accessToken: accessToken,
+          customerId: profileController.userData.value['id'],
+        )
+            .listen((onData) {
+          // debugPrint("MY WALLET  :: ${onData.body}");
+          if (onData.statusCode >= 200 && onData.statusCode <= 299) {
+            Map<String, dynamic> map = jsonDecode(onData.body);
+            userWallet.value = map;
+          }
+        });
 
-      APIService()
-          .getTransactionsStreamed(
-        accessToken: accessToken,
-        customerId: profileController.userData.value['id'],
-        page: 1,
-      )
-          .listen((onData) {
-        debugPrint("MY WALLET TRANSACTIONS :: ${onData.body}");
-        if (onData.statusCode >= 200 && onData.statusCode <= 299) {
-          Map<String, dynamic> map = jsonDecode(onData.body);
+        APIService()
+            .getTransactionsStreamed(
+          accessToken: accessToken,
+          customerId: profileController.userData.value['id'],
+          page: 1,
+        )
+            .listen((onData) {
+          debugPrint("MY WALLET TRANSACTIONS :: ${onData.body}");
+          if (onData.statusCode >= 200 && onData.statusCode <= 299) {
+            Map<String, dynamic> map = jsonDecode(onData.body);
 
-          walletTransactions.value = map;
-        }
-      });
+            walletTransactions.value = map;
+          }
+        });
+      }
     } catch (e) {
       debugPrint("$e");
     }

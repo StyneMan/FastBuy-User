@@ -15,7 +15,6 @@ import 'package:customer/controllers/order_controller.dart';
 import 'package:customer/controllers/vendors_controller.dart';
 import 'package:customer/controllers/wallet_controller.dart';
 import 'package:customer/services/api_service.dart';
-import 'package:customer/services/notification_service.dart';
 import 'package:customer/services/socket/socket_manager.dart';
 import 'package:customer/utils/preferences.dart';
 import 'package:flutter/material.dart';
@@ -40,7 +39,7 @@ class DashBoardController extends GetxController {
     getPackOptions();
     getData();
 
-    debugPrint("PROFILE L::: ${profileController.userData.value}");
+    // debugPrint("PROFILE L::: ${profileController.userData.value}");
 
     if (Constant.theme == "theme_2") {
       if (Constant.walletSetting == false) {
@@ -120,10 +119,10 @@ class DashBoardController extends GetxController {
         // Listen for notification events
         socket.on('notification', (data) {
           print('Notification received: $data');
-          AppNotificationService.showNotification(
-            title: data['title'] ?? 'New Notification',
-            body: data['message'] ?? 'You have a new message!',
-          );
+          // AppNotificationService.showNotification(
+          //   title: data['title'] ?? 'New Notification',
+          //   body: data['message'] ?? 'You have a new message!',
+          // );
         });
 
         socket.on(

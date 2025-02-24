@@ -1,19 +1,11 @@
 import 'dart:async';
-import 'dart:io';
 
-import 'package:customer/app/chat_screens/ChatVideoContainer.dart';
-import 'package:customer/app/chat_screens/full_screen_video_viewer.dart';
-import 'package:customer/app/chat_screens/full_screen_image_viewer.dart';
 import 'package:customer/controllers/chat_controller.dart';
-import 'package:customer/models/conversation_model.dart';
 import 'package:customer/themes/app_them_data.dart';
 import 'package:customer/utils/dark_theme_provider.dart';
-import 'package:customer/utils/network_image_widget.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
@@ -47,30 +39,38 @@ class ChatScreen extends StatelessWidget {
             ),
             body: Column(
               children: [
-                // Expanded(
-                //   child: GestureDetector(
-                //     onTap: () {
-                //       FocusScope.of(context).unfocus();
-                //     },
-                //     child: FirestorePagination(
-                //       controller: controller.scrollController,
-                //       physics: const BouncingScrollPhysics(),
-                //       itemBuilder: (context, documentSnapshots, index) {
-                //         ConversationModel inboxModel = ConversationModel.fromJson(documentSnapshots[index].data() as Map<String, dynamic>);
-                //         return chatItemView(themeChange, inboxModel.senderId == FireStoreUtils.getCurrentUid(), inboxModel);
-                //       },
-                //       onEmpty: Constant.showEmptyView(message: "No Conversion found"),
-                //       // orderBy is compulsory to enable pagination
-                //       // query: FirebaseFirestore.instance
-                //       //     .collection(controller.chatType.value == "Driver" ? 'chat_driver' : 'chat_restaurant')
-                //       //     .doc(controller.orderId.value)
-                //       //     .collection("thread")
-                //       //     .orderBy('createdAt', descending: false),
-                //       isLive: true,
-                //       viewType: ViewType.list,
-                //     ),
-                //   ),
-                // ),
+                Expanded(
+                  child: GestureDetector(
+                    onTap: () {
+                      FocusScope.of(context).unfocus();
+                    },
+                    child: const SizedBox(),
+                    // FirestorePagination(
+                    //   controller: controller.scrollController,
+                    //   physics: const BouncingScrollPhysics(),
+                    //   itemBuilder: (context, documentSnapshots, index) {
+                    //     ConversationModel inboxModel =
+                    //         ConversationModel.fromJson(documentSnapshots[index]
+                    //             .data() as Map<String, dynamic>);
+                    //     return chatItemView(
+                    //         themeChange,
+                    //         inboxModel.senderId ==
+                    //             FireStoreUtils.getCurrentUid(),
+                    //         inboxModel);
+                    //   },
+                    //   onEmpty: Constant.showEmptyView(
+                    //       message: "No Conversion found"),
+                    //   // orderBy is compulsory to enable pagination
+                    //   // query: FirebaseFirestore.instance
+                    //   //     .collection(controller.chatType.value == "Driver" ? 'chat_driver' : 'chat_restaurant')
+                    //   //     .doc(controller.orderId.value)
+                    //   //     .collection("thread")
+                    //   //     .orderBy('createdAt', descending: false),
+                    //   isLive: true,
+                    //   viewType: ViewType.list,
+                    // ),
+                  ),
+                ),
                 Container(
                   color: themeChange.getThem()
                       ? AppThemeData.grey900
@@ -85,11 +85,12 @@ class ChatScreen extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             InkWell(
-                                onTap: () {
-                                  onCameraClick(context, controller);
-                                },
-                                child: SvgPicture.asset(
-                                    "assets/icons/ic_picture_one.svg")),
+                              onTap: () {
+                                onCameraClick(context, controller);
+                              },
+                              child: SvgPicture.asset(
+                                  "assets/icons/ic_picture_one.svg"),
+                            ),
                             Flexible(
                                 child: Padding(
                               padding: const EdgeInsets.only(left: 10),
@@ -171,7 +172,7 @@ class ChatScreen extends StatelessWidget {
         });
   }
 
-  Widget chatItemView(themeChange, bool isMe, ConversationModel data) {
+  Widget chatItemView(themeChange, bool isMe, var data) {
     return Container(
       padding: const EdgeInsets.only(left: 10, right: 10, top: 10, bottom: 10),
       child: isMe
@@ -180,71 +181,77 @@ class ChatScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
-                  data.messageType == "text"
-                      ? Container(
-                          decoration: BoxDecoration(
-                            borderRadius: const BorderRadius.only(
-                                topLeft: Radius.circular(12),
-                                topRight: Radius.circular(12),
-                                bottomLeft: Radius.circular(12)),
-                            color: AppThemeData.primary300,
-                          ),
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 16, vertical: 10),
-                          child: Text(
-                            data.message.toString(),
-                            style: const TextStyle(
-                              fontFamily: AppThemeData.medium,
-                              fontSize: 16,
-                              color: AppThemeData.grey50,
-                            ),
-                          ),
-                        )
-                      : data.messageType == "image"
-                          ? ClipRRect(
-                              borderRadius: const BorderRadius.only(
-                                  topLeft: Radius.circular(12),
-                                  topRight: Radius.circular(12),
-                                  bottomLeft: Radius.circular(12)),
-                              child:
-                                  Stack(alignment: Alignment.center, children: [
-                                GestureDetector(
-                                  onTap: () {
-                                    Get.to(FullScreenImageViewer(
-                                        imageUrl: data.url!.url));
-                                  },
-                                  child: Hero(
-                                    tag: data.url!.url,
-                                    child: NetworkImageWidget(
-                                      imageUrl: data.url!.url,
-                                      height: 100,
-                                      width: 100,
-                                      fit: BoxFit.cover,
-                                    ),
-                                  ),
-                                ),
-                              ]),
-                            )
-                          : FloatingActionButton(
-                              mini: true,
-                              heroTag: data.id,
-                              backgroundColor: AppThemeData.primary300,
-                              onPressed: () {
-                                Get.to(FullScreenVideoViewer(
-                                    heroTag: data.id.toString(),
-                                    videoUrl: data.url!.url));
-                              },
-                              child: const Icon(
-                                Icons.play_arrow,
-                                color: Colors.white,
-                              ),
-                            ),
+                  // data.messageType == "text"
+                  //     ?
+                  Container(
+                    decoration: BoxDecoration(
+                      borderRadius: const BorderRadius.only(
+                        topLeft: Radius.circular(12),
+                        topRight: Radius.circular(12),
+                        bottomLeft: Radius.circular(12),
+                      ),
+                      color: AppThemeData.primary300,
+                    ),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 10,
+                    ),
+                    child: Text(
+                      data.message.toString(),
+                      style: const TextStyle(
+                        fontFamily: AppThemeData.medium,
+                        fontSize: 16,
+                        color: AppThemeData.grey50,
+                      ),
+                    ),
+                  ),
+                  // : data.messageType == "image"
+                  //     ? ClipRRect(
+                  //         borderRadius: const BorderRadius.only(
+                  //             topLeft: Radius.circular(12),
+                  //             topRight: Radius.circular(12),
+                  //             bottomLeft: Radius.circular(12)),
+                  //         child:
+                  //             Stack(alignment: Alignment.center, children: [
+                  //           GestureDetector(
+                  //             onTap: () {
+                  //               Get.to(FullScreenImageViewer(
+                  //                   imageUrl: data.url!.url));
+                  //             },
+                  //             child: Hero(
+                  //               tag: data.url!.url,
+                  //               child: NetworkImageWidget(
+                  //                 imageUrl: data.url!.url,
+                  //                 height: 100,
+                  //                 width: 100,
+                  //                 fit: BoxFit.cover,
+                  //               ),
+                  //             ),
+                  //           ),
+                  //         ]),
+                  //       )
+                  //     : FloatingActionButton(
+                  //         mini: true,
+                  //         heroTag: data.id,
+                  //         backgroundColor: AppThemeData.primary300,
+                  //         onPressed: () {
+                  //           Get.to(FullScreenVideoViewer(
+                  //               heroTag: data.id.toString(),
+                  //               videoUrl: data.url!.url));
+                  //         },
+                  //         child: const Icon(
+                  //           Icons.play_arrow,
+                  //           color: Colors.white,
+                  //         ),
+                  //       ),
                   const SizedBox(height: 5),
                   Text(
-                      DateFormat('MMM d, yyyy hh:mm aa').format(
-                          DateTime.fromMillisecondsSinceEpoch(
-                              data.createdAt!.millisecondsSinceEpoch)),
-                      style: const TextStyle(color: Colors.grey, fontSize: 12)),
+                    DateFormat('MMM d, yyyy hh:mm aa').format(
+                      DateTime.fromMillisecondsSinceEpoch(
+                          data.createdAt!.millisecondsSinceEpoch),
+                    ),
+                    style: const TextStyle(color: Colors.grey, fontSize: 12),
+                  ),
                 ],
               ),
             )
@@ -255,79 +262,83 @@ class ChatScreen extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
-                    data.messageType == "text"
-                        ? Container(
-                            decoration: BoxDecoration(
-                              borderRadius: const BorderRadius.only(
-                                  topLeft: Radius.circular(12),
-                                  topRight: Radius.circular(12),
-                                  bottomRight: Radius.circular(12)),
-                              color: themeChange.getThem()
-                                  ? AppThemeData.grey700
-                                  : AppThemeData.grey200,
-                            ),
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 16, vertical: 10),
-                            child: Text(
-                              data.message.toString(),
-                              style: TextStyle(
-                                fontFamily: AppThemeData.medium,
-                                fontSize: 16,
-                                color: themeChange.getThem()
-                                    ? AppThemeData.grey100
-                                    : AppThemeData.grey800,
-                              ),
-                            ),
-                          )
-                        : data.messageType == "image"
-                            ? ConstrainedBox(
-                                constraints: const BoxConstraints(
-                                  minWidth: 50,
-                                  maxWidth: 200,
-                                ),
-                                child: ClipRRect(
-                                  borderRadius: const BorderRadius.only(
-                                      topLeft: Radius.circular(12),
-                                      topRight: Radius.circular(12),
-                                      bottomRight: Radius.circular(12)),
-                                  child: Stack(
-                                      alignment: Alignment.center,
-                                      children: [
-                                        GestureDetector(
-                                          onTap: () {
-                                            Get.to(FullScreenImageViewer(
-                                                imageUrl: data.url!.url));
-                                          },
-                                          child: Hero(
-                                            tag: data.url!.url,
-                                            child: NetworkImageWidget(
-                                              imageUrl: data.url!.url,
-                                            ),
-                                          ),
-                                        ),
-                                      ]),
-                                ))
-                            : FloatingActionButton(
-                                mini: true,
-                                heroTag: data.id,
-                                backgroundColor: AppThemeData.primary300,
-                                onPressed: () {
-                                  Get.to(FullScreenVideoViewer(
-                                      heroTag: data.id.toString(),
-                                      videoUrl: data.url!.url));
-                                },
-                                child: const Icon(
-                                  Icons.play_arrow,
-                                  color: Colors.white,
-                                ),
-                              ),
+                    // data.messageType == "text"
+                    //     ?
+                    Container(
+                      decoration: BoxDecoration(
+                        borderRadius: const BorderRadius.only(
+                          topLeft: Radius.circular(12),
+                          topRight: Radius.circular(12),
+                          bottomRight: Radius.circular(12),
+                        ),
+                        color: themeChange.getThem()
+                            ? AppThemeData.grey700
+                            : AppThemeData.grey200,
+                      ),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 10,
+                      ),
+                      child: Text(
+                        data.message.toString(),
+                        style: TextStyle(
+                          fontFamily: AppThemeData.medium,
+                          fontSize: 16,
+                          color: themeChange.getThem()
+                              ? AppThemeData.grey100
+                              : AppThemeData.grey800,
+                        ),
+                      ),
+                    )
+                    //       : data.messageType == "image"
+                    //           ? ConstrainedBox(
+                    //               constraints: const BoxConstraints(
+                    //                 minWidth: 50,
+                    //                 maxWidth: 200,
+                    //               ),
+                    //               child: ClipRRect(
+                    //                 borderRadius: const BorderRadius.only(
+                    //                     topLeft: Radius.circular(12),
+                    //                     topRight: Radius.circular(12),
+                    //                     bottomRight: Radius.circular(12)),
+                    //                 child: Stack(
+                    //                     alignment: Alignment.center,
+                    //                     children: [
+                    //                       GestureDetector(
+                    //                         onTap: () {
+                    //                           Get.to(FullScreenImageViewer(
+                    //                               imageUrl: data.url!.url));
+                    //                         },
+                    //                         child: Hero(
+                    //                           tag: data.url!.url,
+                    //                           child: NetworkImageWidget(
+                    //                             imageUrl: data.url!.url,
+                    //                           ),
+                    //                         ),
+                    //                       ),
+                    //                     ]),
+                    //               ))
+                    //           : FloatingActionButton(
+                    //               mini: true,
+                    //               heroTag: data.id,
+                    //               backgroundColor: AppThemeData.primary300,
+                    //               onPressed: () {
+                    //                 Get.to(FullScreenVideoViewer(
+                    //                     heroTag: data.id.toString(),
+                    //                     videoUrl: data.url!.url));
+                    //               },
+                    //               child: const Icon(
+                    //                 Icons.play_arrow,
+                    //                 color: Colors.white,
+                    //               ),
+                    //             ),
                   ],
                 ),
                 const SizedBox(height: 5),
-                Text(
-                    DateFormat('MMM d, yyyy hh:mm aa').format(
-                        DateTime.fromMillisecondsSinceEpoch(
-                            data.createdAt!.millisecondsSinceEpoch)),
+                Text("",
+                    // DateFormat('MMM d, yyyy hh:mm aa').format(
+                    //     DateTime.fromMillisecondsSinceEpoch(
+                    //         data.createdAt!.millisecondsSinceEpoch)),
                     style: const TextStyle(color: Colors.grey, fontSize: 12)),
               ],
             ),

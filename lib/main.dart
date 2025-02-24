@@ -7,6 +7,7 @@ import 'package:customer/controllers/cart_controller.dart';
 import 'package:customer/controllers/global_setting_controller.dart';
 import 'package:customer/controllers/my_profile_controller.dart';
 import 'package:customer/controllers/otp_controller.dart';
+import 'package:customer/firebase_options.dart';
 import 'package:customer/models/language_model.dart';
 import 'package:customer/services/api_service.dart';
 import 'package:customer/services/localization_service.dart';
@@ -15,6 +16,7 @@ import 'package:customer/themes/styles.dart';
 import 'package:customer/utils/dark_theme_provider.dart';
 import 'package:customer/utils/preferences.dart';
 import 'package:flutter/material.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:geocoding/geocoding.dart';
@@ -26,9 +28,9 @@ import 'models/user_model.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  // await Firebase.initializeApp(
-  //   options: DefaultFirebaseOptions.currentPlatform,
-  // );
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   // await FirebaseAppCheck.instance.activate(
   //   webProvider: ReCaptchaV3Provider('recaptcha-v3-site-key'),
   //   androidProvider: AndroidProvider.playIntegrity,

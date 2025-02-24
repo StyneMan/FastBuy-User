@@ -26,8 +26,9 @@ class ProfileScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final themeChange = Provider.of<DarkThemeProvider>(context);
     return Scaffold(
-      backgroundColor:
-          themeChange.getThem() ? Colors.transparent : const Color(0xFFFAF6F1),
+      backgroundColor: themeChange.getThem()
+          ? AppThemeData.surfaceDark
+          : const Color(0xFFFAF6F1),
       body: GetX(
           init: MyProfileController(),
           builder: (controller) {
@@ -400,10 +401,8 @@ class ProfileScreen extends StatelessWidget {
                                                         "Log out".tr,
                                                     negativeString: "Cancel".tr,
                                                     positiveClick: () async {
-                                                      Constant.userModel = null;
-                                                      // await FirebaseAuth
-                                                      //     .instance
-                                                      //     .signOut();
+                                                      Preferences
+                                                          .clearSharPreference();
                                                       Get.offAll(LoginScreen());
                                                     },
                                                     negativeClick: () {

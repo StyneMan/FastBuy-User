@@ -42,6 +42,20 @@ class APIService {
     );
   }
 
+  Future<http.Response> updateFCMToken({
+    required String accessToken,
+    required Map body,
+  }) async {
+    return await http.post(
+      Uri.parse('${Constant.baseURL}/customer/fcm/update'),
+      headers: {
+        "Content-type": "application/json",
+        "Authorization": "Bearer $accessToken",
+      },
+      body: jsonEncode(body),
+    );
+  }
+
   Future<http.Response> loginPhone(Map body) async {
     return await http.post(
       Uri.parse('${Constant.baseURL}/auth/customer/login/phone'),

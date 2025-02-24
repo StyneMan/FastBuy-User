@@ -1,19 +1,7 @@
-import 'dart:math';
-
-import 'package:customer/app/home_screen/discount_restaurant_list_screen.dart';
-import 'package:customer/app/restaurant_details_screen/restaurant_details_screen.dart';
-import 'package:customer/constant/constant.dart';
 import 'package:customer/controllers/home_controller.dart';
-import 'package:customer/models/coupon_model.dart';
-import 'package:customer/models/vendor_model.dart';
 import 'package:customer/themes/app_them_data.dart';
-import 'package:customer/themes/responsive.dart';
-import 'package:customer/themes/round_button_fill.dart';
 import 'package:customer/utils/dark_theme_provider.dart';
-import 'package:customer/utils/network_image_widget.dart';
-import 'package:customer/widget/gradiant_text.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 import 'package:provider/provider.dart';
 
 class OfferView extends StatelessWidget {

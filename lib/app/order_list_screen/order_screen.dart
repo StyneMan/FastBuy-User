@@ -556,11 +556,11 @@ class OrderScreen extends StatelessWidget {
                     child: InkWell(
                       onTap: () {
                         Get.to(
-                            OrderDetailsScreen(
-                              item: item,
-                            ),
-                            arguments: {"orderModel": item});
-                        // Get.off(const OrderPlacingScreen(), arguments: {"orderModel": orderModel});
+                          OrderDetailsScreen(
+                            item: item,
+                          ),
+                          arguments: {"orderModel": item},
+                        );
                       },
                       child: Text(
                         "View Details".tr,

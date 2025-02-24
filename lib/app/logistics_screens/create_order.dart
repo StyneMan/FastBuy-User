@@ -497,32 +497,14 @@ class _CreateParcelOrderState extends State<CreateParcelOrder> {
     try {
       ShowToastDialog.showLoader("Please wait".tr);
       final accessToken = Preferences.getString(Preferences.accessTokenKey);
-      var defaultGateway = {};
-      if (profileController.paymentGateways.value.isEmpty) {
-        // Do nothing
-      } else {
-        final gateway = profileController.paymentGateways.value
-            .where((item) => item['is_default'])
-            .toList();
-
-        debugPrint("dEFAULT GATEWAY HERE ::: $gateway");
-
-        if (gateway.isEmpty) {
-          // Default to the first item in the list
-          defaultGateway = profileController.paymentGateways[0];
-        } else {
-          defaultGateway = gateway[0];
-        }
-      }
 
       Map payload = {
-        "paymentGateway": defaultGateway['provider'],
         "userType": "customer",
         "paymentInfo": {
           "amount": double.parse(
               "${controller.estimateData.value['total_cost']}"), // payable amount here
           "email_address":
-              '${profileController.userData.value['email_address']} ',
+              '${profileController.userData.value['email_address']}',
           "full_name":
               "${profileController.userData.value['first_name']} ${profileController.userData.value['last_name']}",
           "customer_id": "${profileController.userData.value['id']}",
@@ -569,7 +551,9 @@ class _CreateParcelOrderState extends State<CreateParcelOrder> {
       if (response.statusCode >= 200 && response.statusCode <= 299) {
         Map<String, dynamic> map = jsonDecode(response.body);
         // Now open payment link here
-        Get.to(MercadoPagoScreen(initialURl: map['data']['link']))!
+        Get.to(MercadoPagoScreen(
+                initialURl:
+                    map['data']['link'] ?? map['data']['authorization_url']))!
             .then((value) {
           if (value) {
             ShowToastDialog.showToast("Payment Successful!!");

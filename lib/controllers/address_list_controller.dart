@@ -67,23 +67,27 @@ class AddressListController extends GetxController {
   }
 
   refreshShipping() {
-    final accessToken = Preferences.getString(Preferences.accessTokenKey);
+    try {
+      final accessToken = Preferences.getString(Preferences.accessTokenKey);
 
-    if (accessToken.isNotEmpty) {
-      APIService()
-          .getShippingAdressesStreamed(
-        accessToken: accessToken,
-        customerId: profileController.userData.value['id'],
-        page: 1,
-      )
-          .listen((onData) {
-        debugPrint("MY SHIPPING ADDRESSES :: ${onData.body}");
-        if (onData.statusCode >= 200 && onData.statusCode <= 299) {
-          Map<String, dynamic> map = jsonDecode(onData.body);
+      if (accessToken.isNotEmpty) {
+        APIService()
+            .getShippingAdressesStreamed(
+          accessToken: accessToken,
+          customerId: profileController.userData.value['id'],
+          page: 1,
+        )
+            .listen((onData) {
+          debugPrint("MY SHIPPING ADDRESSES :: ${onData.body}");
+          if (onData.statusCode >= 200 && onData.statusCode <= 299) {
+            Map<String, dynamic> map = jsonDecode(onData.body);
 
-          shippingAddresses.value = map;
-        }
-      });
+            shippingAddresses.value = map;
+          }
+        });
+      }
+    } catch (e) {
+      debugPrint("$e");
     }
   }
 
