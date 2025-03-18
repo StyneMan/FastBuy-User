@@ -352,6 +352,8 @@ class _CreateParcelOrderState extends State<CreateParcelOrder> {
                                                       "riderCommission":
                                                           double.parse(
                                                               "${controller.estimateData.value['rider_commission'] ?? "0.0"}"),
+                                                      "serviceCharge": double.parse(
+                                                          "${controller.estimateData.value['service_charge'] ?? "1.0"}")
                                                     },
                                                   },
                                                 ),
@@ -516,6 +518,7 @@ class _CreateParcelOrderState extends State<CreateParcelOrder> {
           "items": controller.addedPackages.value,
           "customerId": "${profileController.userData.value['id']}",
           "vendorId": null,
+          "vendorLocationId": null,
           "riderNote": controller.riderNote.value,
           "vendorNote": null,
           "orderType": "parcel_order",
@@ -539,6 +542,8 @@ class _CreateParcelOrderState extends State<CreateParcelOrder> {
           },
           "riderCommission": double.parse(
               "${controller.estimateData.value['rider_commission'] ?? "0.0"}"),
+          "serviceCharge": double.parse(
+              "${controller.estimateData.value['service_charge'] ?? "1.0"}")
         },
       };
 
@@ -567,7 +572,14 @@ class _CreateParcelOrderState extends State<CreateParcelOrder> {
               debugPrint("MY ORDERS REFRESHED  :: ${onData.body}");
               if (onData.statusCode >= 200 && onData.statusCode <= 299) {
                 Map<String, dynamic> map = jsonDecode(onData.body);
-                orderController.myOrders.value = map;
+                orderController.myOrders.value = map['data'];
+                orderController.hasMoreOrders.value =
+                    int.parse("${map['totalPages']}") >
+                            int.parse("${map['currentPage']}")
+                        ? true
+                        : false;
+                orderController.ordersCurrentPage.value =
+                    int.parse("${map['currentPage']}");
               }
             });
             // Navigate to the Orders Screen from here

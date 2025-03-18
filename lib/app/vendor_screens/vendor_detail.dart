@@ -44,6 +44,9 @@ class _VendorDetailState extends State<VendorDetail>
           length: ((widget.item['vendor']['categories'] ?? [])?.length) + 1,
           vsync: this);
     }
+    cartController.isInCart.value = false;
+    cartController.currCartItem.value.clear();
+
     if (cartController.cartData.value.isNotEmpty) {
       if (cartController.cartData.value['data']?.length > 0) {
         // now check if this vendor's product is in cart
@@ -72,6 +75,38 @@ class _VendorDetailState extends State<VendorDetail>
 
     super.initState();
     initSocketIO();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Constant.toast("DID CHANGE !!!");
+
+    if (cartController.cartData.value.isNotEmpty) {
+      if (cartController.cartData.value['data']?.length > 0) {
+        // now check if this vendor's product is in cart
+        debugPrint("VENDDOR LOCATION ID : ${widget.item['id']}");
+        for (var i = 0;
+            i < cartController.cartData.value['data']?.length;
+            i++) {
+          final itemElem = cartController.cartData.value['data'][i];
+          debugPrint(
+              "CART VENDOR LOCATION ID : ${itemElem['vendor_location']['id']}");
+
+          if (itemElem['vendor_location']['id'] == widget.item['id']) {
+            setState(() {
+              cartController.isInCart.value = true;
+              cartController.currCartItem.value = itemElem;
+            });
+            break;
+          } else {
+            setState(() {
+              cartController.isInCart.value = false;
+            });
+          }
+        }
+      }
+    }
   }
 
   initSocketIO() {

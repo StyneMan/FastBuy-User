@@ -291,6 +291,11 @@ class PackageForm extends StatelessWidget {
                                     Constant.toast(
                                         "Some input fields not filled");
                                   } else {
+                                    // upload image to cloudinary and get urls here
+                                    for (var k = 0;
+                                        k < controller.images.value.length;
+                                        k++) {}
+
                                     Map payload = {
                                       "weight": controller
                                           .weightEditingController.value.text,
@@ -306,7 +311,7 @@ class PackageForm extends StatelessWidget {
                                       "images": controller.images.value,
                                     };
 
-                                    debugPrint("PAYLOADD ::: $payload");
+                                    debugPrint("PAYLOAD ::: $payload");
                                     controller.savePackage(payload);
                                   }
                                 },
@@ -550,7 +555,7 @@ class PackageForm extends StatelessWidget {
                             "images": controller.images.value,
                           };
 
-                          debugPrint("PAYLOADD ::: $payload");
+                          debugPrint("PAYLOAD ::: $payload");
                           controller.savePackage(payload);
                         }
                       },
@@ -959,8 +964,8 @@ class PackageForm extends StatelessWidget {
               shrinkWrap: true,
               itemBuilder: (context, index) => ClipRRect(
                 borderRadius: BorderRadius.circular(10.0),
-                child: Image.file(
-                  File(item['images'][index]),
+                child: Image.network(
+                  "${item['images'][index]}",
                   height: 100,
                   fit: BoxFit.cover,
                 ),

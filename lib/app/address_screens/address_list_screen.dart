@@ -61,7 +61,7 @@ class AddressListScreen extends StatelessWidget {
                   InkWell(
                     onTap: () async {
                       ShowToastDialog.showLoader("Please wait".tr);
-                      // ShippingAddress addressModel = ShippingAddress();
+                      ShippingAddress addressModel = ShippingAddress();
                       try {
                         await Geolocator.requestPermission();
                         final hasPermission = await _handlePermission();
@@ -72,34 +72,71 @@ class AddressListScreen extends StatelessWidget {
 
                         final newLocalData =
                             await _geolocatorPlatform.getCurrentPosition();
-                        // _updatePositionList(
-                        //   _PositionItemType.position,
-                        //   position.toString(),
-                        // );
-                        // position.
 
-                        // Position newLocalData =
-                        //     await Geolocator.getCurrentPosition(
-                        //         desiredAccuracy: LocationAccuracy.high);
+                        debugPrint("CURR LAT ::: ${newLocalData.latitude}");
+                        debugPrint("CURR LNG  ::: ${newLocalData.longitude}");
+                        controller.location.value = UserLocation(
+                          latitude: newLocalData.latitude,
+                          longitude: newLocalData.longitude,
+                        );
 
                         await placemarkFromCoordinates(
                                 newLocalData.latitude, newLocalData.longitude)
                             .then((valuePlaceMaker) {
                           Placemark placeMark = valuePlaceMaker[0];
-                          // addressModel.addressAs = "Home".tr;
-                          // addressModel.location = UserLocation(
-                          //     latitude: newLocalData.latitude,
-                          //     longitude: newLocalData.longitude);
 
                           String currentLocation =
-                              "${placeMark.name}, ${placeMark.subLocality}, ${placeMark.locality}, ${placeMark.administrativeArea}, ${placeMark.postalCode}, ${placeMark.country}";
+                              "${placeMark.street}, ${placeMark.subLocality}, ${placeMark.locality}, ${placeMark.administrativeArea}, ${placeMark.postalCode}, ${placeMark.country}";
                           debugPrint("CURR LOCATION ::: $currentLocation");
-                          // addressModel.locality = currentLocation;
+
+                          controller.shippingModel.value = ShippingAddress(
+                            address: "${placeMark.street}",
+                            addressAs: "Home",
+                            isDefault: true,
+                            landmark: "",
+                            locality: "${placeMark.locality}",
+                            location: UserLocation(
+                              latitude: newLocalData.latitude,
+                              longitude: newLocalData.longitude,
+                            ),
+                          );
+
+                          Map mp = {
+                            "address": "${placeMark.street}",
+                            "landmark": "",
+                            "locality": "${placeMark.locality}",
+                            "addressAs": "Home",
+                            "isDefault": true,
+                            "id": "1",
+                          };
+
+                          Preferences.setString(
+                            Preferences.shippingAddress,
+                            jsonEncode(mp),
+                          );
+
+                          addressModel.addressAs = "Home";
+                          addressModel.locality = "${placeMark.street}";
+                          addressModel.location = UserLocation(
+                            latitude: newLocalData.latitude,
+                            longitude: newLocalData.longitude,
+                          );
+                          Preferences.setString(Preferences.currLatitude,
+                              "${newLocalData.latitude}");
+                          Preferences.setString(Preferences.currLongitude,
+                              "${newLocalData.longitude}");
+
+                          // Now fetch nearest vendors here
+                          // getNearestVendors(
+                          //   addressController: controller,
+                          //   vendorController:
+                          //       dashboardController.vendorController,
+                          // );
                         });
 
                         ShowToastDialog.closeLoader();
                         Get.back();
-                        // Get.back(result: addressModel);
+                        Get.back(result: addressModel);
                       } catch (e) {
                         // await placemarkFromCoordinates(19.228825, 72.854118)
                         //     .then((valuePlaceMaker) {

@@ -712,6 +712,9 @@ class _ProductDetailState extends State<ProductDetail> {
     try {
       Get.back();
       ShowToastDialog.showLoader("Please wait".tr);
+      cartController.currentCartItems.value.clear();
+      cartController.isInCart.value = false;
+      cartController.currCartItem.value.clear();
       Map payload = {
         "total_amount": total,
         "branch_id": widget.product['vendor_location']['id'],
@@ -736,7 +739,8 @@ class _ProductDetailState extends State<ProductDetail> {
         // Show SnackBar with extended duration
         cartController.currentCartItems.value = map['data']['items'];
         cartController.isInCart.value = true;
-        cartController.currCartItem = map['data'];
+        cartController.currCartItem.value = map['data'];
+        cartController.cartData.value = map['carts'];
 
         cartController.refreshCart();
       } else {

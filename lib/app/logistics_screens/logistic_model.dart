@@ -26,12 +26,13 @@ List<LogisticModel> logisticActions = [
     icon: const Icon(CupertinoIcons.doc_text_search),
     title: "Check Rates",
   ),
-  LogisticModel(
-    component: const SizedBox(),
-    icon: const Icon(Icons.help_outline_rounded),
-    title: "Help Center",
-  ),
 ];
+
+  // LogisticModel(
+  //   component: const SizedBox(),
+  //   icon: const Icon(Icons.help_outline_rounded),
+  //   title: "Help Center",
+  // ),
 
   // LogisticModel(
   //   component: const SizedBox(),

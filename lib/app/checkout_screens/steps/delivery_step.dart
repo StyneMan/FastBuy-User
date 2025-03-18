@@ -178,6 +178,8 @@ class _DeliveryStepState extends State<DeliveryStep> {
                                 width: 36,
                                 height: 36,
                                 fit: BoxFit.cover,
+                                errorBuilder: (context, error, stackTrace) =>
+                                    const SizedBox(),
                               ),
                             ),
                           ),
@@ -319,11 +321,15 @@ class _DeliveryStepState extends State<DeliveryStep> {
                               },
                               child: Text(
                                 addressController.shippingModel.value
-                                        .getFullAddress()
-                                        .isEmpty
-                                    ? "Specify your delivery address"
+                                            .getFullAddress()
+                                            .isEmpty ||
+                                        addressController.shippingModel.value
+                                                .getFullAddress() ==
+                                            " "
+                                    ? "Click to add delivery address"
                                     : addressController.shippingModel.value
                                         .getFullAddress(),
+                                textAlign: TextAlign.left,
                               ),
                             ),
                           )

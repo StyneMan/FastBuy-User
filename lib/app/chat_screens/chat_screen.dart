@@ -129,11 +129,7 @@ class ChatScreen extends StatelessWidget {
                               onTap: () {
                                 if (controller
                                     .messageController.value.text.isNotEmpty) {
-                                  controller.sendMessage(
-                                      controller.messageController.value.text,
-                                      null,
-                                      '',
-                                      'text');
+                                  controller.postMessage();
                                   Timer(
                                       const Duration(milliseconds: 500),
                                       () => controller.scrollController.jumpTo(

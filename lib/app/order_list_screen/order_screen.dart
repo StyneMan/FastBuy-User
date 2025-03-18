@@ -207,8 +207,8 @@ class OrderScreen extends StatelessWidget {
                                           children: [
                                             controller.myOrders.isEmpty
                                                 ? const SizedBox()
-                                                : controller.myOrders
-                                                        .value['data']?.isEmpty
+                                                : controller
+                                                        .myOrders.value.isEmpty
                                                     ? Constant.showEmptyView(
                                                         message:
                                                             "No orders found"
@@ -217,23 +217,188 @@ class OrderScreen extends StatelessWidget {
                                                         onRefresh: () =>
                                                             controller
                                                                 .getOrder(),
-                                                        child: ListView.builder(
-                                                          itemCount: controller
-                                                              .myOrders
-                                                              .value['data']
-                                                              ?.length,
+                                                        child: ListView(
+                                                          shrinkWrap: true,
+                                                          controller: controller
+                                                              .ordersScrollController,
+                                                          children: [
+                                                            Obx(
+                                                              () => ListView
+                                                                  .builder(
+                                                                shrinkWrap:
+                                                                    true,
+                                                                padding:
+                                                                    EdgeInsets
+                                                                        .zero,
+                                                                physics:
+                                                                    const NeverScrollableScrollPhysics(),
+                                                                itemCount:
+                                                                    controller
+                                                                        .myOrders
+                                                                        .value
+                                                                        .length,
+                                                                itemBuilder:
+                                                                    (context,
+                                                                        index) {
+                                                                  final item =
+                                                                      controller
+                                                                          .myOrders
+                                                                          .value[index];
+                                                                  return itemView(
+                                                                    themeChange,
+                                                                    context,
+                                                                    item,
+                                                                    controller,
+                                                                  );
+                                                                },
+                                                              ),
+                                                            ),
+                                                            Center(
+                                                              child: SizedBox(
+                                                                width: 200,
+                                                                child: controller
+                                                                        .isLoadingMoreOrders
+                                                                        .value
+                                                                    ? const LinearProgressIndicator()
+                                                                    : const SizedBox(),
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      ),
+                                            controller.myInprogressOrders.value
+                                                    .isEmpty
+                                                ? Constant.showEmptyView(
+                                                    message:
+                                                        "No orders found".tr)
+                                                : RefreshIndicator(
+                                                    onRefresh: () =>
+                                                        controller.getOrder(),
+                                                    child: ListView(
+                                                      shrinkWrap: true,
+                                                      controller: controller
+                                                          .inProgressOrdersScrollController,
+                                                      children: [
+                                                        Obx(
+                                                          () =>
+                                                              ListView.builder(
+                                                            shrinkWrap: true,
+                                                            padding:
+                                                                EdgeInsets.zero,
+                                                            physics:
+                                                                const NeverScrollableScrollPhysics(),
+                                                            itemCount: controller
+                                                                .myInprogressOrders
+                                                                .value
+                                                                .length,
+                                                            itemBuilder:
+                                                                (context,
+                                                                    index) {
+                                                              final item = controller
+                                                                  .myInprogressOrders
+                                                                  .value[index];
+                                                              return itemView(
+                                                                themeChange,
+                                                                context,
+                                                                item,
+                                                                controller,
+                                                              );
+                                                            },
+                                                          ),
+                                                        ),
+                                                        Center(
+                                                          child: SizedBox(
+                                                            width: 200,
+                                                            child: controller
+                                                                    .isLoadingMoreInprogressOrders
+                                                                    .value
+                                                                ? const LinearProgressIndicator()
+                                                                : const SizedBox(),
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                            (controller.myDeliveredOrders.value)
+                                                    .isEmpty
+                                                ? Constant.showEmptyView(
+                                                    message:
+                                                        "No delivered orders found")
+                                                : RefreshIndicator(
+                                                    onRefresh: () =>
+                                                        controller.getOrder(),
+                                                    child: ListView(
+                                                      shrinkWrap: true,
+                                                      controller: controller
+                                                          .deliveredOrdersScrollController,
+                                                      children: [
+                                                        Obx(
+                                                          () =>
+                                                              ListView.builder(
+                                                            shrinkWrap: true,
+                                                            padding:
+                                                                EdgeInsets.zero,
+                                                            physics:
+                                                                const NeverScrollableScrollPhysics(),
+                                                            itemCount: controller
+                                                                .myDeliveredOrders
+                                                                .value
+                                                                .length,
+                                                            itemBuilder:
+                                                                (context,
+                                                                    index) {
+                                                              final item = controller
+                                                                  .myDeliveredOrders
+                                                                  .value[index];
+                                                              return itemView(
+                                                                themeChange,
+                                                                context,
+                                                                item,
+                                                                controller,
+                                                              );
+                                                            },
+                                                          ),
+                                                        ),
+                                                        Center(
+                                                          child: SizedBox(
+                                                            width: 200,
+                                                            child: controller
+                                                                    .isLoadingMoreDeliveredOrders
+                                                                    .value
+                                                                ? const LinearProgressIndicator()
+                                                                : const SizedBox(),
+                                                          ),
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                            (controller.myCancelledOrders.value)
+                                                    .isEmpty
+                                                ? Constant.showEmptyView(
+                                                    message: "No orders found")
+                                                : RefreshIndicator(
+                                                    onRefresh: () =>
+                                                        controller.getOrder(),
+                                                    child: ListView(
+                                                      shrinkWrap: true,
+                                                      controller: controller
+                                                          .cancelledOrdersScrollController,
+                                                      children: [
+                                                        ListView.builder(
                                                           shrinkWrap: true,
                                                           padding:
                                                               EdgeInsets.zero,
+                                                          physics:
+                                                              const NeverScrollableScrollPhysics(),
+                                                          itemCount: controller
+                                                              .myCancelledOrders
+                                                              .value
+                                                              .length,
                                                           itemBuilder:
                                                               (context, index) {
-                                                            // OrderModel orderModel =
-                                                            //     controller
-                                                            //         .allList[index];
                                                             final item = controller
-                                                                    .myOrders
-                                                                    .value[
-                                                                'data'][index];
+                                                                .myCancelledOrders
+                                                                .value[index];
                                                             return itemView(
                                                               themeChange,
                                                               context,
@@ -242,102 +407,17 @@ class OrderScreen extends StatelessWidget {
                                                             );
                                                           },
                                                         ),
-                                                      ),
-                                            (controller.myInprogressOrders
-                                                            .value['data'] ??
-                                                        [])
-                                                    ?.isEmpty
-                                                ? Constant.showEmptyView(
-                                                    message:
-                                                        "No orders found".tr)
-                                                : RefreshIndicator(
-                                                    onRefresh: () =>
-                                                        controller.getOrder(),
-                                                    child: ListView.builder(
-                                                      itemCount: controller
-                                                          .myInprogressOrders
-                                                          .value['data']
-                                                          ?.length,
-                                                      shrinkWrap: true,
-                                                      padding: EdgeInsets.zero,
-                                                      itemBuilder:
-                                                          (context, index) {
-                                                        // OrderModel orderModel =
-                                                        //     controller
-                                                        //         .allList[index];
-                                                        final item = controller
-                                                            .myInprogressOrders
-                                                            .value['data'][index];
-                                                        return itemView(
-                                                          themeChange,
-                                                          context,
-                                                          item,
-                                                          controller,
-                                                        );
-                                                      },
-                                                    ),
-                                                  ),
-                                            (controller.myDeliveredOrders
-                                                            .value['data'] ??
-                                                        [])
-                                                    ?.isEmpty
-                                                ? Constant.showEmptyView(
-                                                    message: "No orders found")
-                                                : RefreshIndicator(
-                                                    onRefresh: () =>
-                                                        controller.getOrder(),
-                                                    child: ListView.builder(
-                                                      itemCount: controller
-                                                          .myDeliveredOrders
-                                                          .value['data']
-                                                          ?.length,
-                                                      shrinkWrap: true,
-                                                      padding: EdgeInsets.zero,
-                                                      itemBuilder:
-                                                          (context, index) {
-                                                        // OrderModel orderModel =
-                                                        //     controller
-                                                        //         .allList[index];
-                                                        final item = controller
-                                                            .myDeliveredOrders
-                                                            .value['data'][index];
-                                                        return itemView(
-                                                          themeChange,
-                                                          context,
-                                                          item,
-                                                          controller,
-                                                        );
-                                                      },
-                                                    ),
-                                                  ),
-                                            (controller.myCancelledOrders
-                                                            .value['data'] ??
-                                                        [])
-                                                    ?.isEmpty
-                                                ? Constant.showEmptyView(
-                                                    message: "No orders found")
-                                                : RefreshIndicator(
-                                                    onRefresh: () =>
-                                                        controller.getOrder(),
-                                                    child: ListView.builder(
-                                                      itemCount: controller
-                                                          .myCancelledOrders
-                                                          .value['data']
-                                                          ?.length,
-                                                      shrinkWrap: true,
-                                                      padding: EdgeInsets.zero,
-                                                      itemBuilder:
-                                                          (context, index) {
-                                                        final item = controller
-                                                            .myCancelledOrders
-                                                            .value['data'][index];
-                                                        return itemView(
-                                                          themeChange,
-                                                          context,
-                                                          item,
-                                                          controller,
-                                                        );
-                                                      },
+                                                        Center(
+                                                          child: SizedBox(
+                                                            width: 200,
+                                                            child: controller
+                                                                    .isLoadingMoreCancelledOrders
+                                                                    .value
+                                                                ? const LinearProgressIndicator()
+                                                                : const SizedBox(),
+                                                          ),
+                                                        ),
+                                                      ],
                                                     ),
                                                   ),
                                           ],
@@ -381,10 +461,11 @@ class OrderScreen extends StatelessWidget {
                         NetworkImageWidget(
                           imageUrl: item['vendor'] == null
                               ? "https://i.imgur.com/ZmYTJoA.png"
-                              : "${item['vendor']['logo']}",
+                              : "${item['vendor']['logo'] ?? item['vendor']['cover']}",
                           fit: BoxFit.cover,
                           height: Responsive.height(10, context),
                           width: Responsive.width(20, context),
+                          errorWidget: const SizedBox(),
                         ),
                         Container(
                           height: Responsive.height(10, context),
@@ -427,7 +508,7 @@ class OrderScreen extends StatelessWidget {
                         Text(
                           item['vendor'] == null
                               ? "FastBuy Logistics"
-                              : "${item['vendor']['name']}",
+                              : "${item['vendor']['name']} ${item['vendor_location']['branch_name']}",
                           style: TextStyle(
                             fontSize: 16,
                             color: themeChange.getThem()
@@ -441,8 +522,8 @@ class OrderScreen extends StatelessWidget {
                           height: 5,
                         ),
                         Text(
-                          "${DateFormat("EEE, dd/MMM/y hh:mm a").format(DateTime.parse("${item['created_at']}"))}",
-                          // Constant.timestampToDateTime(orderModel.createdAt!),
+                          DateFormat("EEE, dd/MMM/y hh:mm a")
+                              .format(DateTime.parse("${item['created_at']}")),
                           style: TextStyle(
                             color: themeChange.getThem()
                                 ? AppThemeData.grey300
@@ -604,13 +685,14 @@ class OrderScreen extends StatelessWidget {
           "amount": elem['product']['sale_amount'],
           "product_id": elem['product']['id'],
           "selections": elem['selections'],
-          "total_amount": elem['total_amount']
+          "total_amount": elem['total_amount'],
         });
       }
 
       Map payload = {
         "total_amount": item['total_amount'],
         "vendor_id": item['vendor']['id'],
+        "branch_id": item['vendor_location']['id'],
         "items": items,
         "vendor_note": item['vendor_note'],
       };

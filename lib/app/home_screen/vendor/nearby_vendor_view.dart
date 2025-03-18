@@ -39,15 +39,7 @@ class NearbyVendorView extends StatelessWidget {
                   ),
                 ),
                 Container(
-                  height: 256,
-                  decoration: ShapeDecoration(
-                    color: themeChange.getThem()
-                        ? AppThemeData.grey900
-                        : AppThemeData.grey50,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(24),
-                    ),
-                  ),
+                  height: 250,
                   padding: const EdgeInsets.symmetric(horizontal: 16),
                   child: controller.nearbyVendors.value.isEmpty ||
                           controller.nearbyVendors.value['data'].length < 1
@@ -61,7 +53,7 @@ class NearbyVendorView extends StatelessWidget {
                           itemBuilder: (context, index) {
                             final item =
                                 controller.allvendors.value['data'][index];
-                            debugPrint("VENDORS CHECK ::: ${item}");
+                            debugPrint("VENDORS CHECK ::: $item");
                             return SizedBox(
                               width: MediaQuery.of(context).size.width * 0.75,
                               child: VendorCard(item: item),

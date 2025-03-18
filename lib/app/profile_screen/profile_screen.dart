@@ -3,6 +3,7 @@ import 'package:customer/app/chat_screens/driver_inbox_screen.dart';
 import 'package:customer/app/chat_screens/restaurant_inbox_screen.dart';
 import 'package:customer/app/edit_profile_screen/edit_profile_screen.dart';
 import 'package:customer/app/refer_friend_screen/refer_friend_screen.dart';
+import 'package:customer/app/support_screen/contact_us.dart';
 import 'package:customer/app/terms_and_condition/terms_and_condition_screen.dart';
 import 'package:customer/constant/constant.dart';
 import 'package:customer/controllers/my_profile_controller.dart';
@@ -15,6 +16,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
+import 'package:iconify_flutter_plus/iconify_flutter_plus.dart';
 import 'package:in_app_review/in_app_review.dart';
 import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
@@ -105,7 +107,7 @@ class ProfileScreen extends StatelessWidget {
                                         : cardDecoration(
                                             themeChange,
                                             controller,
-                                            "assets/images/ic_profile.svg",
+                                            Constant.profileIcon,
                                             "Profile Information".tr,
                                             () {
                                               Get.to(const EditProfileScreen());
@@ -163,7 +165,7 @@ class ProfileScreen extends StatelessWidget {
                                     cardDecoration(
                                         themeChange,
                                         controller,
-                                        "assets/icons/ic_light_dark.svg",
+                                        Constant.darkIcon,
                                         "Dark Mode".tr,
                                         () {}),
                                   ],
@@ -217,21 +219,15 @@ class ProfileScreen extends StatelessWidget {
                                               );
                                             },
                                           ),
-                                    cardDecoration(
-                                        themeChange,
-                                        controller,
-                                        "assets/icons/ic_share.svg",
-                                        "Share app", () {
+                                    cardDecoration(themeChange, controller,
+                                        Constant.shareIcon, "Share app", () {
                                       Share.share(
                                         'Check out FastBuy, your ultimate food and logistic delivery application! \n\nGoogle Play: ${Constant.googlePlayLink} \n\nApp Store: ${Constant.appStoreLink}',
                                         subject: 'Look what I made!',
                                       );
                                     }),
-                                    cardDecoration(
-                                        themeChange,
-                                        controller,
-                                        "assets/icons/ic_rate.svg",
-                                        "Rate the app", () {
+                                    cardDecoration(themeChange, controller,
+                                        Constant.rateIcon, "Rate the app", () {
                                       final InAppReview inAppReview =
                                           InAppReview.instance;
                                       inAppReview.requestReview();
@@ -243,7 +239,7 @@ class ProfileScreen extends StatelessWidget {
                             const SizedBox(
                               height: 10,
                             ),
-                            Constant.userModel == null
+                            controller.userData.value.isEmpty
                                 ? const SizedBox()
                                 : Column(
                                     crossAxisAlignment:
@@ -270,8 +266,9 @@ class ProfileScreen extends StatelessWidget {
                                               ? AppThemeData.grey900
                                               : AppThemeData.grey50,
                                           shape: RoundedRectangleBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(8)),
+                                            borderRadius:
+                                                BorderRadius.circular(8),
+                                          ),
                                         ),
                                         child: Padding(
                                           padding: const EdgeInsets.symmetric(
@@ -281,21 +278,30 @@ class ProfileScreen extends StatelessWidget {
                                               cardDecoration(
                                                   themeChange,
                                                   controller,
-                                                  "assets/icons/ic_restaurant_chat.svg",
-                                                  "Vendor Inbox", () {
+                                                  Constant.supportIcon,
+                                                  "Contact Us", () {
                                                 Get.to(
-                                                  const RestaurantInboxScreen(),
+                                                  const ContactUs(),
                                                 );
                                               }),
-                                              cardDecoration(
-                                                  themeChange,
-                                                  controller,
-                                                  "assets/icons/ic_restaurant_driver.svg",
-                                                  "Rider Inbox", () {
-                                                Get.to(
-                                                  const DriverInboxScreen(),
-                                                );
-                                              }),
+                                              // cardDecoration(
+                                              //     themeChange,
+                                              //     controller,
+                                              //     "assets/icons/ic_restaurant_chat.svg",
+                                              //     "Vendor Inbox", () {
+                                              //   Get.to(
+                                              //     const RestaurantInboxScreen(),
+                                              //   );
+                                              // }),
+                                              // cardDecoration(
+                                              //     themeChange,
+                                              //     controller,
+                                              //     "assets/icons/ic_restaurant_driver.svg",
+                                              //     "Rider Inbox", () {
+                                              //   Get.to(
+                                              //     const DriverInboxScreen(),
+                                              //   );
+                                              // }),
                                             ],
                                           ),
                                         ),
@@ -336,7 +342,7 @@ class ProfileScreen extends StatelessWidget {
                                     cardDecoration(
                                         themeChange,
                                         controller,
-                                        "assets/icons/ic_privacy_policy.svg",
+                                        Constant.policyIcon,
                                         "Privacy Policy", () {
                                       Get.to(TermsAndConditionScreen(
                                         type: "privacy",
@@ -345,7 +351,7 @@ class ProfileScreen extends StatelessWidget {
                                     cardDecoration(
                                         themeChange,
                                         controller,
-                                        "assets/icons/ic_tearm_condition.svg",
+                                        Constant.termsIcon,
                                         "Terms and Conditions", () {
                                       Get.to(TermsAndConditionScreen(
                                         type: "termAndCondition",
@@ -379,14 +385,14 @@ class ProfileScreen extends StatelessWidget {
                                         ? cardDecoration(
                                             themeChange,
                                             controller,
-                                            "assets/icons/ic_logout.svg",
+                                            Constant.profileIcon,
                                             "Log In", () {
                                             Get.offAll(LoginScreen());
                                           })
                                         : cardDecoration(
                                             themeChange,
                                             controller,
-                                            "assets/icons/ic_logout.svg",
+                                            Constant.profileIcon,
                                             "Log out", () {
                                             showDialog(
                                                 context: context,
@@ -517,13 +523,22 @@ class ProfileScreen extends StatelessWidget {
         },
         child: Row(
           children: [
-            SvgPicture.asset(
+            Iconify(
               image,
-              colorFilter: title == "Log In".tr
-                  ? const ColorFilter.mode(
-                      AppThemeData.success500, BlendMode.srcIn)
-                  : null,
+              size: 24,
+              color: themeChange.getThem()
+                  ? AppThemeData.grey50
+                  : AppThemeData.primary400,
             ),
+            // SvgPicture.asset(
+            //   image,
+            //   colorFilter: title == "Log In".tr
+            //       ? const ColorFilter.mode(
+            //           AppThemeData.success500,
+            //           BlendMode.srcIn,
+            //         )
+            //       : null,
+            // ),
             const SizedBox(
               width: 10,
             ),

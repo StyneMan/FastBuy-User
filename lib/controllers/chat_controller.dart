@@ -1,8 +1,9 @@
 import 'dart:async';
 
-import 'package:customer/constant/send_notification.dart';
+// import 'package:customer/constant/send_notification.dart';
 import 'package:customer/models/conversation_model.dart';
 import 'package:customer/models/inbox_model.dart';
+import 'package:customer/services/socket/socket_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
@@ -54,6 +55,30 @@ class ChatController extends GetxController {
     isLoading.value = false;
   }
 
+  postMessage() async {
+    try {
+      final socket = SocketManager().socket;
+      Map payload = {
+        "chatData": {
+          "senderId": "",
+          "receiverId": "",
+          "senderType": "",
+          "receiverType": "",
+        },
+        "msgData": {
+          "senderId": "",
+          "receiverId": "",
+          "message": "",
+        }
+      };
+
+      socket.emit("postMessage", payload);
+      // ShowToastDialog.closeLoader();
+    } catch (e) {
+      debugPrint("$e");
+    }
+  }
+
   sendMessage(String message, Url? url, String videoThumbnail,
       String messageType) async {
     InboxModel inboxModel = InboxModel(
@@ -102,8 +127,8 @@ class ChatController extends GetxController {
       // await FireStoreUtils.addRestaurantChat(conversationModel);
     }
 
-    await SendNotification.sendChatFcmMessage(customerName.value,
-        conversationModel.message.toString(), token.value, {});
+    // await SendNotification.sendChatFcmMessage(customerName.value,
+    //     conversationModel.message.toString(), token.value, {});
   }
 
   final ImagePicker imagePicker = ImagePicker();

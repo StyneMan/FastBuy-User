@@ -166,6 +166,18 @@ class APIService {
     );
   }
 
+  Future<http.Response> saveSupport(
+      {required String accessToken, required Map payload}) async {
+    return await client.post(
+      Uri.parse('${Constant.baseURL}/supports/create'),
+      headers: {
+        "Content-type": "application/json",
+        "Authorization": "Bearer $accessToken",
+      },
+      body: jsonEncode(payload),
+    );
+  }
+
   Future<http.Response> imagesUploader(
       {required String accessToken, required Map payload}) async {
     return await client.put(
@@ -577,24 +589,27 @@ class APIService {
     }
   }
 
+  Future<http.Response> getTransactions({
+    required String accessToken,
+    required String customerId,
+    required int page,
+  }) async {
+    return await client.get(
+      Uri.parse(
+          '${Constant.baseURL}/customer/$customerId/transactions?page=$page'),
+      headers: {
+        "Content-type": "application/json",
+        "Authorization": "Bearer $accessToken",
+      },
+    );
+  }
+
   Future<http.Response> initPayment({
     required String accessToken,
     required Map payload,
   }) async {
     return await client.post(
       Uri.parse('${Constant.baseURL}/bank/payment/init'),
-      headers: {
-        "Content-type": "application/json",
-        "Authorization": "Bearer $accessToken",
-      },
-      body: jsonEncode(payload),
-    );
-  }
-
-  Future<http.Response> initPaystack(
-      {required String accessToken, required Map payload}) async {
-    return await client.post(
-      Uri.parse('${Constant.baseURL}/bank/payments/paystack/init'),
       headers: {
         "Content-type": "application/json",
         "Authorization": "Bearer $accessToken",
@@ -771,5 +786,50 @@ class APIService {
         "Content-type": "application/json",
       },
     );
+  }
+
+  Future<http.Response> getOffers() async {
+    return await http.get(
+      Uri.parse('${Constant.baseURL}/customer/offers/available'),
+      headers: {
+        "Content-type": "application/json",
+      },
+    );
+  }
+
+  Future<http.Response> reviewRider({
+    required String accessToken,
+    required String riderId,
+    required Map payload,
+  }) async {
+    return await client.put(
+      Uri.parse('${Constant.baseURL}/rider/$riderId/review'),
+      headers: {
+        "Content-type": "application/json",
+        "Authorization": "Bearer $accessToken",
+      },
+      body: jsonEncode(payload),
+    );
+  }
+
+  Stream<http.Response> getPendingReviews(
+      {required String accessToken,
+      required String customerId,
+      required int page}) async* {
+    try {
+      // Fetch data and add it to the stream
+      http.Response response = await client.get(
+        Uri.parse(
+            '${Constant.baseURL}/customer/$customerId/orders/cancelled?page=$page'),
+        headers: {
+          "Content-type": "application/json",
+          "Authorization": "Bearer $accessToken",
+        },
+      );
+      yield response; // Yield the response to the stream
+    } catch (error) {
+      // Handle errors by adding an error to the stream
+      _streamController.addError(error);
+    }
   }
 }

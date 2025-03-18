@@ -119,28 +119,33 @@ class _OtpScreenState extends State<OtpScreen> {
             //Store access token here
             Preferences.setString(
                 Preferences.accessTokenKey, map['accessToken']);
+            _profileController.setProfile(map['user']);
 
-            String token = await NotificationService.getToken();
-            debugPrint(":::::::TOKEN:::::: $token");
-            Map payload = {
-              "token": token,
-            };
-            var tokenResp = await APIService()
-                .updateFCMToken(accessToken: map['accessToken'], body: payload);
-            debugPrint("UPDATE FCM RESPONSE ::: ${tokenResp.body}");
-            if (tokenResp.statusCode >= 200 && tokenResp.statusCode <= 299) {
-              Map<String, dynamic> fcmMap = jsonDecode(tokenResp.body);
-              _profileController.setProfile(fcmMap['user']);
-
-              // Now navigate to dashboard from here
-              Get.off(
-                const DashBoardScreen(),
-                transition: Transition.cupertino,
-              );
-            } else {
-              Map<String, dynamic> errorMap = jsonDecode(resp.body);
-              Constant.toast(errorMap['message']);
+            try {
+              String token = await NotificationService.getToken();
+              debugPrint(":::::::TOKEN:::::: $token");
+              Map payload = {
+                "token": token,
+              };
+              var tokenResp = await APIService().updateFCMToken(
+                  accessToken: map['accessToken'], body: payload);
+              debugPrint("UPDATE FCM RESPONSE ::: ${tokenResp.body}");
+              if (tokenResp.statusCode >= 200 && tokenResp.statusCode <= 299) {
+                Map<String, dynamic> fcmMap = jsonDecode(tokenResp.body);
+                _profileController.setProfile(fcmMap['user']);
+                // Now navigate to dashboard from here
+              } else {
+                Map<String, dynamic> errorMap = jsonDecode(resp.body);
+                Constant.toast(errorMap['message']);
+              }
+            } catch (e) {
+              debugPrint("$e");
             }
+
+            Get.off(
+              const DashBoardScreen(),
+              transition: Transition.cupertino,
+            );
           }
         } else {
           Map<String, dynamic> errMap = jsonDecode(resp.body);
@@ -234,7 +239,14 @@ class _OtpScreenState extends State<OtpScreen> {
           debugPrint("MY ORDERS REFRESHED  :: ${onData.body}");
           if (onData.statusCode >= 200 && onData.statusCode <= 299) {
             Map<String, dynamic> map = jsonDecode(onData.body);
-            _dashboardController.orderController.myOrders.value = map;
+            _dashboardController.orderController.myOrders.value = map['data'];
+            _dashboardController.orderController.hasMoreOrders.value =
+                int.parse("${map['totalPages']}") >
+                        int.parse("${map['currentPage']}")
+                    ? true
+                    : false;
+            _dashboardController.orderController.ordersCurrentPage.value =
+                int.parse("${map['currentPage']}");
           }
         });
         APIService()
@@ -252,7 +264,7 @@ class _OtpScreenState extends State<OtpScreen> {
         ShowToastDialog.closeLoader();
         Constant.toast(map['message']);
         _dashboardController.selectedIndex.value = 3;
-        Get.off(
+        Get.offAll(
           const DashBoardScreen(),
           transition: Transition.cupertino,
         );

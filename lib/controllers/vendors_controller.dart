@@ -14,6 +14,7 @@ class VendorsController extends GetxController {
   var restaurantVendors = {}.obs;
   var storeVendors = {}.obs;
   RxList packOptions = [].obs;
+  var availableOffers = {}.obs;
 
   RxBool isOptionsExpanded = false.obs;
   var selectedPacks = {}.obs;
@@ -82,6 +83,13 @@ class VendorsController extends GetxController {
 
       // Assign the value
       packOptions.value = list;
+    }
+
+    final offers = await APIService().getOffers();
+    debugPrint("AVALABLE OFFERS :::: ${offers.body}");
+    if (offers.statusCode >= 200 && offers.statusCode <= 299) {
+      Map<String, dynamic> map = jsonDecode(offers.body);
+      availableOffers.value = map;
     }
 
     if (addressController.location.value.latitude != null &&

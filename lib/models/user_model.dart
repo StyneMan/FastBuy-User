@@ -1,4 +1,5 @@
 import 'package:customer/constant/constant.dart';
+import 'package:flutter/material.dart';
 
 class UserModel {
   String? id;
@@ -202,7 +203,10 @@ class ShippingAddress {
   }
 
   String getFullAddress() {
-    return '${address == null || address!.isEmpty ? " " : address} ${locality == null || locality!.isEmpty ? " " : locality} ${landmark == null || landmark!.isEmpty ? " " : landmark.toString()}';
+    var result =
+        '${address == null || address!.isEmpty ? "" : "$address "}${locality == null || locality!.isEmpty ? "" : "$locality "}${landmark == null || landmark!.isEmpty ? "" : landmark.toString()}';
+    debugPrint("GET FULL ADDDRESS ::: $result");
+    return result;
   }
 }
 

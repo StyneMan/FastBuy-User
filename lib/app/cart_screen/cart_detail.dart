@@ -164,7 +164,7 @@ class _CartDetailState extends State<CartDetail> {
                                             ),
                                           ),
                                           Text(
-                                            "${item['extras']?.length} ${item['extras']?.length > 1 ? "selections" : "selection"}",
+                                            "${(item['extras'] ?? [])?.length} ${(item['extras'] ?? [])?.length > 1 ? "selections" : "selection"}",
                                           ),
                                         ],
                                       )

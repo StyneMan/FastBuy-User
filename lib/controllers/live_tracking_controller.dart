@@ -13,7 +13,6 @@ class LiveTrackingController extends GetxController {
 
   @override
   void onInit() {
-    // TODO: implement onInit
     addMarkerSetup();
     if (Constant.selectedMapType == 'osm') {
       ShowToastDialog.showLoader("Please wait".tr);
@@ -43,9 +42,9 @@ class LiveTrackingController extends GetxController {
             sourceLongitude:
                 double.parse("${orderModel.value['rider']['current_lng']}"),
             destinationLatitude:
-                double.parse("${orderModel.value['vendor']['lat']}"),
+                double.parse("${orderModel.value['vendor_location']['lat']}"),
             destinationLongitude:
-                double.parse("${orderModel.value['vendor']['lng']}"),
+                double.parse("${orderModel.value['vendor_location']['lng']}"),
           );
         } else if (orderModel.value['order_status'] == "in_delivery") {
           getPolyline(
@@ -65,9 +64,9 @@ class LiveTrackingController extends GetxController {
             sourceLongitude:
                 double.parse("${orderModel.value['delivery_addr_lng']}"),
             destinationLatitude:
-                double.parse("${orderModel.value['vendor']['lat']}"),
+                double.parse("${orderModel.value['vendor_location']['lat']}"),
             destinationLongitude:
-                double.parse("${orderModel.value['vendor']['lng']}"),
+                double.parse("${orderModel.value['vendor_location']['lng']}"),
           );
         }
       } else {
@@ -78,8 +77,8 @@ class LiveTrackingController extends GetxController {
               longitude: orderModel.value['rider']['current_lng'],
             ),
             destination: GeoPoint(
-              latitude: orderModel.value['vendor']['lat'],
-              longitude: orderModel.value['vendor']['lng'],
+              latitude: orderModel.value['vendor_location']['lat'],
+              longitude: orderModel.value['vendor_location']['lng'],
             ),
           );
         } else if (orderModel.value['order_status'] == "in_delivery") {
@@ -100,8 +99,8 @@ class LiveTrackingController extends GetxController {
               longitude: orderModel.value['delivery_addr_lng'],
             ),
             destination: GeoPoint(
-              latitude: orderModel.value['vendor']['lat'],
-              longitude: orderModel.value['vendor']['lng'],
+              latitude: orderModel.value['vendor_location']['lat'],
+              longitude: orderModel.value['vendor_location']['lng'],
             ),
           );
         }
@@ -135,6 +134,16 @@ class LiveTrackingController extends GetxController {
         sourceLongitude != null &&
         destinationLatitude != null &&
         destinationLongitude != null) {
+      final Uint8List departure =
+          await Constant().getBytesFromAsset('assets/images/pickup.png', 100);
+      final Uint8List destination =
+          await Constant().getBytesFromAsset('assets/images/dropoff.png', 100);
+      final Uint8List driver = await Constant()
+          .getBytesFromAsset('assets/images/food_delivery.png', 50);
+      final departureIco = BitmapDescriptor.fromBytes(departure);
+      final destinationIco = BitmapDescriptor.fromBytes(destination);
+      final driverIco = BitmapDescriptor.fromBytes(driver);
+
       List<LatLng> polylineCoordinates = [];
       PolylineRequest polylineRequest = PolylineRequest(
         origin: PointLatLng(sourceLatitude, sourceLongitude),
@@ -155,22 +164,24 @@ class LiveTrackingController extends GetxController {
       }
 
       addMarker(
-          latitude: double.parse("${orderModel.value['vendor']['lat']}"),
-          longitude: double.parse("${orderModel.value['vendor']['lng']}"),
+          latitude:
+              double.parse("${orderModel.value['vendor_location']['lat']}"),
+          longitude:
+              double.parse("${orderModel.value['vendor_location']['lng']}"),
           id: "Departure",
-          descriptor: departureIcon!,
+          descriptor: departureIco,
           rotation: 0.0);
       addMarker(
           latitude: double.parse("${orderModel.value['delivery_addr_lat']}"),
           longitude: double.parse("${orderModel.value['delivery_addr_lng']}"),
           id: "Destination",
-          descriptor: destinationIcon!,
+          descriptor: destinationIco,
           rotation: 0.0);
       addMarker(
         latitude: double.parse("${orderModel.value['rider']['current_lat']}"),
         longitude: double.parse("${orderModel.value['rider']['current_lng']}"),
         id: "Driver",
-        descriptor: driverIcon!,
+        descriptor: driverIco,
         rotation: double.parse("2.0"),
       );
 

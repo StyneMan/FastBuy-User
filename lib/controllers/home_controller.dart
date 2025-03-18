@@ -18,7 +18,6 @@ class HomeController extends GetxController {
   DashBoardController dashBoardController = Get.put(DashBoardController());
   final CartProvider cartProvider = CartProvider();
   var banners = {}.obs;
-  var offers = {}.obs;
 
   getCartData() async {
     cartProvider.cartStream.listen(
@@ -72,23 +71,15 @@ class HomeController extends GetxController {
     try {
       final resp = await APIService().banners();
       debugPrint("BANNER RESPONSE ::: ${resp.body}");
+      isLoading.value = false;
       if (resp.statusCode >= 200 && resp.statusCode <= 299) {
         final Map<String, dynamic> map = jsonDecode(resp.body);
         // List<Map<String, dynamic>> list =
         //     decodedList.map((item) => item as Map<String, dynamic>).toList();
         banners.value = map;
       }
-
-      // OFFERS :
-      final offersResp = await APIService().banners();
-      debugPrint("BANNER RESPONSE ::: ${offersResp.body}");
-      if (offersResp.statusCode >= 200 && offersResp.statusCode <= 299) {
-        final Map<String, dynamic> map = jsonDecode(offersResp.body);
-        // List<Map<String, dynamic>> list =
-        //     decodedList.map((item) => item as Map<String, dynamic>).toList();
-        offers.value = map;
-      }
     } catch (e) {
+      isLoading.value = false;
       debugPrint("$e");
     }
 

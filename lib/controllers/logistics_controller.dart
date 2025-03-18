@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:cloudinary_sdk/cloudinary_sdk.dart';
 import 'package:customer/constant/constant.dart';
@@ -65,6 +66,7 @@ class LogisticsController extends GetxController {
 
   RxList addedPackages = [].obs;
   RxList images = [].obs;
+  RxList packageImages = [].obs;
   RxBool shouldAddMorePackage = true.obs;
 
   RxBool isFetchingCost = false.obs;
@@ -166,14 +168,40 @@ class LogisticsController extends GetxController {
     }
   }
 
-  savePackage(var payload) {
-    addedPackages.value = [...addedPackages.value, payload];
+  savePackage(var payload) async {
+    // Upload images to cloudinary first
+    for (var k = 0; k < images.value.length; k++) {
+      final resp = await cloudinary.uploadResource(
+        CloudinaryUploadResource(
+          uploadPreset: 'ml_default',
+          filePath: File(images.value[k]).path,
+          fileBytes: File(images.value[k]).readAsBytesSync(),
+          resourceType: CloudinaryResourceType.image,
+          progressCallback: (count, total) {},
+        ),
+      );
+
+      packageImages.value = [
+        ...packageImages.value,
+        resp.secureUrl,
+      ];
+    }
+
+    Map refactoredPayload = {
+      "weight": payload['weight'],
+      "quantity": 1,
+      "name": payload['name'],
+      "dimen": payload['dimen'],
+      "images": packageImages.value,
+    };
+    addedPackages.value = [...addedPackages.value, refactoredPayload];
     // Clear fields
     packageNameEditingController.value.clear();
     packageQuantityEditingController.value.clear();
     dimensionEditingController.value.clear();
     weightEditingController.value.clear();
     images.value = [];
+    packageImages.value = [];
     shouldAddMorePackage.value = true;
   }
 
@@ -193,6 +221,10 @@ class LogisticsController extends GetxController {
       });
 
       final accessToken = Preferences.getString(Preferences.accessTokenKey);
+
+      if (addedPackages.isEmpty) {
+        totalWeight = double.parse(weightEditingController.value.text);
+      }
 
       Map payload = {
         "totalWeight": totalWeight,

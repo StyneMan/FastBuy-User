@@ -18,7 +18,6 @@ class BannerView extends StatelessWidget {
     return SizedBox(
       height: 200,
       child: PageView.builder(
-        physics: const CarouselScrollPhysics(),
         controller: controller.pageController.value,
         scrollDirection: Axis.horizontal,
         itemCount: (controller.banners.value['data'] ?? [])?.length,
@@ -32,19 +31,6 @@ class BannerView extends StatelessWidget {
           return InkWell(
             onTap: () async {
               if (bannerModel['banner_type'] == "vendor_banner") {
-                // ShowToastDialog.showLoader("Please wait".tr);
-                // VendorModel? vendorModel = await FireStoreUtils.getVendorById(
-                //     bannerModel.redirect_id.toString());
-
-                // if (vendorModel!.zoneId == Constant.selectedZone!.id) {
-                //   ShowToastDialog.closeLoader();
-                //   Get.to(const RestaurantDetailsScreen(),
-                //       arguments: {"vendorModel": vendorModel});
-                // } else {
-                //   ShowToastDialog.closeLoader();
-                //   ShowToastDialog.showToast(
-                //       "Sorry, The Zone is not available in your area. change the other location first.");
-                // }
               } else if (bannerModel['banner_type'] == "product_banner") {
                 Get.to(
                   ProductInfoScreen(

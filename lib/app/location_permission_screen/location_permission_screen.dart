@@ -87,7 +87,7 @@ class LocationPermissionScreen extends StatelessWidget {
                           ShowToastDialog.showLoader("Please wait".tr);
                           ShippingAddress addressModel = ShippingAddress();
                           try {
-                            await Geolocator.requestPermission();
+                            // await Geolocator.requestPermission();
 
                             Position newLocalData =
                                 await Geolocator.getCurrentPosition(
@@ -100,10 +100,6 @@ class LocationPermissionScreen extends StatelessWidget {
                                 "CURRENT LOCATION PICKED LAT ::: ${newLocalData.latitude}");
                             debugPrint(
                                 "CURRENT LOCATION PICKED LNG ::: ${newLocalData.longitude}");
-
-                            // Position newLocalData =
-                            //     await Geolocator.getCurrentPosition(
-                            //         desiredAccuracy: LocationAccuracy.high);
 
                             await placemarkFromCoordinates(
                                     newLocalData.latitude,
@@ -173,6 +169,7 @@ class LocationPermissionScreen extends StatelessWidget {
                             dashboardController.selectedIndex.value = 0;
                             Get.to(const DashBoardScreen());
                           } catch (e) {
+                            debugPrint("CURR locATION ERROR ==>>> $e");
                             // await placemarkFromCoordinates(19.228825, 72.854118)
                             //     .then((valuePlaceMaker) {
                             //   Placemark placeMark = valuePlaceMaker[0];
@@ -187,7 +184,7 @@ class LocationPermissionScreen extends StatelessWidget {
                             // Constant.selectedLocation = addressModel;
                             ShowToastDialog.closeLoader();
 
-                            Get.offAll(const DashBoardScreen());
+                            // Get.offAll(const DashBoardScreen());
                           }
                         },
                       );

@@ -565,16 +565,16 @@ class HomeScreenTwo extends StatelessWidget {
                                     height: 20,
                                   ),
                                   const NearbyVendorView(),
-                                  Padding(
-                                    padding: const EdgeInsets.symmetric(
+                                  const Padding(
+                                    padding: EdgeInsets.symmetric(
                                       horizontal: 16,
                                     ),
                                     child: Column(
                                       children: [
-                                        const SizedBox(
+                                        SizedBox(
                                           height: 20,
                                         ),
-                                        OfferView(controller: controller),
+                                        OfferView(),
                                       ],
                                     ),
                                   ),

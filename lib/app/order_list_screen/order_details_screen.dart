@@ -84,7 +84,9 @@ class OrderDetailsScreen extends StatelessWidget {
                                 ),
                               ),
                               RoundedButtonFill(
-                                title: "${item['order_status']}".tr,
+                                title:
+                                    "${item['order_status'].toString().toLowerCase().contains('arrived') ? "Arrived" : item['order_status']}"
+                                        .tr,
                                 color: Constant.statusColor(
                                   status: "${item['order_status']}",
                                 ),
@@ -202,88 +204,89 @@ class OrderDetailsScreen extends StatelessWidget {
                                                 item['order_status'] ==
                                                     "completed"
                                             ? const SizedBox()
-                                            : InkWell(
-                                                onTap: () async {
-                                                  // ShowToastDialog.showLoader(
-                                                  //     "Please wait".tr);
+                                            : const SizedBox()
+                                        // InkWell(
+                                        //     onTap: () async {
+                                        //       // ShowToastDialog.showLoader(
+                                        //       //     "Please wait".tr);
 
-                                                  // UserModel? customer =
-                                                  //     await FireStoreUtils
-                                                  //         .getUserProfile(
-                                                  //             controller
-                                                  //                 .orderModel
-                                                  //                 .value
-                                                  //                 .authorID
-                                                  //                 .toString());
-                                                  // UserModel? restaurantUser =
-                                                  //     await FireStoreUtils
-                                                  //         .getUserProfile(
-                                                  //             controller
-                                                  //                 .orderModel
-                                                  //                 .value
-                                                  //                 .vendor!
-                                                  //                 .author
-                                                  //                 .toString());
-                                                  // VendorModel? vendorModel =
-                                                  //     await FireStoreUtils
-                                                  //         .getVendorById(
-                                                  //             restaurantUser!
-                                                  //                 .vendorID
-                                                  //                 .toString());
-                                                  // ShowToastDialog.closeLoader();
+                                        //       // UserModel? customer =
+                                        //       //     await FireStoreUtils
+                                        //       //         .getUserProfile(
+                                        //       //             controller
+                                        //       //                 .orderModel
+                                        //       //                 .value
+                                        //       //                 .authorID
+                                        //       //                 .toString());
+                                        //       // UserModel? restaurantUser =
+                                        //       //     await FireStoreUtils
+                                        //       //         .getUserProfile(
+                                        //       //             controller
+                                        //       //                 .orderModel
+                                        //       //                 .value
+                                        //       //                 .vendor!
+                                        //       //                 .author
+                                        //       //                 .toString());
+                                        //       // VendorModel? vendorModel =
+                                        //       //     await FireStoreUtils
+                                        //       //         .getVendorById(
+                                        //       //             restaurantUser!
+                                        //       //                 .vendorID
+                                        //       //                 .toString());
+                                        //       // ShowToastDialog.closeLoader();
 
-                                                  // Get.to(
-                                                  //   const ChatScreen(),
-                                                  //   arguments: {
-                                                  //     "customerName":
-                                                  //         '${customer!.fullName()}',
-                                                  //     "restaurantName":
-                                                  //         vendorModel!.title,
-                                                  //     "orderId": controller
-                                                  //         .orderModel.value.id,
-                                                  //     "restaurantId":
-                                                  //         restaurantUser.id,
-                                                  //     "customerId": customer.id,
-                                                  //     "customerProfileImage":
-                                                  //         customer
-                                                  //             .profilePictureURL,
-                                                  //     "restaurantProfileImage":
-                                                  //         vendorModel.photo,
-                                                  //     "token": restaurantUser
-                                                  //         .fcmToken,
-                                                  //     "chatType": "restaurant",
-                                                  //   },
-                                                  // );
-                                                },
-                                                child: Container(
-                                                  width: 42,
-                                                  height: 42,
-                                                  decoration: ShapeDecoration(
-                                                    shape:
-                                                        RoundedRectangleBorder(
-                                                      side: BorderSide(
-                                                          width: 1,
-                                                          color: themeChange
-                                                                  .getThem()
-                                                              ? AppThemeData
-                                                                  .grey700
-                                                              : AppThemeData
-                                                                  .grey200),
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                              120),
-                                                    ),
-                                                  ),
-                                                  child: Padding(
-                                                    padding:
-                                                        const EdgeInsets.all(
-                                                            8.0),
-                                                    child: SvgPicture.asset(
-                                                      "assets/icons/ic_wechat.svg",
-                                                    ),
-                                                  ),
-                                                ),
-                                              )
+                                        //       // Get.to(
+                                        //       //   const ChatScreen(),
+                                        //       //   arguments: {
+                                        //       //     "customerName":
+                                        //       //         '${customer!.fullName()}',
+                                        //       //     "restaurantName":
+                                        //       //         vendorModel!.title,
+                                        //       //     "orderId": controller
+                                        //       //         .orderModel.value.id,
+                                        //       //     "restaurantId":
+                                        //       //         restaurantUser.id,
+                                        //       //     "customerId": customer.id,
+                                        //       //     "customerProfileImage":
+                                        //       //         customer
+                                        //       //             .profilePictureURL,
+                                        //       //     "restaurantProfileImage":
+                                        //       //         vendorModel.photo,
+                                        //       //     "token": restaurantUser
+                                        //       //         .fcmToken,
+                                        //       //     "chatType": "restaurant",
+                                        //       //   },
+                                        //       // );
+                                        //     },
+                                        //     // child: Container(
+                                        //     //   width: 42,
+                                        //     //   height: 42,
+                                        //     //   decoration: ShapeDecoration(
+                                        //     //     shape:
+                                        //     //         RoundedRectangleBorder(
+                                        //     //       side: BorderSide(
+                                        //     //           width: 1,
+                                        //     //           color: themeChange
+                                        //     //                   .getThem()
+                                        //     //               ? AppThemeData
+                                        //     //                   .grey700
+                                        //     //               : AppThemeData
+                                        //     //                   .grey200),
+                                        //     //       borderRadius:
+                                        //     //           BorderRadius.circular(
+                                        //     //               120),
+                                        //     //     ),
+                                        //     //   ),
+                                        //     //   child: Padding(
+                                        //     //     padding:
+                                        //     //         const EdgeInsets.all(
+                                        //     //             8.0),
+                                        //     //     child: SvgPicture.asset(
+                                        //     //       "assets/icons/ic_wechat.svg",
+                                        //     //     ),
+                                        //     //   ),
+                                        //     // ),
+                                        //   )
                                       ],
                                     ),
                                   ),
@@ -345,7 +348,8 @@ class OrderDetailsScreen extends StatelessWidget {
                                                                 Text(
                                                                   item['order_type'] ==
                                                                           "parcel_order"
-                                                                      ? "${item['delivery_address']}"
+                                                                      ? "${item['customer']['first_name']} ${item['customer']['last_name']}"
+                                                                          .capitalize!
                                                                       : "${item['vendor']['name']} ${item['vendor_location']['branch_name']}",
                                                                   textAlign:
                                                                       TextAlign
@@ -366,7 +370,22 @@ class OrderDetailsScreen extends StatelessWidget {
                                                                 ),
                                                                 item['order_type'] ==
                                                                         "parcel_order"
-                                                                    ? const SizedBox()
+                                                                    ? Text(
+                                                                        "${item['pickup_address']}"
+                                                                            .trimLeft(),
+                                                                        textAlign:
+                                                                            TextAlign.start,
+                                                                        style:
+                                                                            TextStyle(
+                                                                          fontFamily:
+                                                                              AppThemeData.medium,
+                                                                          fontSize:
+                                                                              14,
+                                                                          color: themeChange.getThem()
+                                                                              ? AppThemeData.grey300
+                                                                              : AppThemeData.grey600,
+                                                                        ),
+                                                                      )
                                                                     : Text(
                                                                         "${item['vendor_location']['street']}",
                                                                         textAlign:
@@ -396,7 +415,11 @@ class OrderDetailsScreen extends StatelessWidget {
                                                                     if (item[
                                                                             'order_type'] ==
                                                                         "parcel_order") {
-                                                                      // Use FastBuy's contaact here
+                                                                      Constant
+                                                                          .makePhoneCall(
+                                                                        item['rider']['intl_phone_format']
+                                                                            .toString(),
+                                                                      );
                                                                     } else {
                                                                       Constant
                                                                           .makePhoneCall(
@@ -450,89 +473,7 @@ class OrderDetailsScreen extends StatelessWidget {
                                                                   item['order_status'] ==
                                                                       "completed"
                                                               ? const SizedBox()
-                                                              : InkWell(
-                                                                  onTap:
-                                                                      () async {
-                                                                    controller
-                                                                        .initChat();
-
-                                                                    // Future.delayed(
-                                                                    //   const Duration(
-                                                                    //       seconds: 3),
-                                                                    //   () {
-                                                                    //     ShowToastDialog
-                                                                    //         .closeLoader();
-                                                                    //   },
-                                                                    // );
-
-                                                                    // Get.to(
-                                                                    //   const ChatScreen(),
-                                                                    //   arguments: {
-                                                                    //     "customerName":
-                                                                    //         '${item['customer']['first_name']} ${item['customer']['last_name']}',
-                                                                    //     "restaurantName": item[
-                                                                    //                 'order_type'] ==
-                                                                    //             "parcel_order"
-                                                                    //         ? "FastBuy Logistics"
-                                                                    //         : '${item['vendor']['name']}',
-                                                                    //     "orderId":
-                                                                    //         '${item['order_id']}',
-                                                                    //     "restaurantId":
-                                                                    //         item['order_type'] ==
-                                                                    //                 "parcel_order"
-                                                                    //             ? ""
-                                                                    //             : '${item['vendor']['id']}',
-                                                                    //     "customerId":
-                                                                    //         '${item['customer']['id']}',
-                                                                    //     "customerProfileImage":
-                                                                    //         '${item['customer']['photo_url']}',
-                                                                    //     "restaurantProfileImage": item[
-                                                                    //                 'order_type'] ==
-                                                                    //             "parcel_order"
-                                                                    //         ? "https://i.imgur.com/ZmYTJoA.png"
-                                                                    //         : '${item['vendor']['logo']}',
-                                                                    //     "token": "",
-                                                                    //     "chatType":
-                                                                    //         "restaurant",
-                                                                    //   },
-                                                                    // );
-                                                                  },
-                                                                  child:
-                                                                      Container(
-                                                                    width: 42,
-                                                                    height: 42,
-                                                                    decoration:
-                                                                        ShapeDecoration(
-                                                                      shape:
-                                                                          RoundedRectangleBorder(
-                                                                        side:
-                                                                            BorderSide(
-                                                                          width:
-                                                                              1,
-                                                                          color: themeChange.getThem()
-                                                                              ? AppThemeData.grey700
-                                                                              : AppThemeData.grey200,
-                                                                        ),
-                                                                        borderRadius:
-                                                                            BorderRadius.circular(
-                                                                          120,
-                                                                        ),
-                                                                      ),
-                                                                    ),
-                                                                    child:
-                                                                        Padding(
-                                                                      padding:
-                                                                          const EdgeInsets
-                                                                              .all(
-                                                                        8.0,
-                                                                      ),
-                                                                      child: SvgPicture
-                                                                          .asset(
-                                                                        "assets/icons/ic_wechat.svg",
-                                                                      ),
-                                                                    ),
-                                                                  ),
-                                                                )
+                                                              : const SizedBox(),
                                                         ],
                                                       )
                                                     : Column(
@@ -645,9 +586,20 @@ class OrderDetailsScreen extends StatelessWidget {
                                                                   CrossAxisAlignment
                                                                       .start,
                                                               children: [
-                                                                SvgPicture
-                                                                    .asset(
-                                                                  "assets/icons/ic_timer.svg",
+                                                                ClipOval(
+                                                                  child: Image
+                                                                      .network(
+                                                                    "${item['rider']['photo_url']}",
+                                                                    width: 48,
+                                                                    height: 48,
+                                                                    errorBuilder: (context,
+                                                                            error,
+                                                                            stackTrace) =>
+                                                                        SvgPicture
+                                                                            .asset(
+                                                                      "assets/icons/ic_timer.svg",
+                                                                    ),
+                                                                  ),
                                                                 ),
                                                                 const SizedBox(
                                                                   width: 5,
@@ -712,13 +664,7 @@ class OrderDetailsScreen extends StatelessWidget {
                                                                             CrossAxisAlignment.start,
                                                                         children: [
                                                                           Text(
-                                                                            "Rider full name",
-                                                                            // controller
-                                                                            //     .orderModel
-                                                                            //     .value
-                                                                            //     .driver!
-                                                                            //     .fullName()
-                                                                            //     .toString(),
+                                                                            "${item['rider']['first_name']} ${item['rider']['last_name']}".capitalize!,
                                                                             textAlign:
                                                                                 TextAlign.start,
                                                                             style:
@@ -730,13 +676,7 @@ class OrderDetailsScreen extends StatelessWidget {
                                                                             ),
                                                                           ),
                                                                           Text(
-                                                                            "Rider email",
-                                                                            // controller
-                                                                            //     .orderModel
-                                                                            //     .value
-                                                                            //     .driver!
-                                                                            //     .email
-                                                                            //     .toString(),
+                                                                            "${item['rider']['email_address']}",
                                                                             textAlign:
                                                                                 TextAlign.start,
                                                                             style:
@@ -754,12 +694,10 @@ class OrderDetailsScreen extends StatelessWidget {
                                                                       onTap:
                                                                           () {
                                                                         // Call Rider
-                                                                        // Constant.makePhoneCall(controller
-                                                                        //     .orderModel
-                                                                        //     .value
-                                                                        //     .vendor!
-                                                                        //     .phonenumber
-                                                                        //     .toString());
+                                                                        Constant
+                                                                            .makePhoneCall(
+                                                                          "${item['rider']['intl_phone_format']}",
+                                                                        );
                                                                       },
                                                                       child:
                                                                           Container(
@@ -797,73 +735,73 @@ class OrderDetailsScreen extends StatelessWidget {
                                                                     const SizedBox(
                                                                       width: 10,
                                                                     ),
-                                                                    InkWell(
-                                                                      onTap:
-                                                                          () async {
-                                                                        // ShowToastDialog.showLoader(
-                                                                        //     "Please wait".tr);
+                                                                    // InkWell(
+                                                                    //   onTap:
+                                                                    //       () async {
+                                                                    //     // ShowToastDialog.showLoader(
+                                                                    //     //     "Please wait".tr);
 
-                                                                        // UserModel? customer = await FireStoreUtils.getUserProfile(controller
-                                                                        //     .orderModel
-                                                                        //     .value
-                                                                        //     .authorID
-                                                                        //     .toString());
-                                                                        // UserModel? restaurantUser = await FireStoreUtils.getUserProfile(controller
-                                                                        //     .orderModel
-                                                                        //     .value
-                                                                        //     .driverID
-                                                                        //     .toString());
+                                                                    //     // UserModel? customer = await FireStoreUtils.getUserProfile(controller
+                                                                    //     //     .orderModel
+                                                                    //     //     .value
+                                                                    //     //     .authorID
+                                                                    //     //     .toString());
+                                                                    //     // UserModel? restaurantUser = await FireStoreUtils.getUserProfile(controller
+                                                                    //     //     .orderModel
+                                                                    //     //     .value
+                                                                    //     //     .driverID
+                                                                    //     //     .toString());
 
-                                                                        // ShowToastDialog
-                                                                        //     .closeLoader();
+                                                                    //     // ShowToastDialog
+                                                                    //     //     .closeLoader();
 
-                                                                        // Get.to(
-                                                                        //     const ChatScreen(),
-                                                                        //     arguments: {
-                                                                        //       "customerName": '${customer!.fullName()}',
-                                                                        //       "restaurantName": restaurantUser!.fullName(),
-                                                                        //       "orderId": controller.orderModel.value.id,
-                                                                        //       "restaurantId": restaurantUser.id,
-                                                                        //       "customerId": customer.id,
-                                                                        //       "customerProfileImage": customer.profilePictureURL,
-                                                                        //       "restaurantProfileImage": restaurantUser.profilePictureURL,
-                                                                        //       "token": restaurantUser.fcmToken,
-                                                                        //       "chatType": "Driver",
-                                                                        //     });
-                                                                      },
-                                                                      child:
-                                                                          Container(
-                                                                        width:
-                                                                            42,
-                                                                        height:
-                                                                            42,
-                                                                        decoration:
-                                                                            ShapeDecoration(
-                                                                          shape:
-                                                                              RoundedRectangleBorder(
-                                                                            side:
-                                                                                BorderSide(
-                                                                              width: 1,
-                                                                              color: themeChange.getThem() ? AppThemeData.grey700 : AppThemeData.grey200,
-                                                                            ),
-                                                                            borderRadius:
-                                                                                BorderRadius.circular(
-                                                                              120,
-                                                                            ),
-                                                                          ),
-                                                                        ),
-                                                                        child:
-                                                                            Padding(
-                                                                          padding: const EdgeInsets
-                                                                              .all(
-                                                                              8.0),
-                                                                          child:
-                                                                              SvgPicture.asset(
-                                                                            "assets/icons/ic_wechat.svg",
-                                                                          ),
-                                                                        ),
-                                                                      ),
-                                                                    )
+                                                                    //     // Get.to(
+                                                                    //     //     const ChatScreen(),
+                                                                    //     //     arguments: {
+                                                                    //     //       "customerName": '${customer!.fullName()}',
+                                                                    //     //       "restaurantName": restaurantUser!.fullName(),
+                                                                    //     //       "orderId": controller.orderModel.value.id,
+                                                                    //     //       "restaurantId": restaurantUser.id,
+                                                                    //     //       "customerId": customer.id,
+                                                                    //     //       "customerProfileImage": customer.profilePictureURL,
+                                                                    //     //       "restaurantProfileImage": restaurantUser.profilePictureURL,
+                                                                    //     //       "token": restaurantUser.fcmToken,
+                                                                    //     //       "chatType": "Driver",
+                                                                    //     //     });
+                                                                    //   },
+                                                                    //   child:
+                                                                    //       Container(
+                                                                    //     width:
+                                                                    //         42,
+                                                                    //     height:
+                                                                    //         42,
+                                                                    //     decoration:
+                                                                    //         ShapeDecoration(
+                                                                    //       shape:
+                                                                    //           RoundedRectangleBorder(
+                                                                    //         side:
+                                                                    //             BorderSide(
+                                                                    //           width: 1,
+                                                                    //           color: themeChange.getThem() ? AppThemeData.grey700 : AppThemeData.grey200,
+                                                                    //         ),
+                                                                    //         borderRadius:
+                                                                    //             BorderRadius.circular(
+                                                                    //           120,
+                                                                    //         ),
+                                                                    //       ),
+                                                                    //     ),
+                                                                    //     child:
+                                                                    //         Padding(
+                                                                    //       padding: const EdgeInsets
+                                                                    //           .all(
+                                                                    //           8.0),
+                                                                    //       child:
+                                                                    //           SvgPicture.asset(
+                                                                    //         "assets/icons/ic_wechat.svg",
+                                                                    //       ),
+                                                                    //     ),
+                                                                    //   ),
+                                                                    // )
                                                                   ],
                                                                 )
                                                               : const SizedBox(),
@@ -1047,9 +985,6 @@ class OrderDetailsScreen extends StatelessWidget {
                                                                           .grey50
                                                                       : AppThemeData
                                                                           .grey900,
-                                                                  fontFamily:
-                                                                      AppThemeData
-                                                                          .semiBold,
                                                                   fontWeight:
                                                                       FontWeight
                                                                           .w600,
@@ -1076,9 +1011,6 @@ class OrderDetailsScreen extends StatelessWidget {
                                                                           .grey500
                                                                       : AppThemeData
                                                                           .grey400,
-                                                                  fontFamily:
-                                                                      AppThemeData
-                                                                          .semiBold,
                                                                   fontWeight:
                                                                       FontWeight
                                                                           .w600,
@@ -1293,7 +1225,7 @@ class OrderDetailsScreen extends StatelessWidget {
                                                 ),
                                               ),
                                               Text(
-                                                "₦${Constant.formatNumber(elem['total_amount'])}",
+                                                "₦${Constant.formatNumber(item['total_amount'])}",
                                                 textAlign: TextAlign.start,
                                                 style: TextStyle(
                                                   color: themeChange.getThem()

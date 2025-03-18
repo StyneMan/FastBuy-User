@@ -24,11 +24,9 @@ import 'package:provider/provider.dart';
 
 class CheckoutScreen extends StatefulWidget {
   final cart;
-  // final int index;
   const CheckoutScreen({
     super.key,
     required this.cart,
-    // required this.index,
   });
 
   @override
@@ -254,18 +252,19 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                                             "items": widget.cart['items'],
                                             "customerId":
                                                 "${dashboardController.profileController.userData.value['id']}",
-                                            "vendorLocationId":
-                                                widget.cart['vendor_location']
-                                                    ['id']['id'],
+                                            "vendorLocationId": widget
+                                                .cart['vendor_location']['id'],
                                             "riderNote":
                                                 controller.riderNote.value,
                                             "vendorNote":
                                                 widget.cart['vendor_note'],
-                                            "orderType": widget.cart['vendor']
-                                                        ['vendor_type'] ==
-                                                    "restaurant"
-                                                ? "restaurant_order"
-                                                : "store_order",
+                                            "orderType":
+                                                widget.cart['vendor_location']
+                                                                ['vendor']
+                                                            ['vendor_type'] ==
+                                                        "restaurant"
+                                                    ? "restaurant_order"
+                                                    : "store_order",
                                             "deliveryType":
                                                 controller.deliveryType.value,
                                             "paymentMethod": controller
@@ -285,6 +284,8 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                                                 "${addressController.location.value.longitude}",
                                             "riderCommission": double.parse(
                                                 "${controller.deliveryEstimates.value['rider_commission'] ?? "0.0"}"),
+                                            "serviceCharge": double.parse(
+                                                "${controller.deliveryEstimates.value['service_charge'] ?? "1.0"}")
                                           },
                                         },
                                       ),
@@ -388,6 +389,8 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
           "deliveryAddrLng": "${addressController.location.value.longitude}",
           "riderCommission": double.parse(
               "${controller.deliveryEstimates.value['rider_commission'] ?? "0.0"}"),
+          "serviceCharge": double.parse(
+              "${controller.deliveryEstimates.value['service_charge'] ?? "1.0"}")
         },
       };
 
@@ -417,7 +420,15 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
               debugPrint("MY ORDERS REFRESHED  :: ${onData.body}");
               if (onData.statusCode >= 200 && onData.statusCode <= 299) {
                 Map<String, dynamic> map = jsonDecode(onData.body);
-                dashboardController.orderController.myOrders.value = map;
+                dashboardController.orderController.myOrders.value =
+                    map['data'];
+                dashboardController.orderController.hasMoreOrders.value =
+                    int.parse("${map['totalPages']}") >
+                            int.parse("${map['currentPage']}")
+                        ? true
+                        : false;
+                dashboardController.orderController.ordersCurrentPage.value =
+                    int.parse("${map['currentPage']}");
               }
             });
             // Navigate to the Orders Screen from here

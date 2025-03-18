@@ -7,10 +7,11 @@ class MyProfileController extends GetxController {
   var policy = "".obs;
   var terms = "".obs;
   var paymentGateways = [].obs;
+  RxDouble ratingVal = 1.0.obs;
+  var pendingReviews = {}.obs;
 
   @override
   void onInit() {
-    // TODO: implement onInit
     getThem();
     super.onInit();
   }

@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
 
-import 'package:customer/app/wallet_screen/wallet_screen.dart';
 import 'package:customer/constant/constant.dart';
 import 'package:customer/constant/show_toast_dialog.dart';
 import 'package:customer/models/payment_model/mid_trans.dart';
@@ -14,7 +13,6 @@ import 'package:customer/payment/midtrans_screen.dart';
 import 'package:customer/payment/orangePayScreen.dart';
 import 'package:customer/payment/xenditModel.dart';
 import 'package:customer/payment/xenditScreen.dart';
-import 'package:customer/utils/preferences.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'dart:math' as maths;
@@ -37,12 +35,10 @@ import 'package:uuid/uuid.dart';
 
 class GiftCardController extends GetxController {
   RxBool isLoading = true.obs;
-  RxString selectedPaymentMethod = PaymentGateway.wallet.name.obs;
   var pageController = PageController();
 
   @override
   void onInit() {
-    // TODO: implement onInit
     getGiftCard();
     super.onInit();
   }

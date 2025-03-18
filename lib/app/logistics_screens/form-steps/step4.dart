@@ -473,8 +473,8 @@ class PaymentForm extends StatelessWidget {
               shrinkWrap: true,
               itemBuilder: (context, index) => ClipRRect(
                 borderRadius: BorderRadius.circular(10.0),
-                child: Image.file(
-                  File(item['images'][index]),
+                child: Image.network(
+                  "${item['images'][index]}",
                   height: 100,
                   fit: BoxFit.cover,
                 ),

@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:customer/app/cart_screen/cart_detail.dart';
 import 'package:customer/app/checkout_screens/checkout_screen.dart';
 import 'package:customer/app/vendor_screens/vendor_detail.dart';
@@ -59,6 +61,8 @@ class CartCard extends StatelessWidget {
                           width: 36,
                           height: 36,
                           fit: BoxFit.cover,
+                          errorBuilder: (context, error, stackTrace) =>
+                              const SizedBox(),
                         ),
                       ),
                     ),
@@ -71,6 +75,7 @@ class CartCard extends StatelessWidget {
                       children: [
                         Text(
                           "${item['vendor_location']['vendor']['name']} ${item['vendor_location']['branch_name']}"
+                              .trimLeft()
                               .tr,
                           style: TextStyle(
                             fontSize: 15,
@@ -155,7 +160,7 @@ class CartCard extends StatelessWidget {
           ),
           RoundedButtonFill(
             onPress: () {
-              if (item['items']?.length > 0) {
+              if ((item['items'] ?? [])?.length > 0) {
                 Get.to(
                   CheckoutScreen(
                     cart: item,
@@ -171,7 +176,7 @@ class CartCard extends StatelessWidget {
                 );
               }
             },
-            title: item['items']?.length > 0 ? "Checkout" : "Add Items",
+            title: (item['items'] ?? [])?.length > 0 ? "Checkout" : "Add Items",
             color: AppThemeData.primary300,
             textColor: AppThemeData.grey900,
           ),
@@ -225,7 +230,12 @@ class CartCard extends StatelessWidget {
       );
       ShowToastDialog.closeLoader();
       debugPrint("RESPONSE DELETE CART ::: ${resp.body}");
-      // Npw refresh cart here
+      if (resp.statusCode >= 200 && resp.statusCode <= 299) {
+        Map<String, dynamic> map = jsonDecode(resp.body);
+        controller.cartData.value = map['data'];
+        controller.currCartItem.value = {};
+      }
+      // Now refresh cart here
       controller.refreshCart();
     } catch (e) {
       debugPrint("$e");

@@ -17,7 +17,7 @@ class ProductCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final themeChange = Provider.of<DarkThemeProvider>(context);
     return Container(
-      height: 400,
+      height: 425,
       decoration: ShapeDecoration(
         color:
             themeChange.getThem() ? AppThemeData.grey900 : AppThemeData.grey50,

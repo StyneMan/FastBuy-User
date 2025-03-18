@@ -1,5 +1,3 @@
-import 'package:customer/app/wallet_screen/wallet_screen.dart';
-import 'package:customer/constant/constant.dart';
 import 'package:customer/controllers/wallet_controller.dart';
 import 'package:customer/themes/app_them_data.dart';
 import 'package:customer/themes/round_button_fill.dart';
@@ -119,66 +117,66 @@ class PaymentListScreen extends StatelessWidget {
     );
   }
 
-  cardDecoration(WalletController controller, PaymentGateway value, themeChange,
-      String image) {
-    return Obx(
-      () => Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-        child: InkWell(
-          onTap: () {
-            controller.selectedPaymentMethod.value = value.name;
-          },
-          child: Row(
-            children: [
-              Container(
-                width: 50,
-                height: 50,
-                decoration: ShapeDecoration(
-                  shape: RoundedRectangleBorder(
-                    side: const BorderSide(width: 1, color: Color(0xFFE5E7EB)),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                ),
-                child: Padding(
-                  padding: EdgeInsets.all(value.name == "payFast" ? 0 : 8.0),
-                  child: Image.asset(
-                    image,
-                  ),
-                ),
-              ),
-              const SizedBox(
-                width: 10,
-              ),
-              Expanded(
-                child: Text(
-                  value.name.capitalizeString(),
-                  textAlign: TextAlign.start,
-                  style: TextStyle(
-                    fontFamily: AppThemeData.medium,
-                    fontSize: 16,
-                    color: themeChange.getThem()
-                        ? AppThemeData.grey50
-                        : AppThemeData.grey900,
-                  ),
-                ),
-              ),
-              const Expanded(
-                child: SizedBox(),
-              ),
-              Radio(
-                value: value.name,
-                groupValue: controller.selectedPaymentMethod.value,
-                activeColor: themeChange.getThem()
-                    ? AppThemeData.primary300
-                    : AppThemeData.primary300,
-                onChanged: (value) {
-                  controller.selectedPaymentMethod.value = value.toString();
-                },
-              )
-            ],
-          ),
-        ),
-      ),
-    );
-  }
+  // cardDecoration(WalletController controller, themeChange,
+  //     String image) {
+  //   return Obx(
+  //     () => Padding(
+  //       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+  //       child: InkWell(
+  //         onTap: () {
+  //           // controller.selectedPaymentMethod.value = value.name;
+  //         },
+  //         child: Row(
+  //           children: [
+  //             Container(
+  //               width: 50,
+  //               height: 50,
+  //               decoration: ShapeDecoration(
+  //                 shape: RoundedRectangleBorder(
+  //                   side: const BorderSide(width: 1, color: Color(0xFFE5E7EB)),
+  //                   borderRadius: BorderRadius.circular(8),
+  //                 ),
+  //               ),
+  //               child: Padding(
+  //                 padding: EdgeInsets.all(value.name == "payFast" ? 0 : 8.0),
+  //                 child: Image.asset(
+  //                   image,
+  //                 ),
+  //               ),
+  //             ),
+  //             const SizedBox(
+  //               width: 10,
+  //             ),
+  //             Expanded(
+  //               child: Text(
+  //                 value.name.capitalizeString(),
+  //                 textAlign: TextAlign.start,
+  //                 style: TextStyle(
+  //                   fontFamily: AppThemeData.medium,
+  //                   fontSize: 16,
+  //                   color: themeChange.getThem()
+  //                       ? AppThemeData.grey50
+  //                       : AppThemeData.grey900,
+  //                 ),
+  //               ),
+  //             ),
+  //             const Expanded(
+  //               child: SizedBox(),
+  //             ),
+  //             Radio(
+  //               value: value.name,
+  //               groupValue: controller.selectedPaymentMethod.value,
+  //               activeColor: themeChange.getThem()
+  //                   ? AppThemeData.primary300
+  //                   : AppThemeData.primary300,
+  //               onChanged: (value) {
+  //                 controller.selectedPaymentMethod.value = value.toString();
+  //               },
+  //             )
+  //           ],
+  //         ),
+  //       ),
+  //     ),
+  //   );
+  // }
 }

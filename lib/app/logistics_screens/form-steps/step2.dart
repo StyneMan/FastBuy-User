@@ -173,43 +173,50 @@ class ReceiverForm extends StatelessWidget {
               fontWeight: FontWeight.w700,
             ),
           ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              SvgPicture.asset(
-                "assets/icons/ic_location.svg",
-                colorFilter: ColorFilter.mode(
-                  themeChange.getThem()
-                      ? AppThemeData.grey300
-                      : AppThemeData.grey600,
-                  BlendMode.srcIn,
-                ),
-              ),
-              const SizedBox(
-                width: 10.0,
-              ),
-              Expanded(
-                child: TextButton(
-                  onPressed: () {
-                    Get.to(
-                      AddressListScreen(
-                        receiver: "receiver",
-                      ),
-                      transition: Transition.cupertino,
-                    );
-                  },
-                  child: Text(
-                    addressController.receivingModel.value
-                            .getFullAddress()
-                            .isEmpty
-                        ? "Specify your delivery address"
-                        : addressController.receivingModel.value
-                            .getFullAddress(),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10.0),
+            decoration: BoxDecoration(
+              border: Border.all(color: Colors.grey, width: 1.0),
+              borderRadius: BorderRadius.circular(10.0),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                SvgPicture.asset(
+                  "assets/icons/ic_location.svg",
+                  colorFilter: ColorFilter.mode(
+                    themeChange.getThem()
+                        ? AppThemeData.grey300
+                        : AppThemeData.grey600,
+                    BlendMode.srcIn,
                   ),
                 ),
-              ),
-            ],
+                const SizedBox(
+                  width: 10.0,
+                ),
+                Expanded(
+                  child: TextButton(
+                    onPressed: () {
+                      Get.to(
+                        AddressListScreen(
+                          receiver: "receiver",
+                        ),
+                        transition: Transition.cupertino,
+                      );
+                    },
+                    child: Text(
+                      addressController.receivingModel.value
+                              .getFullAddress()
+                              .isEmpty
+                          ? "Specify your delivery address"
+                          : addressController.receivingModel.value
+                              .getFullAddress(),
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ],
       ),

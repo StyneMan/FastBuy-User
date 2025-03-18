@@ -1,11 +1,15 @@
+import 'dart:convert';
+
 import 'package:customer/app/auth_screen/login_screen.dart';
 import 'package:customer/app/wallet_screen/payment_list_screen.dart';
 import 'package:customer/constant/constant.dart';
 import 'package:customer/controllers/my_profile_controller.dart';
 import 'package:customer/controllers/wallet_controller.dart';
+import 'package:customer/services/api_service.dart';
 import 'package:customer/themes/app_them_data.dart';
 import 'package:customer/themes/round_button_fill.dart';
 import 'package:customer/utils/dark_theme_provider.dart';
+import 'package:customer/utils/preferences.dart';
 import 'package:customer/widget/my_separator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -13,10 +17,42 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
-class WalletScreen extends StatelessWidget {
+class WalletScreen extends StatefulWidget {
   WalletScreen({super.key});
 
+  @override
+  State<WalletScreen> createState() => _WalletScreenState();
+}
+
+class _WalletScreenState extends State<WalletScreen> {
   final _profileController = Get.find<MyProfileController>();
+  final walletController = Get.put(WalletController());
+
+  @override
+  void initState() {
+    super.initState();
+    loader();
+  }
+
+  loader() async {
+    try {
+      final accessToken = Preferences.getString(Preferences.accessTokenKey);
+      APIService()
+          .getWalletStreamed(
+        accessToken: accessToken,
+        customerId: _profileController.userData.value['id'],
+      )
+          .listen((onData) {
+        // debugPrint("MY WALLET  :: ${onData.body}");
+        if (onData.statusCode >= 200 && onData.statusCode <= 299) {
+          Map<String, dynamic> map = jsonDecode(onData.body);
+          walletController.userWallet.value = map;
+        }
+      });
+    } catch (e) {
+      debugPrint("$e");
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -177,16 +213,18 @@ class WalletScreen extends StatelessWidget {
                                               fontFamily: AppThemeData.regular,
                                             ),
                                           ),
-                                          Text(
-                                            "₦${Constant.formatNumber(controller.userWallet.value['balance'] ?? 0.0)}",
-                                            maxLines: 1,
-                                            style: TextStyle(
-                                              color: themeChange.getThem()
-                                                  ? AppThemeData.grey50
-                                                  : AppThemeData.grey50,
-                                              fontSize: 40,
-                                              overflow: TextOverflow.ellipsis,
-                                              // fontFamily: AppThemeData.bold,
+                                          Obx(
+                                            () => Text(
+                                              "₦${Constant.formatNumber(controller.userWallet.value['balance'])}",
+                                              maxLines: 1,
+                                              style: TextStyle(
+                                                color: themeChange.getThem()
+                                                    ? AppThemeData.grey50
+                                                    : AppThemeData.grey50,
+                                                fontSize: 40,
+                                                overflow: TextOverflow.ellipsis,
+                                                // fontFamily: AppThemeData.bold,
+                                              ),
                                             ),
                                           ),
                                           const SizedBox(
@@ -218,13 +256,9 @@ class WalletScreen extends StatelessWidget {
                                 ),
                               ],
                             ),
-                            // controller.walletTransactionList.isEmpty
                             Expanded(
-                              child: (controller.walletTransactions
-                                                  .value['data'] ??
-                                              [])
-                                          ?.length <
-                                      1
+                              child: (controller.walletTransactions.value)
+                                      .isEmpty
                                   ? Constant.showEmptyView(
                                       message: "No transactions found".tr)
                                   : Padding(
@@ -232,23 +266,46 @@ class WalletScreen extends StatelessWidget {
                                         horizontal: 16,
                                         vertical: 10,
                                       ),
-                                      child: ListView.builder(
-                                        padding: EdgeInsets.zero,
-                                        itemCount: controller.walletTransactions
-                                            .value['data'].length,
-                                        itemBuilder: (context, index) {
-                                          // WalletTransactionModel
-                                          //     walletTractionModel = controller
-                                          //         .walletTransactionList[index];
-                                          final item = controller
-                                              .walletTransactions
-                                              .value['data'][index];
-                                          return transactionCard(
-                                            controller,
-                                            themeChange,
-                                            item,
-                                          );
-                                        },
+                                      child: Obx(
+                                        () => ListView(
+                                          shrinkWrap: true,
+                                          controller: controller
+                                              .transactionScrollController,
+                                          children: [
+                                            ListView.builder(
+                                              shrinkWrap: true,
+                                              padding: EdgeInsets.zero,
+                                              physics:
+                                                  const NeverScrollableScrollPhysics(),
+                                              itemCount: controller
+                                                  .walletTransactions
+                                                  .value
+                                                  .length,
+                                              itemBuilder: (context, index) {
+                                                // WalletTransactionModel
+                                                //     walletTractionModel = controller
+                                                //         .walletTransactionList[index];
+                                                final item = controller
+                                                    .walletTransactions
+                                                    .value[index];
+                                                return transactionCard(
+                                                  controller,
+                                                  themeChange,
+                                                  item,
+                                                );
+                                              },
+                                            ),
+                                            Center(
+                                              child: SizedBox(
+                                                width: 200,
+                                                child: controller
+                                                        .isLoadingMore.value
+                                                    ? const LinearProgressIndicator()
+                                                    : const SizedBox(),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
                                       ),
                                     ),
                             ),
@@ -389,20 +446,4 @@ class WalletScreen extends StatelessWidget {
       ],
     );
   }
-}
-
-enum PaymentGateway {
-  payFast,
-  mercadoPago,
-  paypal,
-  stripe,
-  flutterWave,
-  payStack,
-  paytm,
-  razorpay,
-  cod,
-  wallet,
-  midTrans,
-  orangeMoney,
-  xendit
 }

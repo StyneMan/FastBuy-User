@@ -1,3 +1,5 @@
+// ignore_for_file: invalid_use_of_protected_member
+
 import 'package:customer/app/dash_board_screens/dash_board_screen.dart';
 import 'package:customer/app/logistics_screens/logistic_model.dart';
 import 'package:customer/app/order_list_screen/order_details_screen.dart';
@@ -181,16 +183,12 @@ class _LogisticScreenState extends State<LogisticScreen> {
                           : ListView.builder(
                               // itemCount: orderController
                               //     .myParcelOrders.value['data']?.length,
-                              itemCount: orderController
-                                          .myParcelOrders.value['data'] ==
-                                      null
-                                  ? 0
-                                  : (orderController.myParcelOrders
-                                              .value['data'].length >
-                                          3
-                                      ? 3
-                                      : orderController.myParcelOrders
-                                          .value['data'].length), // Limit to 5
+                              itemCount:
+                                  (orderController.myParcelOrders.value.length >
+                                          5
+                                      ? 5
+                                      : orderController.myParcelOrders.value
+                                          .length), // Limit to 4
                               shrinkWrap: true,
                               physics: const NeverScrollableScrollPhysics(),
                               padding: EdgeInsets.zero,
@@ -198,8 +196,8 @@ class _LogisticScreenState extends State<LogisticScreen> {
                                 // OrderModel orderModel =
                                 //     controller
                                 //         .allList[index];
-                                final item = orderController
-                                    .myParcelOrders.value['data'][index];
+                                final item =
+                                    orderController.myParcelOrders.value[index];
                                 return itemView(
                                   themeChange,
                                   context,
